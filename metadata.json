@@ -1,0 +1,7 @@
+{
+  "name": "Ecclesia Locator",
+  "description": "Localizador de igrejas com feed comunitário e integração de doações.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
