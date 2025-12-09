@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Church } from '../types';
 import { MapPin, Filter } from 'lucide-react';
 
-// Fix for default Leaflet icons in React
-const iconPerson = new L.Icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/markers/marker-icon-2x-blue.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+// Custom Marker Icon using DivIcon and Tailwind classes
+// This avoids issues with external image loading and provides sharper vectors
+const customMarkerIcon = new L.DivIcon({
+  className: 'bg-transparent border-none', // Reset default Leaflet div styles
+  html: `
+    <div class="relative flex flex-col items-center justify-center transform hover:scale-110 transition-transform duration-200 cursor-pointer">
+      <div class="w-10 h-10 bg-blue-600 rounded-full shadow-xl border-2 border-white flex items-center justify-center z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+      <div class="w-3 h-3 bg-blue-600 rotate-45 -mt-2 shadow-sm"></div>
+      <div class="w-8 h-2 bg-black/20 blur-[2px] rounded-full mt-0.5"></div>
+    </div>
+  `,
+  iconSize: [40, 50],
+  iconAnchor: [20, 48], // Tip of the pin roughly at the coordinate
+  popupAnchor: [0, -48]
 });
 
 interface MapViewProps {
@@ -52,7 +63,7 @@ export const MapView: React.FC<MapViewProps> = ({ churches, onSelectChurch, curr
           <Marker 
             key={church.id} 
             position={[church.lat, church.lng]} 
-            icon={iconPerson}
+            icon={customMarkerIcon}
             eventHandlers={{
               click: () => onSelectChurch(church),
             }}
