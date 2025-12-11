@@ -8,7 +8,6 @@ import { ReligionDialog } from './components/ReligionDialog';
 import { ReportAppDialog } from './components/ReportAppDialog';
 import { InstitutionLogin } from './components/InstitutionLogin';
 import { InstitutionDashboard } from './components/InstitutionDashboard';
-import { generateDailyMessage } from './services/geminiService';
 import { Heart, Share2, Copy, ArrowLeft, Download, FileText, Server, HandHeart } from 'lucide-react';
 
 // Mock Data
@@ -124,22 +123,6 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('ecclesia_religion', religion);
   }, [religion]);
-
-  // Initialize daily message via Gemini
-  useEffect(() => {
-    const fetchDailyMessage = async () => {
-      const message = await generateDailyMessage();
-      const aiPost: FeedPost = {
-        id: 'ai-daily',
-        author: 'Mensagem do Dia (IA)',
-        content: message,
-        date: 'Agora',
-        isAiGenerated: true
-      };
-      setFeed(prev => [aiPost, ...prev]);
-    };
-    fetchDailyMessage();
-  }, []);
 
   const handleViewChange = (newView: ViewState) => {
     if (newView === ViewState.SETTINGS) {
