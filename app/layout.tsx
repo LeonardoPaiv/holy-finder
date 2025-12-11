@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
+import { AppShell } from "../components/AppShell";
 
 export const metadata: Metadata = {
   title: "Ecclesia Locator",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="bg-gray-50 text-slate-900 antialiased">
-        <div id="root">{children}</div>
+        <AppShell>
+          <div id="root">{children}</div>
+        </AppShell>
       </body>
     </html>
   );
