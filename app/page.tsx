@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { ViewState, Church, FeedPost, Transaction } from './types';
-import { BottomNav } from './components/BottomNav';
-import { MapView } from './components/MapView';
-import { ChurchDialog } from './components/ChurchDialog';
-import { SettingsMenu } from './components/SettingsMenu';
-import { ReligionDialog } from './components/ReligionDialog';
-import { ReportAppDialog } from './components/ReportAppDialog';
-import { InstitutionLogin } from './components/InstitutionLogin';
-import { InstitutionDashboard } from './components/InstitutionDashboard';
+'use client';
+
+import { useState, useEffect, type FC } from 'react';
+import dynamic from 'next/dynamic';
+import { ViewState, Church, FeedPost, Transaction } from '../types';
+import { BottomNav } from '../components/BottomNav';
+// import { MapView } from '../components/MapView'; // Removed static import
+import { ChurchDialog } from '../components/ChurchDialog';
+import { SettingsMenu } from '../components/SettingsMenu';
+import { ReligionDialog } from '../components/ReligionDialog';
+import { ReportAppDialog } from '../components/ReportAppDialog';
+import { InstitutionLogin } from '../components/InstitutionLogin';
+import { InstitutionDashboard } from '../components/InstitutionDashboard';
 import { Heart, Share2, Copy, ArrowLeft, Download, FileText, Server, HandHeart } from 'lucide-react';
+
+const MapView = dynamic(() => import('../components/MapView').then(mod => mod.MapView), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-slate-100 animate-pulse" />
+});
 
 // Mock Data
 const MOCK_CHURCHES: Church[] = [
@@ -105,7 +113,7 @@ const MOCK_TRANSACTIONS: Transaction[] = [
   }
 ];
 
-const App: React.FC = () => {
+const App: FC = () => {
   const [view, setView] = useState<ViewState>(ViewState.MAP);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isReligionDialogOpen, setIsReligionDialogOpen] = useState(false);
@@ -116,7 +124,10 @@ const App: React.FC = () => {
 
   // Initialize religion from local storage or default to 'Católica'
   const [religion, setReligion] = useState<string>(() => {
-    return localStorage.getItem('ecclesia_religion') || 'Católica';
+    if (typeof window !== 'undefined') {
+        return localStorage.getItem('ecclesia_religion') || 'Católica';
+    }
+    return 'Católica';
   });
 
   // Save religion to local storage whenever it changes
