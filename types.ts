@@ -37,3 +37,49 @@ export interface Transaction {
   date: string;
   receiptUrl: string;
 }
+
+export type CompanyType =
+  | 'Católica'
+  | 'Evangélica'
+  | 'Espírita'
+  | 'Matriz Africana'
+  | 'Judaica'
+  | 'Budista'
+  | 'Muçulmana'
+  | 'Outras';
+
+export interface Geo {
+  type: 'Point';
+  coordinates: [number, number];
+}
+
+export interface Event {
+  name: string;
+  days: string[];
+  hours: string[];
+  description: string;
+}
+
+export interface Company {
+  _id: string;
+  email: string;
+  name: string;
+  geo: Geo;
+  type: CompanyType;
+  photo?: string;
+  tel?: string;
+  address?: string;
+  events: Event[];
+  missas: Event[];
+  level: 'comum' | 'admin';
+}
+
+export interface Post {
+  _id: string;
+  cnpj: string;
+  type: CompanyType;
+  photo?: string;
+  description?: string;
+  geo: Geo;
+  events: Event[];
+}
