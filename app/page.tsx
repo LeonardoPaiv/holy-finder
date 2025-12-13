@@ -2,9 +2,9 @@
 
 import { useState, useEffect, type FC } from 'react';
 import dynamic from 'next/dynamic';
-import { Church } from '../types';
+import { Company } from '../types';
 import { ChurchDialog } from '../components/ChurchDialog';
-import { ChurchService } from '../services/churchService';
+import { CompanyService } from '../services/companyService';
 import { useApp } from '../components/AppContext';
 
 const MapView = dynamic(() => import('../components/MapView').then(mod => mod.MapView), {
@@ -13,31 +13,33 @@ const MapView = dynamic(() => import('../components/MapView').then(mod => mod.Ma
 });
 
 const App: FC = () => {
-  const [selectedChurch, setSelectedChurch] = useState<Church | null>(null);
-  const [churches, setChurches] = useState<Church[]>([]);
-  const { religion } = useApp();
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const { religion, userLocation } = useApp();
 
   // Load data from services
   useEffect(() => {
     const fetchData = async () => {
-      const churchesData = await ChurchService.getChurches();
-      setChurches(churchesData);
+      if (userLocation) {
+        const companiesData = await CompanyService.getCompanies(userLocation.lat, userLocation.lng);
+        setCompanies(companiesData);
+      } 
     };
     fetchData();
-  }, []);
+  }, [userLocation]);
 
   return (
     <div className="w-full h-full">
       <MapView
-        churches={churches}
-        onSelectChurch={setSelectedChurch}
+        companies={companies}
+        onSelectCompany={setSelectedCompany}
         currentReligion={religion}
       />
 
       {/* Global Dialogs */}
       <ChurchDialog
-        church={selectedChurch}
-        onClose={() => setSelectedChurch(null)}
+        church={selectedCompany}
+        onClose={() => setSelectedCompany(null)}
       />
     </div>
   );

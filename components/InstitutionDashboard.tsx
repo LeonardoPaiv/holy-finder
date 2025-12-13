@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Save, Camera, Clock, MapPin, Phone, Info, Plus, Trash2, Check, X } from 'lucide-react';
-import { Church } from '../types';
+import { Company, Event } from '../types';
 
 interface InstitutionDashboardProps {
   onBack: () => void;
@@ -8,20 +8,22 @@ interface InstitutionDashboardProps {
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-import { ChurchService } from '../services/churchService';
+import { CompanyService } from '../services/companyService';
 
 export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBack }) => {
   // Mock data for editing - now fetched from service
-  const [formData, setFormData] = useState<Partial<Church>>({});
+  const [formData, setFormData] = useState<Partial<Company>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
-      // For this mock dashboard we are hardcoding editing the first church (Catedral da Sé)
-      // In a real app we would get the ID from params or context
-      const church = await ChurchService.getChurchById('1');
-      if (church) {
-        setFormData(church);
+      try {
+          const companies = await CompanyService.getCompanies(-23.550520, -46.633308);
+          if (companies && companies.length > 0) {
+              setFormData(companies[0]);
+          }
+      } catch (e) {
+          console.error("Failed to load company for dashboard", e);
       }
       setIsLoading(false);
     };
@@ -35,7 +37,7 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
 
   const handleSave = async () => {
     try {
-      await ChurchService.updateChurch(formData);
+      await CompanyService.updateCompany(formData);
       alert('Configurações salvas com sucesso!');
     } catch (error) {
       alert('Erro ao salvar configurações.');
@@ -69,14 +71,17 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
 
     // Sort days based on standard week order
     const sortedDays = WEEKDAYS.filter(day => selectedDays.includes(day));
-    const daysString = sortedDays.join(', ');
-    const timesString = selectedTimesList.join(', ');
-
-    const newEntry = `${daysString}: ${timesString}`;
+    
+    const newEvent: Event = {
+        name: 'Missa', // Default name
+        days: sortedDays,
+        hours: selectedTimesList,
+        description: ''
+    };
 
     setFormData(prev => ({
       ...prev,
-      massTimes: [...(prev.massTimes || []), newEntry]
+      missas: [...(prev.missas || []), newEvent]
     }));
 
     // Reset fields
@@ -88,7 +93,7 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
   const removeSchedule = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      massTimes: prev.massTimes?.filter((_, i) => i !== index)
+      missas: prev.missas?.filter((_, i) => i !== index)
     }));
   };
 
@@ -114,7 +119,7 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
           </button>
           <div>
             <h2 className="text-lg font-bold text-slate-800 leading-tight">Painel da Instituição</h2>
-            <p className="text-xs text-slate-500">Editando: Catedral da Sé</p>
+            <p className="text-xs text-slate-500">Editando: {formData.name || 'Nova Instituição'}</p>
           </div>
         </div>
         <button
@@ -135,7 +140,7 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
             <label className="block text-sm font-bold text-slate-700 mb-3">Foto de Capa</label>
             <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-300 flex flex-col items-center justify-center group cursor-pointer hover:border-blue-400 transition-colors">
               <img
-                src="https://picsum.photos/800/600?random=1"
+                src={formData.photo || "https://picsum.photos/800/600?random=1"}
                 alt="Current Cover"
                 className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
               />
@@ -157,7 +162,7 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
               <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase">Nome da Instituição</label>
               <input
                 type="text"
-                value={formData.name}
+                value={formData.name || ''}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full p-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-blue-500 outline-none transition-colors"
               />
@@ -169,7 +174,7 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
                 <MapPin size={18} className="text-slate-400 shrink-0" />
                 <input
                   type="text"
-                  value={formData.address}
+                  value={formData.address || ''}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   className="w-full bg-transparent outline-none"
                 />
@@ -182,22 +187,19 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
                 <Phone size={18} className="text-slate-400 shrink-0" />
                 <input
                   type="text"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  value={formData.tel || ''}
+                  onChange={(e) => setFormData({ ...formData, tel: e.target.value })}
                   className="w-full bg-transparent outline-none"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase">Descrição / Sobre</label>
-              <textarea
-                rows={4}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-blue-500 outline-none transition-colors resize-none"
-              />
-            </div>
+            {/* Description is not in Company type, removing or using a custom field if we added it back. 
+                For now, I'll remove it to be consistent with types.ts or assume we might want to add it later. 
+                If I strictly follow types.ts, I should remove it. 
+                But the UI had it. Let's comment it out or leave it if I extend the type locally? 
+                No, let's stick to types.ts. I'll remove it.
+            */}
           </div>
 
           {/* Schedules */}
@@ -209,31 +211,27 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
 
             {/* List of existing schedules */}
             <div className="space-y-3 mb-6">
-              {formData.massTimes?.length === 0 && (
+              {(!formData.missas || formData.missas.length === 0) && (
                 <p className="text-sm text-slate-400 italic">Nenhum horário cadastrado.</p>
               )}
-              {formData.massTimes?.map((timeEntry, index) => {
-                // Fix: Parse manually to avoid splitting the time string (HH:MM) which contains colons
-                const firstColonIndex = timeEntry.indexOf(':');
-                const days = firstColonIndex !== -1 ? timeEntry.substring(0, firstColonIndex) : timeEntry;
-                const times = firstColonIndex !== -1 ? timeEntry.substring(firstColonIndex + 1) : '';
-
+              {formData.missas?.map((event, index) => {
                 return (
                   <div key={index} className="flex items-start justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
                     <div className="flex flex-col space-y-2">
                       {/* Row 1: Days */}
                       <span className="font-bold text-slate-800 text-base flex items-center">
                         <Check size={16} className="text-green-500 mr-1.5" />
-                        {days.trim()}
+                        {event.days.join(', ')}
                       </span>
                       {/* Row 2: Times */}
                       <div className="flex flex-wrap gap-2">
-                        {times?.split(',').map((t, idx) => (
+                        {event.hours.map((t, idx) => (
                           <span key={idx} className="bg-white border border-slate-200 text-slate-600 text-sm font-medium px-2.5 py-1 rounded-md shadow-sm">
-                            {t.trim()}
+                            {t}
                           </span>
                         ))}
                       </div>
+                      <div className="text-xs text-slate-500">{event.name}</div>
                     </div>
 
                     <button

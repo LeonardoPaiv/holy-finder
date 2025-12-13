@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { Church } from '../types';
+import { Company } from '../types';
 import { MapPin, Filter, Navigation } from 'lucide-react';
 import { useApp } from './AppContext';
 
@@ -39,8 +39,8 @@ const userLocationIcon = new L.DivIcon({
 });
 
 interface MapViewProps {
-  churches: Church[];
-  onSelectChurch: (church: Church) => void;
+  companies: Company[];
+  onSelectCompany: (company: Company) => void;
   currentReligion: string;
 }
 
@@ -61,7 +61,7 @@ const MapController = ({ center }: { center: [number, number] }) => {
   return null;
 };
 
-export const MapView: React.FC<MapViewProps> = ({ churches, onSelectChurch, currentReligion }) => {
+export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, currentReligion }) => {
   const { userLocation, setUserLocation } = useApp();
   // Default to São Paulo if no location
   const defaultPosition: [number, number] = [-23.550520, -46.633308];
@@ -119,13 +119,13 @@ export const MapView: React.FC<MapViewProps> = ({ churches, onSelectChurch, curr
             <Marker position={[userLocation.lat, userLocation.lng]} icon={userLocationIcon} />
         )}
 
-        {churches.map((church) => (
+        {companies.map((company) => (
           <Marker 
-            key={church.id} 
-            position={[church.lat, church.lng]} 
+            key={company._id} 
+            position={[company.geo.coordinates[1], company.geo.coordinates[0]]} 
             icon={customMarkerIcon}
             eventHandlers={{
-              click: () => onSelectChurch(church),
+              click: () => onSelectCompany(company),
             }}
           >
           </Marker>

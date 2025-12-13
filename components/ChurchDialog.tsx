@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { X, Clock, MapPin, Phone, AlertTriangle, ArrowLeft, Send } from 'lucide-react';
-import { Church } from '../types';
+import { Company } from '../types';
 
 interface ChurchDialogProps {
-  church: Church | null;
+  church: Company | null;
   onClose: () => void;
 }
 
@@ -101,7 +101,7 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
             {/* Header Image */}
             <div className="relative h-48 md:h-40 shrink-0 group">
               <img 
-                src={church.image} 
+                src={church.photo || 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2073&auto=format&fit=crop'} 
                 alt={church.name} 
                 className="w-full h-full object-cover"
               />
@@ -134,34 +134,39 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
               
               <div className="flex items-start space-x-3 text-slate-600">
                 <MapPin className="shrink-0 text-blue-600 mt-1" size={20} />
-                <span className="text-sm md:text-base">{church.address}</span>
+                <span className="text-sm md:text-base">{church.address || 'Endereço não informado'}</span>
               </div>
 
-              <div className="flex items-center space-x-3 text-slate-600">
-                <Phone className="shrink-0 text-green-600" size={20} />
-                <span className="text-sm md:text-base">{church.phone}</span>
-              </div>
+              {church.tel && (
+                <div className="flex items-center space-x-3 text-slate-600">
+                  <Phone className="shrink-0 text-green-600" size={20} />
+                  <span className="text-sm md:text-base">{church.tel}</span>
+                </div>
+              )}
 
               <div className="space-y-3">
                 <div className="flex items-center space-x-2 font-semibold text-slate-800 border-b pb-2">
                   <Clock className="text-orange-500" size={20} />
                   <span>Horários de Missa</span>
                 </div>
-                <ul className="space-y-2">
-                  {church.massTimes.map((time, idx) => (
-                    <li key={idx} className="flex justify-between text-sm text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                      <span>{time}</span>
-                      <span className="text-green-600 font-medium text-xs bg-green-50 px-2 py-0.5 rounded-full border border-green-100">Confirmado</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                <h3 className="font-semibold text-blue-800 mb-2">Sobre a Comunidade</h3>
-                <p className="text-sm text-blue-900 leading-relaxed">
-                  {church.description}
-                </p>
+                {church.missas && church.missas.length > 0 ? (
+                  <ul className="space-y-2">
+                    {church.missas.map((missa, idx) => (
+                      <li key={idx} className="flex flex-col text-sm text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <div className="flex justify-between items-center">
+                            <span className="font-medium">{missa.name}</span>
+                            <span className="text-green-600 font-medium text-xs bg-green-50 px-2 py-0.5 rounded-full border border-green-100">Confirmado</span>
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">
+                            {missa.days.join(', ')} - {missa.hours.join(', ')}
+                        </div>
+                        {missa.description && <div className="text-xs italic text-slate-400 mt-1">{missa.description}</div>}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                    <p className="text-sm text-slate-500 italic">Nenhum horário cadastrado.</p>
+                )}
               </div>
 
             </div>
