@@ -28,4 +28,22 @@ const CompanySchema = new Schema<Company>({
     _id: false // Disable auto _id since we define it manually
 });
 
-export default mongoose.models.Company || mongoose.model<Company>('Company', CompanySchema);
+CompanySchema.index({ geo: '2dsphere' });
+
+const CompanyModel = mongoose.models.Company || mongoose.model<Company>('Company', CompanySchema);
+
+const syncIndexes = () => {
+    CompanyModel.syncIndexes().then(() => {
+        console.log('Company indexes synced');
+    }).catch((err: any) => {
+        console.error('Company index sync failed', err);
+    });
+};
+
+if (mongoose.connection.readyState === 1) {
+    syncIndexes();
+} else {
+    mongoose.connection.once('connected', syncIndexes);
+}
+
+export default CompanyModel;

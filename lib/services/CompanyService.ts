@@ -9,4 +9,7 @@ export class CompanyService extends BaseService<CompanyDocument> {
     constructor() {
         super(new CompanyRepository());
     }
+    async getCompaniesByRadius(lat: number, lng: number, radiusInKm: number = 5): Promise<CompanyDocument[]> {
+        return (this.repository as CompanyRepository).findByRadius(lat, lng, radiusInKm);
+    }
 }
