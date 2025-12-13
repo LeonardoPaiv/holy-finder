@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Church } from '../types';
-import { MapPin, Filter } from 'lucide-react';
+import { MapPin, Filter, Navigation } from 'lucide-react';
+import { useApp } from './AppContext';
 
 // Custom Marker Icon using DivIcon and Tailwind classes
-// This avoids issues with external image loading and provides sharper vectors
 const customMarkerIcon = new L.DivIcon({
-  className: 'bg-transparent border-none', // Reset default Leaflet div styles
+  className: 'bg-transparent border-none',
   html: `
     <div class="relative flex flex-col items-center justify-center transform hover:scale-110 transition-transform duration-200 cursor-pointer">
       <div class="w-10 h-10 bg-blue-600 rounded-full shadow-xl border-2 border-white flex items-center justify-center z-10">
@@ -21,8 +21,21 @@ const customMarkerIcon = new L.DivIcon({
     </div>
   `,
   iconSize: [40, 50],
-  iconAnchor: [20, 48], // Tip of the pin roughly at the coordinate
+  iconAnchor: [20, 48],
   popupAnchor: [0, -48]
+});
+
+// User Location Marker
+const userLocationIcon = new L.DivIcon({
+    className: 'bg-transparent border-none',
+    html: `
+      <div class="relative flex items-center justify-center">
+        <div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg z-10"></div>
+        <div class="absolute w-12 h-12 bg-blue-500/20 rounded-full animate-ping"></div>
+      </div>
+    `,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
 });
 
 interface MapViewProps {
@@ -31,18 +44,61 @@ interface MapViewProps {
   currentReligion: string;
 }
 
-// Component to handle map resizing when container changes
-const MapResizer = () => {
+// Component to handle map resizing and centering
+const MapController = ({ center }: { center: [number, number] }) => {
   const map = useMap();
+  
   useEffect(() => {
     map.invalidateSize();
   }, [map]);
+
+  useEffect(() => {
+      if (center) {
+          map.flyTo(center, map.getZoom());
+      }
+  }, [center, map]);
+
   return null;
 };
 
 export const MapView: React.FC<MapViewProps> = ({ churches, onSelectChurch, currentReligion }) => {
-  // Center roughly on São Paulo for demo purposes, or use geolocation
-  const [position] = useState<[number, number]>([-23.550520, -46.633308]);
+  const { userLocation, setUserLocation } = useApp();
+  // Default to São Paulo if no location
+  const defaultPosition: [number, number] = [-23.550520, -46.633308];
+  const position: [number, number] = userLocation ? [userLocation.lat, userLocation.lng] : defaultPosition;
+
+  useEffect(() => {
+      if (!userLocation && "geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+              (position) => {
+                  setUserLocation({
+                      lat: position.coords.latitude,
+                      lng: position.coords.longitude
+                  });
+              },
+              (error) => {
+                  console.error("Error getting location:", error);
+              }
+          );
+      }
+  }, [userLocation, setUserLocation]);
+
+  const handleRecenter = () => {
+      if (userLocation) {
+           // If we already have location, just trigger a re-render or similar (handled by MapController via prop)
+           // But actually, MapController updates when 'position' changes.
+           // If we want to force re-center on button click even if position hasn't changed, we might need a way to signal it.
+           // For now, let's just re-fetch location to be sure.
+           navigator.geolocation.getCurrentPosition(
+              (position) => {
+                  setUserLocation({
+                      lat: position.coords.latitude,
+                      lng: position.coords.longitude
+                  });
+              }
+           );
+      }
+  };
 
   return (
     <div className="w-full h-full absolute inset-0 bg-slate-100">
@@ -53,12 +109,16 @@ export const MapView: React.FC<MapViewProps> = ({ churches, onSelectChurch, curr
         className="w-full h-full z-0"
         zoomControl={false}
       >
-        <MapResizer />
+        <MapController center={position} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
         
+        {userLocation && (
+            <Marker position={[userLocation.lat, userLocation.lng]} icon={userLocationIcon} />
+        )}
+
         {churches.map((church) => (
           <Marker 
             key={church.id} 
@@ -92,6 +152,14 @@ export const MapView: React.FC<MapViewProps> = ({ churches, onSelectChurch, curr
           </div>
         </div>
       </div>
+
+      {/* Recenter Button */}
+      <button 
+        onClick={handleRecenter}
+        className="absolute bottom-24 right-4 z-[400] bg-white p-3 rounded-full shadow-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
+      >
+        <Navigation size={24} className={userLocation ? "text-blue-600" : "text-slate-400"} />
+      </button>
     </div>
   );
 };
