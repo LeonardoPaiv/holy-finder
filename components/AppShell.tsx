@@ -7,6 +7,7 @@ import { SettingsMenu } from '../components/SettingsMenu';
 import { ReligionDialog } from '../components/ReligionDialog';
 import { ReportAppDialog } from '../components/ReportAppDialog';
 import { AppProvider, useApp } from './AppContext';
+import { Toaster } from 'react-hot-toast';
 
 const AppShellContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const pathname = usePathname();
@@ -29,6 +30,7 @@ const AppShellContent: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <main className="flex-1 relative overflow-hidden">
                 {children}
             </main>
+            <Toaster />
 
             {/* Settings Popper Menu */}
             <SettingsMenu
