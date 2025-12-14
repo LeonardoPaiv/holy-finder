@@ -1,57 +1,79 @@
-import React, { useState } from 'react';
-import { Building, ArrowLeft, Lock, ChevronRight, Mail } from 'lucide-react';
+'use client';
+
+import React, { useState, useRef } from 'react';
+import { Building, ArrowLeft, Lock, ChevronRight, Mail, FileText } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { cpf, cnpj } from 'cpf-cnpj-validator';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import Cookies from 'js-cookie';
 
-interface InstitutionLoginProps {
-  onLoginSuccess: () => void;
-  onBack: () => void;
-}
-
-
-export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSuccess, onBack }) => {
+export default function InstitutionSignUp() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [cnpjValue, setCnpjValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<HCaptcha>(null);
+
+  const handleCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '');
+    setCnpjValue(cnpj.format(value));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!cnpj.isValid(cnpjValue)) {
+      toast.error('CNPJ inválido');
+      return;
+    }
+
+    if (!captchaToken) {
+      toast.error('Por favor, complete o captcha');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            cnpj: cnpjValue,
+          },
+          emailRedirectTo: 'http://localhost:3000/institution/dashboard',
+        },
       });
 
       if (error) throw error;
 
-      if (data.session) {
-        Cookies.set('sb-access-token', data.session.access_token, { expires: 7 });
-        Cookies.set('sb-refresh-token', data.session.refresh_token, { expires: 7 });
-      }
-
-      onLoginSuccess();
+      toast.success('Cadastro realizado com sucesso! Verifique seu email.');
+      router.push('/institution/login');
     } catch (error: any) {
-      console.error('Error logging in:', error);
-      toast.error(error.message || 'Erro ao realizar login');
+      console.error('Error signing up:', error);
+      toast.error(error.message || 'Erro ao realizar cadastro');
+      captchaRef.current?.resetCaptcha();
+      setCaptchaToken(null);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full h-full bg-slate-50 flex flex-col overflow-y-auto">
+    <div className="w-full h-full bg-slate-50 flex flex-col overflow-y-auto min-h-screen">
       {/* Header */}
       <div className="bg-white p-4 flex items-center border-b border-slate-100 sticky top-0 z-10">
         <button 
-          onClick={onBack}
+          onClick={() => router.back()}
           className="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors mr-2"
         >
           <ArrowLeft size={24} />
         </button>
-        <h1 className="text-lg font-bold text-slate-800">Área da Instituição</h1>
+        <h1 className="text-lg font-bold text-slate-800">Cadastro de Instituição</h1>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-6">
@@ -62,12 +84,30 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
               <Building size={32} />
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">Bem-vindo(a)</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">Crie sua conta</h2>
             <p className="text-slate-500 mb-8 text-sm">
-              Gerencie as informações da sua paróquia ou comunidade.
+              Cadastre sua paróquia ou comunidade para gerenciar suas informações.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4 text-left">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase">CNPJ</label>
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    value={cnpjValue}
+                    onChange={handleCnpjChange}
+                    placeholder="00.000.000/0000-00"
+                    maxLength={18}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 pl-10"
+                    required
+                  />
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <FileText size={18} />
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase">Email</label>
                 <div className="relative">
@@ -95,11 +135,20 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
                     placeholder="••••••••"
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 pl-10"
                     required
+                    minLength={6}
                   />
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                     <Lock size={18} />
                   </div>
                 </div>
+              </div>
+
+              <div className="flex justify-center py-2">
+                <HCaptcha
+                  sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001"} // Test key
+                  onVerify={(token) => setCaptchaToken(token)}
+                  ref={captchaRef}
+                />
               </div>
 
               <div className="pt-2">
@@ -109,10 +158,10 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center space-x-2 active:scale-95 group disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {loading ? (
-                    <span>Entrando...</span>
+                    <span>Cadastrando...</span>
                   ) : (
                     <>
-                      <span>Acessar Painel</span>
+                      <span>Criar Conta</span>
                       <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
@@ -121,23 +170,20 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
             </form>
 
             <div className="mt-6 text-center">
-              <a href="#" className="text-xs text-slate-400 hover:text-blue-500 transition-colors">
-                Esqueci minha senha
-              </a>
-            </div>
-
-            <div className="mt-2 text-center">
-              <a href="/institution/signup" className="text-xs text-slate-400 hover:text-blue-500 transition-colors">
-                Registrar-se
-              </a>
+              <button 
+                onClick={() => router.push('/institution/login')}
+                className="text-xs text-slate-400 hover:text-blue-500 transition-colors"
+              >
+                Já tem uma conta? Faça login
+              </button>
             </div>
           </div>
           
           <p className="text-center mt-6 text-xs text-slate-400 max-w-xs mx-auto">
-            Ao entrar, você concorda com os termos de uso do Ecclesia Locator para instituições parceiras.
+            Ao se cadastrar, você concorda com os termos de uso do Ecclesia Locator para instituições parceiras.
           </p>
         </div>
       </div>
     </div>
   );
-};
+}

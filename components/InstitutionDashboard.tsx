@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Save, Camera, Clock, MapPin, Phone, Info, Plus, Trash2, Check, X } from 'lucide-react';
+import { ArrowLeft, Save, Camera, Clock, MapPin, Phone, Info, Plus, Trash2, Check, X, LogOut } from 'lucide-react';
 import { Company, Event } from '../types';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import Cookies from 'js-cookie';
 
 interface InstitutionDashboardProps {
   onBack: () => void;
@@ -11,6 +14,7 @@ const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 import { CompanyService } from '../services/companyService';
 
 export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBack }) => {
+  const router = useRouter();
   // Mock data for editing - now fetched from service
   const [formData, setFormData] = useState<Partial<Company>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +46,18 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
     } catch (error) {
       alert('Erro ao salvar configurações.');
       console.error(error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      Cookies.remove('sb-access-token');
+      Cookies.remove('sb-refresh-token');
+      router.push('/institution/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      router.push('/institution/login');
     }
   };
 
@@ -122,13 +138,23 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
             <p className="text-xs text-slate-500">Editando: {formData.name || 'Nova Instituição'}</p>
           </div>
         </div>
-        <button
-          onClick={handleSave}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
-        >
-          <Save size={16} />
-          <span className="hidden md:inline">Salvar</span>
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={handleLogout}
+            className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center space-x-2"
+            title="Sair"
+          >
+            <LogOut size={20} />
+            <span className="hidden md:inline text-sm font-medium">Sair</span>
+          </button>
+          <button
+            onClick={handleSave}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
+          >
+            <Save size={16} />
+            <span className="hidden md:inline">Salvar</span>
+          </button>
+        </div>
       </div>
 
       {/* Content */}
