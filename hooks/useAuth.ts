@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { ROUTES, COOKIES } from '@/lib/constants';
-import toast from 'react-hot-toast';
+import { translateSupabaseError } from '@/lib/supabaseErrors';
 
 export const useAuth = () => {
   const router = useRouter();
@@ -42,7 +42,9 @@ export const useAuth = () => {
       
       return Promise.resolve();
     } catch (error: any) {
-      console.error('Error logging in:', error);
+      if (error.code) {
+        throw new Error(translateSupabaseError(error.code))
+      }
       throw error;
     } finally {
       setLoading(false);
@@ -67,7 +69,9 @@ export const useAuth = () => {
       
       return Promise.resolve();
     } catch (error: any) {
-      console.error('Error signing up:', error);
+      if (error.code) {
+        throw new Error(translateSupabaseError(error.code))
+      }
       throw error;
     } finally {
       setLoading(false);
