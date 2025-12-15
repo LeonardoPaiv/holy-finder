@@ -94,11 +94,46 @@ export const useAuth = () => {
     }
   };
 
+  const checkSession = async (callback: () => void): Promise<void> => {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (session && !error) {
+        callback();
+        return;
+      }
+
+      const refreshToken = Cookies.get(COOKIES.REFRESH_TOKEN);
+
+      if (refreshToken) {
+        const { data, error: refreshError } = await supabase.auth.refreshSession({ 
+          refresh_token: refreshToken 
+        });
+
+        if (data.session && !refreshError) {
+          Cookies.set(COOKIES.ACCESS_TOKEN, data.session.access_token, { expires: 7 });
+          Cookies.set(COOKIES.REFRESH_TOKEN, data.session.refresh_token, { expires: 7 });
+          callback();
+          return;
+        }
+      }
+
+      // If we get here, session is invalid and refresh failed/didn't exist
+      Cookies.remove(COOKIES.ACCESS_TOKEN);
+      Cookies.remove(COOKIES.REFRESH_TOKEN);
+    } catch (error) {
+      console.error('Error checking session:', error);
+      Cookies.remove(COOKIES.ACCESS_TOKEN);
+      Cookies.remove(COOKIES.REFRESH_TOKEN);
+    }
+  };
+
   return {
     user,
     loading,
     signIn,
     signUp,
     signOut,
+    checkSession,
   };
 };

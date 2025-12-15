@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
 
 export const useInstitutionLoginViewModel = (onLoginSuccess: () => void) => {
-  const { signIn, loading } = useAuth();
+  const { signIn, loading, checkSession } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -17,6 +17,10 @@ export const useInstitutionLoginViewModel = (onLoginSuccess: () => void) => {
       toast.error(error.message || 'Erro ao realizar login');
     }
   };
+
+  useEffect(() => {
+    checkSession(onLoginSuccess);
+  }, [])
 
   return {
     email,
