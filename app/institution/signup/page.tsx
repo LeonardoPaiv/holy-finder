@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Building, ArrowLeft, Lock, ChevronRight, Mail, FileText } from 'lucide-react';
+import { ArrowLeft, Lock, ChevronRight, Mail, FileText, User as UserIcon, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { useInstitutionSignupViewModel } from '@/components/viewmodels/InstitutionSignupViewModel';
@@ -12,8 +12,11 @@ export default function InstitutionSignUp() {
   const {
     email,
     setEmail,
+    fullName,
+    setFullName,
     password,
     setPassword,
+    passwordRequirements,
     cnpjValue,
     handleCnpjChange,
     loading,
@@ -21,6 +24,8 @@ export default function InstitutionSignUp() {
     captchaRef,
     handleSubmit,
   } = useInstitutionSignupViewModel();
+
+  const [isPasswordFocused, setIsPasswordFocused] = React.useState(false);
 
   return (
     <div className="w-full h-full bg-slate-50 flex flex-col overflow-y-auto min-h-screen">
@@ -49,6 +54,23 @@ export default function InstitutionSignUp() {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4 text-left">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase">Nome Completo</label>
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Seu nome completo"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 pl-10"
+                    required
+                  />
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <UserIcon size={18} />
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase">CNPJ</label>
                 <div className="relative">
@@ -91,15 +113,42 @@ export default function InstitutionSignUp() {
                     type="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onFocus={() => setIsPasswordFocused(true)}
+                    onBlur={() => setIsPasswordFocused(false)}
                     placeholder="••••••••"
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 pl-10"
                     required
-                    minLength={6}
                   />
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                     <Lock size={18} />
                   </div>
                 </div>
+                
+                {isPasswordFocused && (
+                  <div className="mt-2 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <p className="font-semibold text-slate-600 mb-2">A senha deve conter:</p>
+                    <div className={`flex items-center space-x-2 ${passwordRequirements.minLength ? 'text-green-600' : 'text-slate-400'}`}>
+                      {passwordRequirements.minLength ? <Check size={14} /> : <div className="w-3.5 h-3.5 rounded-full border border-slate-300" />}
+                      <span>Pelo menos 8 caracteres</span>
+                    </div>
+                    <div className={`flex items-center space-x-2 ${passwordRequirements.hasUpperCase ? 'text-green-600' : 'text-slate-400'}`}>
+                      {passwordRequirements.hasUpperCase ? <Check size={14} /> : <div className="w-3.5 h-3.5 rounded-full border border-slate-300" />}
+                      <span>Uma letra maiúscula</span>
+                    </div>
+                    <div className={`flex items-center space-x-2 ${passwordRequirements.hasLowerCase ? 'text-green-600' : 'text-slate-400'}`}>
+                      {passwordRequirements.hasLowerCase ? <Check size={14} /> : <div className="w-3.5 h-3.5 rounded-full border border-slate-300" />}
+                      <span>Uma letra minúscula</span>
+                    </div>
+                    <div className={`flex items-center space-x-2 ${passwordRequirements.hasNumber ? 'text-green-600' : 'text-slate-400'}`}>
+                      {passwordRequirements.hasNumber ? <Check size={14} /> : <div className="w-3.5 h-3.5 rounded-full border border-slate-300" />}
+                      <span>Um número</span>
+                    </div>
+                    <div className={`flex items-center space-x-2 ${passwordRequirements.hasSymbol ? 'text-green-600' : 'text-slate-400'}`}>
+                      {passwordRequirements.hasSymbol ? <Check size={14} /> : <div className="w-3.5 h-3.5 rounded-full border border-slate-300" />}
+                      <span>Um símbolo (!@#$...)</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-center py-2">

@@ -11,6 +11,7 @@ export const useInstitutionSignupViewModel = () => {
   const { signUp, loading } = useAuth();
   
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [cnpjValue, setCnpjValue] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -21,11 +22,31 @@ export const useInstitutionSignupViewModel = () => {
     setCnpjValue(cnpj.format(value));
   };
 
+  const passwordRequirements = {
+    minLength: password.length >= 8,
+    hasUpperCase: /[A-Z]/.test(password),
+    hasLowerCase: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSymbol: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
+
+  const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!fullName.trim() || fullName.trim().split(/\s+/).length < 2) {
+      toast.error('Por favor, informe seu nome e sobrenome');
+      return;
+    }
+
     if (!cnpj.isValid(cnpjValue)) {
       toast.error('CNPJ inválido');
+      return;
+    }
+
+    if (!isPasswordValid) {
+      toast.error('A senha não atende aos requisitos de segurança');
       return;
     }
 
@@ -35,7 +56,8 @@ export const useInstitutionSignupViewModel = () => {
     }
 
     try {
-      await signUp(email, password, cnpjValue);
+      const rawCnpj = cnpjValue.replace(/\D/g, '');
+      await signUp(email, password, rawCnpj, fullName);
       toast.success('Cadastro realizado com sucesso! Verifique seu email.');
       router.push(ROUTES.INSTITUTION.LOGIN);
     } catch (error: any) {
@@ -48,8 +70,12 @@ export const useInstitutionSignupViewModel = () => {
   return {
     email,
     setEmail,
+    fullName,
+    setFullName,
     password,
     setPassword,
+    passwordRequirements,
+    isPasswordValid,
     cnpjValue,
     handleCnpjChange,
     loading,

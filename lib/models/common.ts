@@ -21,6 +21,14 @@ export enum Religions {
     OUTRAS = 'Outras'
 }
 
+export enum UserType {
+    INACTIVE = 'inactive',
+    COMUM = 'comum',
+    INSTITUTION_ADMIN = 'institution admin',
+    MODERATOR = 'moderator',
+    SUPER_ADMIN = 'super admin'
+}
+
 export const EventSchema = new Schema({
     name: { type: String, required: true },
     days: [{

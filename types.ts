@@ -71,7 +71,7 @@ export interface Company {
   address?: string;
   events: Event[];
   missas: Event[];
-  level: 'comum' | 'admin';
+  active: boolean;
 }
 
 export interface Post {
@@ -82,4 +82,14 @@ export interface Post {
   description?: string;
   geo: Geo;
   events: Event[];
+}
+
+export type UserType = 'inactive' | 'comum' | 'institution admin' | 'moderator' | 'super admin';
+
+export interface User {
+  _id: string;
+  email: string;
+  fullName: string;
+  institution: string;
+  type: UserType;
 }

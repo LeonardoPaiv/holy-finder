@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { Company, CompanyType } from '../../types';
+import { Company } from '../../types';
 import { EventSchema, GeoSchema, Religions } from './common';
 
 const CompanySchema = new Schema<Company>({
@@ -17,11 +17,10 @@ const CompanySchema = new Schema<Company>({
     address: { type: String, required: false },
     events: [EventSchema],
     missas: [EventSchema],
-    level: {
-        type: String,
-        enum: ['comum', 'admin'],
+    active: {
+        type: Boolean,
         required: true,
-        default: 'comum'
+        default: false
     }
 }, {
     timestamps: true,
