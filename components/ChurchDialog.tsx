@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { X, Clock, MapPin, Phone, AlertTriangle, ArrowLeft, Send } from 'lucide-react';
 import { Company } from '../types';
+import { useChurchDialogViewModel } from './viewmodels/ChurchDialogViewModel';
 
 interface ChurchDialogProps {
   church: Company | null;
@@ -8,28 +9,16 @@ interface ChurchDialogProps {
 }
 
 export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) => {
-  const [isReporting, setIsReporting] = useState(false);
-  const [reportText, setReportText] = useState('');
-
-  // Reset state when church changes
-  useEffect(() => {
-    setIsReporting(false);
-    setReportText('');
-  }, [church]);
+  const {
+    isReporting,
+    setIsReporting,
+    reportText,
+    setReportText,
+    handleSendReport,
+    handleClose,
+  } = useChurchDialogViewModel(church, onClose);
 
   if (!church) return null;
-
-  const handleSendReport = () => {
-    // Aqui seria a integração com backend
-    alert('Problema reportado com sucesso! Agradecemos sua contribuição para manter os dados atualizados.');
-    setReportText('');
-    setIsReporting(false);
-  };
-
-  const handleClose = () => {
-    setIsReporting(false);
-    onClose();
-  };
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 md:p-4">

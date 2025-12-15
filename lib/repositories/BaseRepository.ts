@@ -4,8 +4,8 @@ export abstract class BaseRepository<T extends Document> {
     constructor(protected readonly model: Model<T>) { }
 
     async create(data: Partial<T>): Promise<T> {
-        const created = await this.model.create(data);
-        return created;
+        const created = await this.model.create(data as any);
+        return created as any;
     }
 
     async findAll(filter: any = {}): Promise<T[]> {

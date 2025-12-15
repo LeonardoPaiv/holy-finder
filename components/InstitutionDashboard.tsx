@@ -1,118 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ArrowLeft, Save, Camera, Clock, MapPin, Phone, Info, Plus, Trash2, Check, X, LogOut } from 'lucide-react';
-import { Company, Event } from '../types';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
-import Cookies from 'js-cookie';
+import { useInstitutionDashboardViewModel } from './viewmodels/InstitutionDashboardViewModel';
+import { WEEKDAYS } from '@/lib/constants';
 
 interface InstitutionDashboardProps {
   onBack: () => void;
 }
 
-const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
-import { CompanyService } from '../services/companyService';
-
 export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBack }) => {
-  const router = useRouter();
-  // Mock data for editing - now fetched from service
-  const [formData, setFormData] = useState<Partial<Company>>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-          const companies = await CompanyService.getCompanies(-23.550520, -46.633308);
-          if (companies && companies.length > 0) {
-              setFormData(companies[0]);
-          }
-      } catch (e) {
-          console.error("Failed to load company for dashboard", e);
-      }
-      setIsLoading(false);
-    };
-    loadData();
-  }, []);
-
-  // Local state for new schedule entry
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [currentInputTime, setCurrentInputTime] = useState('');
-  const [selectedTimesList, setSelectedTimesList] = useState<string[]>([]);
-
-  const handleSave = async () => {
-    try {
-      await CompanyService.updateCompany(formData);
-      alert('Configurações salvas com sucesso!');
-    } catch (error) {
-      alert('Erro ao salvar configurações.');
-      console.error(error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      Cookies.remove('sb-access-token');
-      Cookies.remove('sb-refresh-token');
-      router.push('/institution/login');
-    } catch (error) {
-      console.error('Error logging out:', error);
-      router.push('/institution/login');
-    }
-  };
-
-  const toggleDay = (day: string) => {
-    if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter(d => d !== day));
-    } else {
-      setSelectedDays([...selectedDays, day]);
-    }
-  };
-
-  const addTimeToDraft = () => {
-    if (!currentInputTime) return;
-    if (!selectedTimesList.includes(currentInputTime)) {
-      const newTimes = [...selectedTimesList, currentInputTime].sort();
-      setSelectedTimesList(newTimes);
-    }
-    setCurrentInputTime('');
-  };
-
-  const removeTimeFromDraft = (timeToRemove: string) => {
-    setSelectedTimesList(selectedTimesList.filter(t => t !== timeToRemove));
-  };
-
-  const handleAddScheduleBlock = () => {
-    if (selectedDays.length === 0 || selectedTimesList.length === 0) return;
-
-    // Sort days based on standard week order
-    const sortedDays = WEEKDAYS.filter(day => selectedDays.includes(day));
-    
-    const newEvent: Event = {
-        name: 'Missa', // Default name
-        days: sortedDays,
-        hours: selectedTimesList,
-        description: ''
-    };
-
-    setFormData(prev => ({
-      ...prev,
-      missas: [...(prev.missas || []), newEvent]
-    }));
-
-    // Reset fields
-    setSelectedDays([]);
-    setSelectedTimesList([]);
-    setCurrentInputTime('');
-  };
-
-  const removeSchedule = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      missas: prev.missas?.filter((_, i) => i !== index)
-    }));
-  };
-
+  const {
+    formData,
+    setFormData,
+    isLoading,
+    selectedDays,
+    currentInputTime,
+    setCurrentInputTime,
+    selectedTimesList,
+    handleSave,
+    handleLogout,
+    toggleDay,
+    addTimeToDraft,
+    removeTimeFromDraft,
+    handleAddScheduleBlock,
+    removeSchedule,
+  } = useInstitutionDashboardViewModel();
 
   if (isLoading) {
     return (
@@ -219,13 +130,6 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
                 />
               </div>
             </div>
-
-            {/* Description is not in Company type, removing or using a custom field if we added it back. 
-                For now, I'll remove it to be consistent with types.ts or assume we might want to add it later. 
-                If I strictly follow types.ts, I should remove it. 
-                But the UI had it. Let's comment it out or leave it if I extend the type locally? 
-                No, let's stick to types.ts. I'll remove it.
-            */}
           </div>
 
           {/* Schedules */}

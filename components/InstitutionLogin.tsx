@@ -1,45 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Building, ArrowLeft, Lock, ChevronRight, Mail } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import toast from 'react-hot-toast';
-import Cookies from 'js-cookie';
+import { useInstitutionLoginViewModel } from './viewmodels/InstitutionLoginViewModel';
+import { ROUTES } from '@/lib/constants';
 
 interface InstitutionLoginProps {
   onLoginSuccess: () => void;
   onBack: () => void;
 }
 
-
 export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSuccess, onBack }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      if (data.session) {
-        Cookies.set('sb-access-token', data.session.access_token, { expires: 7 });
-        Cookies.set('sb-refresh-token', data.session.refresh_token, { expires: 7 });
-      }
-
-      onLoginSuccess();
-    } catch (error: any) {
-      console.error('Error logging in:', error);
-      toast.error(error.message || 'Erro ao realizar login');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    loading,
+    handleSubmit,
+  } = useInstitutionLoginViewModel(onLoginSuccess);
 
   return (
     <div className="w-full h-full bg-slate-50 flex flex-col overflow-y-auto">
@@ -127,7 +104,7 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
             </div>
 
             <div className="mt-2 text-center">
-              <a href="/institution/signup" className="text-xs text-slate-400 hover:text-blue-500 transition-colors">
+              <a href={ROUTES.INSTITUTION.SIGNUP} className="text-xs text-slate-400 hover:text-blue-500 transition-colors">
                 Registrar-se
               </a>
             </div>
