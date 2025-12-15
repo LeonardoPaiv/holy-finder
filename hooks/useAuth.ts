@@ -4,23 +4,52 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { ROUTES, COOKIES } from '@/lib/constants';
 import { translateSupabaseError } from '@/lib/supabaseErrors';
+import { useApp } from '@/components/AppContext';
+import { UserService } from '@/services/userService';
+import { CompanyService } from '@/services/companyService';
 
 export const useAuth = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
-  console.log("🚀 ~ useAuth ~ user:", user)
+  const { setUser: setContextUser, setInstitution } = useApp();
+
+  const fetchUserData = async (email: string) => {
+    try {
+      const userProfile = await UserService.getUserByEmail(email);
+      if (userProfile) {
+        setContextUser(userProfile);
+        if (userProfile.institution) {
+          const company = await CompanyService.getCompanyByCnpj(userProfile.institution);
+          if (company) {
+            setInstitution(company);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
+      if (session?.user?.email) {
+        fetchUserData(session.user.email);
+      }
     };
 
     getSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user?.email) {
+        fetchUserData(session.user.email);
+      } else {
+        setContextUser(null);
+        setInstitution(null);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -39,6 +68,9 @@ export const useAuth = () => {
       if (data.session) {
         Cookies.set(COOKIES.ACCESS_TOKEN, data.session.access_token, { expires: 7 });
         Cookies.set(COOKIES.REFRESH_TOKEN, data.session.refresh_token, { expires: 7 });
+        if (data.session.user.email) {
+            await fetchUserData(data.session.user.email);
+        }
       }
       
       return Promise.resolve();
@@ -107,6 +139,8 @@ export const useAuth = () => {
       await supabase.auth.signOut();
       Cookies.remove(COOKIES.ACCESS_TOKEN);
       Cookies.remove(COOKIES.REFRESH_TOKEN);
+      setContextUser(null);
+      setInstitution(null);
       router.push(ROUTES.INSTITUTION.LOGIN);
     } catch (error) {
       console.error('Error logging out:', error);
@@ -122,6 +156,9 @@ export const useAuth = () => {
       const { data: { session }, error } = await supabase.auth.getSession();
 
       if (session && !error) {
+        if (session.user.email) {
+            await fetchUserData(session.user.email);
+        }
         callback();
         return;
       }
@@ -136,6 +173,9 @@ export const useAuth = () => {
         if (data.session && !refreshError) {
           Cookies.set(COOKIES.ACCESS_TOKEN, data.session.access_token, { expires: 7 });
           Cookies.set(COOKIES.REFRESH_TOKEN, data.session.refresh_token, { expires: 7 });
+          if (data.session.user.email) {
+            await fetchUserData(data.session.user.email);
+          }
           callback();
           return;
         }

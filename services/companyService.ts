@@ -1,4 +1,5 @@
 import { Company } from '../types';
+import Cookies from 'js-cookie';
 
 export const CompanyService = {
     getCompanies: async (lat: number, lng: number, radius: number = 5): Promise<Company[]> => {
@@ -14,14 +15,55 @@ export const CompanyService = {
         }
     },
 
-    getCompanyById: async (id: string): Promise<Company | undefined> => {
-        // TODO: Implement get by ID API endpoint if needed
-        return undefined;
+    getCompanyByCnpj: async (cnpj: string): Promise<Company | null> => {
+        try {
+            const response = await fetch(`/api/companies/${cnpj}`);
+            if (!response.ok) {
+                return null;
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching company by CNPJ:', error);
+            return null;
+        }
     },
 
-    updateCompany: async (updatedCompany: Partial<Company> & { _id?: string }): Promise<Company> => {
-        // TODO: Implement update API endpoint
-        console.log('Simulating update for:', updatedCompany);
-        return updatedCompany as Company;
-    }
+    updateBasicInfo: async (cnpj: string, data: Partial<Company>): Promise<Company> => {
+        const response = await fetch(`/api/companies/${cnpj}/basic-info`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
+            },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) throw new Error('Failed to update basic info');
+        return await response.json();
+    },
+
+    updateMissas: async (cnpj: string, missas: any[]): Promise<Company> => {
+        const response = await fetch(`/api/companies/${cnpj}/missas`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
+            },
+            body: JSON.stringify({ missas })
+        });
+        if (!response.ok) throw new Error('Failed to update missas');
+        return await response.json();
+    },
+
+    updateEvents: async (cnpj: string, events: any[]): Promise<Company> => {
+        const response = await fetch(`/api/companies/${cnpj}/events`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
+            },
+            body: JSON.stringify({ events })
+        });
+        if (!response.ok) throw new Error('Failed to update events');
+        return await response.json();
+    },
 };
