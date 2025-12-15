@@ -27,7 +27,7 @@ const AppShellContent: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
     return (
         <div className="h-screen w-screen flex flex-col overflow-hidden relative font-sans">
-            <main className="flex-1 relative overflow-hidden">
+            <main className="flex-1 relative overflow-auto">
                 {children}
             </main>
             <Toaster />

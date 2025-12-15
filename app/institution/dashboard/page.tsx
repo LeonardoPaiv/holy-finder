@@ -1,8 +1,8 @@
 'use client'
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { InstitutionDashboard } from '../../../components/InstitutionDashboard';
 import Cookies from 'js-cookie';
+import { InstitutionDashboard } from '@/components/InstitutionDashboard';
 
 export default function InstitutionDashboardPage() {
     const router = useRouter();
@@ -27,5 +27,5 @@ export default function InstitutionDashboardPage() {
         }
     }, [router]);
 
-    return <InstitutionDashboard onBack={() => router.push('/')} />;
+    return <InstitutionDashboard />;
 }

@@ -4,7 +4,7 @@ import { CompanyService } from '@/services/companyService';
 import { useAuth } from '@/hooks/useAuth';
 import { WEEKDAYS } from '@/lib/constants';
 
-export const useInstitutionDashboardViewModel = () => {
+export const useInstitutionDataEditorViewModel = () => {
   const { signOut } = useAuth();
   const [formData, setFormData] = useState<Partial<Company>>({});
   const [isLoading, setIsLoading] = useState(true);

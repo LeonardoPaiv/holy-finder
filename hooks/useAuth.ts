@@ -9,6 +9,7 @@ export const useAuth = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
+  console.log("🚀 ~ useAuth ~ user:", user)
 
   useEffect(() => {
     const getSession = async () => {
