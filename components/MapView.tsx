@@ -190,14 +190,19 @@ export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, cu
       
       {/* Floating search bar and Religion Badge */}
       <div className="absolute top-4 left-4 right-4 z-[400] md:w-[400px] md:left-4 space-y-2">
-        {/* Search Bar */}
-        <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200">
-          <MapPin className="text-blue-600" size={20} />
-          <input 
-            type="text" 
-            placeholder="Buscar paróquia ou bairro..." 
-            className="flex-1 bg-transparent outline-none text-slate-900 placeholder:text-slate-500 font-medium"
-          />
+        {/* Search Bar Container with Logo */}
+        <div className="flex items-center space-x-2">
+           <div className="bg-white p-2 rounded-xl shadow-lg border border-slate-200 shrink-0">
+              <img src="/logo.webp" alt="Logo" className="w-8 h-8 object-contain" />
+           </div>
+           <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200 flex-1">
+            <MapPin className="text-blue-600" size={20} />
+            <input 
+              type="text" 
+              placeholder="Buscar paróquia ou bairro..." 
+              className="flex-1 bg-transparent outline-none text-slate-900 placeholder:text-slate-500 font-medium"
+            />
+          </div>
         </div>
 
         {/* Selected Religion Badge */}

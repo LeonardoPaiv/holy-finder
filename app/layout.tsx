@@ -4,8 +4,13 @@ import "leaflet/dist/leaflet.css";
 import { AppShell } from "../components/AppShell";
 
 export const metadata: Metadata = {
-  title: "Ecclesia Locator",
+  title: "Mapa da Fé",
   description: "Encontre igrejas e horários de missa próximos a você",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

@@ -44,9 +44,12 @@ export const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onBa
           >
             <ArrowLeft size={24} />
           </button>
-          <div>
-            <h2 className="text-lg font-bold text-slate-800 leading-tight">Painel da Instituição</h2>
-            <p className="text-xs text-slate-500">Editando: {formData.name || 'Nova Instituição'}</p>
+          <div className="flex items-center space-x-3">
+             <img src="/logo.webp" alt="Logo" className="w-8 h-8 object-contain" />
+             <div>
+                <h2 className="text-lg font-bold text-slate-800 leading-tight">Painel da Instituição</h2>
+                <p className="text-xs text-slate-500">Editando: {formData.name || 'Nova Instituição'}</p>
+             </div>
           </div>
         </div>
         <div className="flex items-center space-x-2">

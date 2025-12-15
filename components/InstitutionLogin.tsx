@@ -35,8 +35,8 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
         <div className="w-full max-w-sm">
           <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 text-center">
             
-            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6 text-blue-600 rotate-3">
-              <Building size={32} />
+            <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-slate-100">
+              <img src="/logo.webp" alt="Logo" className="w-full h-full object-contain p-2" />
             </div>
 
             <h2 className="text-2xl font-bold text-slate-800 mb-2">Bem-vindo(a)</h2>
