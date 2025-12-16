@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 const customMarkerIcon = new L.DivIcon({
   className: 'bg-transparent border-none',
   html: `
-    <div class="relative flex flex-col items-center justify-center transform hover:scale-110 transition-transform duration-200 cursor-pointer">
+    <div class="marker-fade-in relative flex flex-col items-center justify-center transform hover:scale-110 transition-transform duration-200 cursor-pointer">
       <div class="w-10 h-10 bg-blue-600 rounded-full shadow-xl border-2 border-white flex items-center justify-center z-10">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
@@ -30,7 +30,7 @@ const customMarkerIcon = new L.DivIcon({
 const userLocationIcon = new L.DivIcon({
     className: 'bg-transparent border-none',
     html: `
-      <div class="relative flex items-center justify-center">
+      <div class="marker-fade-in relative flex items-center justify-center">
         <div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg z-10"></div>
         <div class="absolute w-12 h-12 bg-blue-500/20 rounded-full animate-ping"></div>
       </div>
