@@ -1,10 +1,11 @@
-import React from 'react';
-import { X, Clock, MapPin, Phone, AlertTriangle, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Clock, MapPin, Phone, AlertTriangle, Calendar, Maximize2 } from 'lucide-react';
 import { Company } from '../types';
 import { useChurchDialogViewModel } from './viewmodels/ChurchDialogViewModel';
 import { GOOGLE_MAPS_URL } from '../utils/constants';
 import { ScheduleSection } from './church-dialog/ScheduleSection';
 import { ReportForm } from './church-dialog/ReportForm';
+import { ImagePreviewDialog } from './ImagePreviewDialog';
 
 interface ChurchDialogProps {
   church: Company | null;
@@ -12,6 +13,7 @@ interface ChurchDialogProps {
 }
 
 export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) => {
+  const [showPreview, setShowPreview] = useState(false);
   const {
     isReporting,
     setIsReporting,
@@ -70,10 +72,19 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
               {/* Report Button */}
               <button 
                 onClick={() => setIsReporting(true)}
-                className="absolute top-4 right-14 z-20 p-2 mr-1 bg-black/40 hover:bg-red-600 text-white rounded-full backdrop-blur-md transition-all border border-white/10 shadow-sm"
+                className="absolute top-4 right-24 z-20 p-2 bg-black/40 hover:bg-red-600 text-white rounded-full backdrop-blur-md transition-all border border-white/10 shadow-sm"
                 title="Reportar problema ou informação incorreta"
               >
                 <AlertTriangle size={20} />
+              </button>
+
+              {/* Preview Button */}
+              <button 
+                onClick={() => setShowPreview(true)}
+                className="absolute top-4 right-14 z-20 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-all border border-white/10 shadow-sm"
+                title="Expandir imagem"
+              >
+                <Maximize2 size={20} />
               </button>
 
               {/* Close Button */}
@@ -134,6 +145,12 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
           </>
         )}
       </div>
+      
+      <ImagePreviewDialog 
+        isOpen={showPreview} 
+        onClose={() => setShowPreview(false)} 
+        imageUrl={church.photo || 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2073&auto=format&fit=crop'} 
+      />
     </div>
   );
 };

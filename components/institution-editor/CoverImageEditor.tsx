@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Camera, Save, X, Trash2, Maximize2 } from 'lucide-react';
+import { ImagePreviewDialog } from '../ImagePreviewDialog';
 
 interface CoverImageEditorProps {
     photoUrl?: string;
@@ -165,26 +166,11 @@ export const CoverImageEditor: React.FC<CoverImageEditorProps> = ({ photoUrl, on
                 )}
             </div>
 
-            {/* Full Screen Preview Modal */}
-            {showFullPreview && (
-                <div 
-                    className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-                    onClick={() => setShowFullPreview(false)}
-                >
-                    <button 
-                        className="absolute top-4 right-4 text-white hover:text-gray-300 p-2"
-                        onClick={() => setShowFullPreview(false)}
-                    >
-                        <X size={32} />
-                    </button>
-                    <img 
-                        src={preview || photoUrl} 
-                        alt="Full Preview" 
-                        className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-                        onClick={(e) => e.stopPropagation()}
-                    />
-                </div>
-            )}
+            <ImagePreviewDialog 
+                isOpen={showFullPreview} 
+                onClose={() => setShowFullPreview(false)} 
+                imageUrl={preview || photoUrl} 
+            />
         </>
     );
 }
