@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Settings, FileText, Users, Shield, LogOut } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useInstitution } from '@/components/contexts/InstitutionContext';
 
 interface DashboardOptionProps {
   icon: React.ReactNode;
@@ -32,7 +32,7 @@ const DashboardOption: React.FC<DashboardOptionProps> = ({ icon, title, descript
 
 export const InstitutionDashboard: React.FC = () => {
   const router = useRouter();
-  const { signOut } = useAuth();
+  const { signOut } = useInstitution();
 
   const handleLogout = async () => {
     await signOut();

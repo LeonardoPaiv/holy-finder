@@ -14,10 +14,6 @@ interface AppContextType {
     setReligion: (religion: string) => void;
     userLocation: UserLocation | null;
     setUserLocation: (location: UserLocation) => void;
-    user: User | null;
-    setUser: (user: User | null) => void;
-    institution: Company | null;
-    setInstitution: (institution: Company | null) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -25,8 +21,6 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [religion, setReligion] = useState<string>('Católica');
     const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-    const [user, setUser] = useState<User | null>(null);
-    const [institution, setInstitution] = useState<Company | null>(null);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -60,10 +54,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             setReligion, 
             userLocation, 
             setUserLocation,
-            user,
-            setUser,
-            institution,
-            setInstitution
         }}>
             {children}
         </AppContext.Provider>

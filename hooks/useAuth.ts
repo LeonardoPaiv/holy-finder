@@ -1,53 +1,69 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { ROUTES, COOKIES } from '@/lib/constants';
 import { translateSupabaseError } from '@/lib/supabaseErrors';
-import { useApp } from '@/components/AppContext';
-import { UserService } from '@/services/userService';
-import { CompanyService } from '@/services/companyService';
 
 export const useAuth = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const { setUser: setContextUser, setInstitution } = useApp();
+  const [institution, setInstitution] = useState<any>(null);
+
+
+
+  const fetchingRef = useRef(false);
 
   const fetchUserData = async (email: string) => {
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+    
     try {
-      const userProfile = await UserService.getUserByEmail(email);
+      // Fetch User
+      const userResponse = await fetch(`/api/users/${email}`);
+      if (!userResponse.ok) throw new Error('Failed to fetch user');
+      const userProfile = await userResponse.json();
+      
       if (userProfile) {
-        setContextUser(userProfile);
+        setUser(userProfile);
         if (userProfile.institution) {
-          const company = await CompanyService.getCompanyByCnpj(userProfile.institution);
-          if (company) {
+          // Fetch Company
+          const companyResponse = await fetch(`/api/companies/${userProfile.institution}`);
+          if (companyResponse.ok) {
+            const company = await companyResponse.json();
             setInstitution(company);
           }
         }
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
+    } finally {
+      fetchingRef.current = false;
     }
   };
 
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      if (session?.user?.email) {
-        fetchUserData(session.user.email);
+      if (session?.user) {
+        setUser(session.user);
+        if (session.user.email && !user) {
+             fetchUserData(session.user.email);
+        }
       }
     };
 
     getSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user?.email) {
-        fetchUserData(session.user.email);
+      if (session?.user) {
+        setUser(session.user);
+        if (session.user.email && !user) {
+            fetchUserData(session.user.email);
+        }
       } else {
-        setContextUser(null);
+        setUser(null);
         setInstitution(null);
       }
     });
@@ -139,7 +155,7 @@ export const useAuth = () => {
       await supabase.auth.signOut();
       Cookies.remove(COOKIES.ACCESS_TOKEN);
       Cookies.remove(COOKIES.REFRESH_TOKEN);
-      setContextUser(null);
+      setUser(null);
       setInstitution(null);
       router.push(ROUTES.INSTITUTION.LOGIN);
     } catch (error) {
@@ -151,7 +167,7 @@ export const useAuth = () => {
     }
   };
 
-  const checkSession = async (callback: () => void): Promise<void> => {
+  const checkSession = async (callback?: () => void): Promise<void> => {
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
 
@@ -159,7 +175,7 @@ export const useAuth = () => {
         if (session.user.email) {
             await fetchUserData(session.user.email);
         }
-        callback();
+        callback?.();
         return;
       }
 
@@ -176,7 +192,7 @@ export const useAuth = () => {
           if (data.session.user.email) {
             await fetchUserData(data.session.user.email);
           }
-          callback();
+          callback?.();
           return;
         }
       }
@@ -193,6 +209,9 @@ export const useAuth = () => {
 
   return {
     user,
+    institution,
+    setInstitution,
+    setUser,
     loading,
     signIn,
     signUp,

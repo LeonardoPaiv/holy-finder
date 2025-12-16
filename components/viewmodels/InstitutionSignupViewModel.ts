@@ -1,14 +1,14 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import { cpf, cnpj } from 'cpf-cnpj-validator';
+import { useInstitution } from '@/components/contexts/InstitutionContext';
+import { cnpj } from 'cpf-cnpj-validator';
 import toast from 'react-hot-toast';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { ROUTES } from '@/lib/constants';
 
 export const useInstitutionSignupViewModel = () => {
   const router = useRouter();
-  const { signUp, loading } = useAuth();
+  const { signUp, loading } = useInstitution();
   
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');

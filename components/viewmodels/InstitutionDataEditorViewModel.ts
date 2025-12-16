@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Company, Event } from '@/types';
 import { CompanyService } from '@/services/companyService';
-import { useAuth } from '@/hooks/useAuth';
-import { useApp } from '@/components/AppContext';
+import { useInstitution } from '@/components/contexts/InstitutionContext';
 import { WEEKDAYS } from '@/lib/constants';
 import toast from 'react-hot-toast';
 
 export const useInstitutionDataEditorViewModel = () => {
-  const { signOut } = useAuth();
-  const { institution, user, setInstitution } = useApp();
+  const { signOut } = useInstitution();
+  const { institution, user, setInstitution } = useInstitution();
   const [formData, setFormData] = useState<Partial<Company>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
