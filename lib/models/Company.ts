@@ -15,6 +15,7 @@ const CompanySchema = new Schema<Company>({
     photo: { type: String, required: false },
     tel: { type: String, required: false },
     address: { type: String, required: false },
+    dedicatedMapsUrl: { type: String, required: false },
     events: [EventSchema],
     missas: [EventSchema],
     active: {
