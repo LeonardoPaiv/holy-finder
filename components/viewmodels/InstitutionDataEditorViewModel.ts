@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Company, Event } from '@/types';
 import { CompanyService } from '@/services/companyService';
+import { StorageService } from '@/services/storageService';
 import { useInstitution } from '@/components/contexts/InstitutionContext';
 import { WEEKDAYS } from '@/lib/constants';
 import toast from 'react-hot-toast';
@@ -107,6 +108,23 @@ export const useInstitutionDataEditorViewModel = () => {
     } catch (error) {
       console.error('Error saving maps URL:', error);
       toast.error('Erro ao salvar link do Google Maps.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const saveCoverImage = async (file: File) => {
+    if (!institution?._id) return;
+    setIsSaving(true);
+    try {
+      const photoUrl = await StorageService.uploadCoverImage(file, institution._id);
+      const updated = await CompanyService.updateCoverImage(institution._id, photoUrl);
+      setInstitution(updated);
+      setFormData(prev => ({ ...prev, photo: updated.photo }));
+      toast.success('Foto de capa salva com sucesso!');
+    } catch (error) {
+      console.error('Error saving cover image:', error);
+      toast.error('Erro ao salvar foto de capa.');
     } finally {
       setIsSaving(false);
     }
@@ -263,5 +281,6 @@ export const useInstitutionDataEditorViewModel = () => {
     // Location
     saveLocation,
     saveMapsUrl,
+    saveCoverImage,
   };
 };

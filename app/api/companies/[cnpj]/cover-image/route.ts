@@ -12,24 +12,20 @@ export async function PATCH(
     await dbConnect();
     const { cnpj } = params;
     const body = await request.json();
+    const { photoUrl } = body;
+
+    if (!photoUrl) {
+      return NextResponse.json({ error: 'Photo URL is required' }, { status: 400 });
+    }
 
     // 1. Verify Authentication & Permissions
     const { errorResponse } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN]);
     if (errorResponse) return errorResponse;
 
-    // 3. Update Basic Info
-    const allowedFields = ['name', 'email', 'tel', 'address'];
-    const updateData: any = {};
-    
-    for (const field of allowedFields) {
-      if (body[field] !== undefined) {
-        updateData[field] = body[field];
-      }
-    }
-
+    // 2. Update Photo URL
     const updatedCompany = await CompanyModel.findOneAndUpdate(
       { _id: cnpj },
-      { $set: updateData },
+      { $set: { photo: photoUrl } },
       { new: true }
     );
 
@@ -40,7 +36,7 @@ export async function PATCH(
     return NextResponse.json(updatedCompany);
 
   } catch (error) {
-    console.error('Error updating basic info:', error);
+    console.error('Error updating cover image:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

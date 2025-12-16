@@ -54,6 +54,7 @@ export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ on
     // Location
     saveLocation,
     saveMapsUrl,
+    saveCoverImage,
   } = useInstitutionDataEditorViewModel();
 
   const [activeTab, setActiveTab] = useState<TabType>('basic');
@@ -117,7 +118,11 @@ export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ on
 
           {activeTab === 'basic' && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-              <CoverImageEditor photoUrl={formData.photo} />
+              <CoverImageEditor 
+                photoUrl={formData.photo} 
+                onSave={saveCoverImage}
+                isSaving={isSaving}
+              />
               <BasicInfoEditor 
                 formData={formData} 
                 setFormData={setFormData} 
