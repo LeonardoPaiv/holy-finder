@@ -6,6 +6,7 @@ import { CoverImageEditor } from './institution-editor/CoverImageEditor';
 import { BasicInfoEditor } from './institution-editor/BasicInfoEditor';
 import { ScheduleEditor } from './institution-editor/ScheduleEditor';
 import { EventsEditor } from './institution-editor/EventsEditor';
+import { LocationEditor } from './institution-editor/LocationEditor';
 import { Info, MapPin, Clock, Calendar } from 'lucide-react';
 
 interface InstitutionDataEditorProps {
@@ -50,6 +51,9 @@ export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ on
     // Common
     saveBasicInfo,
     handleLogout,
+    // Location
+    saveLocation,
+    saveMapsUrl,
   } = useInstitutionDataEditorViewModel();
 
   const [activeTab, setActiveTab] = useState<TabType>('basic');
@@ -125,14 +129,14 @@ export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ on
           )}
 
           {activeTab === 'location' && (
-            <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm text-center animate-in fade-in slide-in-from-bottom-4 duration-300">
-              <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin size={32} className="text-blue-500" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-800 mb-2">Editor de Localização</h3>
-              <p className="text-slate-500">
-                Em breve você poderá ajustar a localização exata da sua instituição no mapa.
-              </p>
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+              <LocationEditor 
+                initialCoordinates={formData.geo?.coordinates || [-46.633308, -23.550520]} // Default to SP if missing
+                initialMapsUrl={formData.dedicatedMapsUrl}
+                onSaveLocation={saveLocation}
+                onSaveMapsUrl={saveMapsUrl}
+                isSaving={isSaving}
+              />
             </div>
           )}
 

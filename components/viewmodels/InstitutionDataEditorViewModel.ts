@@ -80,6 +80,38 @@ export const useInstitutionDataEditorViewModel = () => {
     }
   };
 
+  const saveLocation = async (coordinates: [number, number]) => {
+    if (!institution?._id) return;
+    setIsSaving(true);
+    try {
+      const updated = await CompanyService.updateLocation(institution._id, coordinates);
+      setInstitution(updated);
+      setFormData(prev => ({ ...prev, geo: updated.geo }));
+      toast.success('Localização salva com sucesso!');
+    } catch (error) {
+      console.error('Error saving location:', error);
+      toast.error('Erro ao salvar localização.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const saveMapsUrl = async (url: string) => {
+    if (!institution?._id) return;
+    setIsSaving(true);
+    try {
+      const updated = await CompanyService.updateMapsUrl(institution._id, url);
+      setInstitution(updated);
+      setFormData(prev => ({ ...prev, dedicatedMapsUrl: updated.dedicatedMapsUrl }));
+      toast.success('Link do Google Maps salvo com sucesso!');
+    } catch (error) {
+      console.error('Error saving maps URL:', error);
+      toast.error('Erro ao salvar link do Google Maps.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleLogout = async () => {
     await signOut();
   };
@@ -228,5 +260,8 @@ export const useInstitutionDataEditorViewModel = () => {
     // Common
     saveBasicInfo,
     handleLogout,
+    // Location
+    saveLocation,
+    saveMapsUrl,
   };
 };

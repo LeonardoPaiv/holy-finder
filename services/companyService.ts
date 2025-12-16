@@ -66,4 +66,30 @@ export const CompanyService = {
         if (!response.ok) throw new Error('Failed to update events');
         return await response.json();
     },
+
+    updateLocation: async (cnpj: string, coordinates: [number, number]): Promise<Company> => {
+        const response = await fetch(`/api/companies/${cnpj}/location`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
+            },
+            body: JSON.stringify({ coordinates })
+        });
+        if (!response.ok) throw new Error('Failed to update location');
+        return await response.json();
+    },
+
+    updateMapsUrl: async (cnpj: string, dedicatedMapsUrl: string): Promise<Company> => {
+        const response = await fetch(`/api/companies/${cnpj}/maps-url`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
+            },
+            body: JSON.stringify({ dedicatedMapsUrl })
+        });
+        if (!response.ok) throw new Error('Failed to update maps URL');
+        return await response.json();
+    },
 };

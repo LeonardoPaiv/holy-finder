@@ -39,4 +39,36 @@ export class CompanyService extends BaseService<CompanyDocument> {
 
         return this.repository.create(defaultCompany as any);
     }
+
+    async updateLocation(cnpj: string, coordinates: [number, number]): Promise<ICompany> {
+        const response = await fetch(`/api/companies/${cnpj}/location`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ coordinates }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update location');
+        }
+
+        return response.json();
+    }
+
+    async updateMapsUrl(cnpj: string, dedicatedMapsUrl: string): Promise<ICompany> {
+        const response = await fetch(`/api/companies/${cnpj}/maps-url`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ dedicatedMapsUrl }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update maps URL');
+        }
+
+        return response.json();
+    }
 }
