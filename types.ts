@@ -8,18 +8,6 @@ export enum ViewState {
   INSTITUTION_DASHBOARD = 'INSTITUTION_DASHBOARD'
 }
 
-export interface Church {
-  id: string;
-  name: string;
-  address: string;
-  lat: number;
-  lng: number;
-  image: string;
-  massTimes: string[];
-  description: string;
-  phone: string;
-}
-
 export interface FeedPost {
   id: string;
   author: string;

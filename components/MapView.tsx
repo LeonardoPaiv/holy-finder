@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import React, { useEffect, useState, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { Company } from '../types';
-import { MapPin, Filter, Navigation } from 'lucide-react';
+import { MapPin, Filter, Navigation, RefreshCw } from 'lucide-react';
 import { useApp } from './AppContext';
 import toast from 'react-hot-toast';
 
@@ -43,6 +43,7 @@ interface MapViewProps {
   companies: Company[];
   onSelectCompany: (company: Company) => void;
   currentReligion: string;
+  onSearchArea?: (center: { lat: number; lng: number }) => void;
 }
 
 // Component to handle map resizing and centering
@@ -62,21 +63,51 @@ const MapController = ({ center }: { center: [number, number] }) => {
   return null;
 };
 
-export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, currentReligion }) => {
+// Component to handle map events like dragging
+const MapEvents = ({ 
+    onMoveEnd 
+}: { 
+    onMoveEnd: (center: L.LatLng) => void 
+}) => {
+    useMapEvents({
+        moveend: (e) => {
+            onMoveEnd(e.target.getCenter());
+        },
+    });
+    return null;
+};
+
+export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, currentReligion, onSearchArea }) => {
   const { userLocation, setUserLocation } = useApp();
   
-  const position: [number, number] | null = React.useMemo(() => {
-    return userLocation ? [userLocation.lat, userLocation.lng] : null;
+  const position: [number, number] = React.useMemo(() => {
+     const defaultPosition: [number, number] = [-23.550520, -46.633308];
+     return userLocation ? [userLocation.lat, userLocation.lng] : defaultPosition;
   }, [userLocation]);
+
+  const [lastSearchCenter, setLastSearchCenter] = useState<L.LatLng | null>(null);
+  const [showSearchButton, setShowSearchButton] = useState(false);
+  const mapRef = useRef<L.Map | null>(null);
+
+  // Initialize lastSearchCenter when userLocation is first available
+  useEffect(() => {
+      if (userLocation && !lastSearchCenter) {
+          setLastSearchCenter(new L.LatLng(userLocation.lat, userLocation.lng));
+      } else if (!userLocation && !lastSearchCenter) {
+           setLastSearchCenter(new L.LatLng(-23.550520, -46.633308));
+      }
+  }, [userLocation, lastSearchCenter]);
 
   useEffect(() => {
       if (!userLocation && "geolocation" in navigator) {
           navigator.geolocation.getCurrentPosition(
               (position) => {
-                  setUserLocation({
+                  const newLocation = {
                       lat: position.coords.latitude,
                       lng: position.coords.longitude
-                  });
+                  };
+                  setUserLocation(newLocation);
+                  setLastSearchCenter(new L.LatLng(newLocation.lat, newLocation.lng));
               },
               (error) => {
                   console.error("Error getting location:", error);
@@ -96,6 +127,7 @@ export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, cu
                 lng: position.coords.longitude
               };
               setUserLocation(newLocation);
+              setLastSearchCenter(new L.LatLng(newLocation.lat, newLocation.lng));
               resolve(newLocation);
             },
             (error) => {
@@ -121,28 +153,56 @@ export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, cu
       if (userLocation) {
            navigator.geolocation.getCurrentPosition(
               (position) => {
-                  setUserLocation({
+                  const newLocation = {
                       lat: position.coords.latitude,
                       lng: position.coords.longitude
-                  });
+                  };
+                  setUserLocation(newLocation);
+                  setLastSearchCenter(new L.LatLng(newLocation.lat, newLocation.lng));
+                  setShowSearchButton(false);
               }
            );
       }
   };
 
-  // Default center (São Paulo) to show map background even without user location
-  const mapCenter = position || [-23.550520, -46.633308] as [number, number];
+  const handleMapMove = (center: L.LatLng) => {
+      if (lastSearchCenter) {
+          const distance = center.distanceTo(lastSearchCenter);
+          // 5km threshold
+          if (distance > 5000) {
+              setShowSearchButton(true);
+          } else {
+              setShowSearchButton(false);
+          }
+      }
+  };
+
+  const handleSearchArea = () => {
+      if (mapRef.current && onSearchArea) {
+          const center = mapRef.current.getCenter();
+          setLastSearchCenter(center);
+          setShowSearchButton(false);
+          onSearchArea({ lat: center.lat, lng: center.lng });
+      } else if (mapRef.current) {
+          // If no callback provided, just update the reference point to hide button
+          const center = mapRef.current.getCenter();
+          setLastSearchCenter(center);
+          setShowSearchButton(false);
+      }
+  };
 
   return (
     <div className="w-full h-full absolute inset-0 bg-slate-100">
       <MapContainer 
-        center={mapCenter} 
+        center={position} 
         zoom={14} 
         scrollWheelZoom={true} 
         className="w-full h-full z-0"
         zoomControl={false}
+        ref={mapRef}
       >
-        <MapController center={mapCenter} />
+        <MapController center={position} />
+        <MapEvents onMoveEnd={handleMapMove} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
@@ -165,6 +225,19 @@ export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, cu
         ))}
       </MapContainer>
       
+      {/* Search Here Button */}
+      {showSearchButton && (
+          <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[400] animate-in fade-in slide-in-from-top-4 duration-300">
+              <button 
+                  onClick={handleSearchArea}
+                  className="bg-white text-blue-600 px-4 py-2 rounded-full shadow-lg font-semibold text-sm flex items-center space-x-2 hover:bg-blue-50 transition-colors border border-blue-100"
+              >
+                  <RefreshCw size={16} />
+                  <span>Pesquisar nesta área</span>
+              </button>
+          </div>
+      )}
+
       {/* Location Permission Overlay */}
       {!userLocation && (
         <div className="absolute inset-0 z-[500] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
@@ -190,19 +263,14 @@ export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, cu
       
       {/* Floating search bar and Religion Badge */}
       <div className="absolute top-4 left-4 right-4 z-[400] md:w-[400px] md:left-4 space-y-2">
-        {/* Search Bar Container with Logo */}
-        <div className="flex items-center space-x-2">
-           <div className="bg-white p-2 rounded-xl shadow-lg border border-slate-200 shrink-0">
-              <img src="/logo.webp" alt="Logo" className="w-8 h-8 object-contain" />
-           </div>
-           <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200 flex-1">
-            <MapPin className="text-blue-600" size={20} />
-            <input 
-              type="text" 
-              placeholder="Buscar paróquia ou bairro..." 
-              className="flex-1 bg-transparent outline-none text-slate-900 placeholder:text-slate-500 font-medium"
-            />
-          </div>
+        {/* Search Bar */}
+        <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200">
+          <MapPin className="text-blue-600" size={20} />
+          <input 
+            type="text" 
+            placeholder="Buscar paróquia ou bairro..." 
+            className="flex-1 bg-transparent outline-none text-slate-900 placeholder:text-slate-500 font-medium"
+          />
         </div>
 
         {/* Selected Religion Badge */}
