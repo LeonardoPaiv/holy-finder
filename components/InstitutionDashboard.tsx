@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Settings, FileText, Users, Shield, LogOut } from 'lucide-react';
+import { Settings, FileText, Users, Shield, LogOut, Map } from 'lucide-react';
 import { useInstitution } from '@/components/contexts/InstitutionContext';
 
 interface DashboardOptionProps {
@@ -48,6 +48,13 @@ export const InstitutionDashboard: React.FC = () => {
       disabled: false
     },
     {
+      icon: <Map size={32} />,
+      title: 'Voltar ao Mapa',
+      description: 'Retornar para a visualização do mapa principal.',
+      onClick: () => router.push('/'),
+      disabled: false
+    },
+    {
       icon: <FileText size={32} />,
       title: 'Postagens da Instituição',
       description: 'Publique novidades e avisos para a comunidade.',
@@ -67,7 +74,7 @@ export const InstitutionDashboard: React.FC = () => {
       description: 'Contribua para manter a comunidade segura.',
       onClick: () => {},
       disabled: true
-    }
+    },
   ];
 
   return (
