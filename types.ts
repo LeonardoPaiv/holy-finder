@@ -60,6 +60,7 @@ export interface Company {
   events: Event[];
   missas: Event[];
   active: boolean;
+  dedicatedMapsUrl?: string;
 }
 
 export interface Post {
