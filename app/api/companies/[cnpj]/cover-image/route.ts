@@ -14,7 +14,7 @@ export async function PATCH(
     const body = await request.json();
     const { photoUrl } = body;
 
-    if (!photoUrl) {
+    if (photoUrl === undefined) {
       return NextResponse.json({ error: 'Photo URL is required' }, { status: 400 });
     }
 

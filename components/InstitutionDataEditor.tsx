@@ -55,6 +55,7 @@ export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ on
     saveLocation,
     saveMapsUrl,
     saveCoverImage,
+    deletePhoto,
   } = useInstitutionDataEditorViewModel();
 
   const [activeTab, setActiveTab] = useState<TabType>('basic');
@@ -121,7 +122,9 @@ export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ on
               <CoverImageEditor 
                 photoUrl={formData.photo} 
                 onSave={saveCoverImage}
+                onDelete={deletePhoto}
                 isSaving={isSaving}
+                isAdmin={isAdmin}
               />
               <BasicInfoEditor 
                 formData={formData} 

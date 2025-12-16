@@ -45,5 +45,46 @@ export const StorageService = {
       .getPublicUrl(fileName);
 
     return publicUrl;
+  },
+
+  deleteCoverImage: async (url: string): Promise<void> => {
+    const bucketName = process.env.NEXT_PUBLIC_BUCKET_NAME;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!bucketName || !supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase configuration missing');
+    }
+
+    const token = Cookies.get(COOKIES.ACCESS_TOKEN);
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
+    // Create an authenticated client for this request
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    });
+
+    // Extract path from URL
+    // URL format: https://[project].supabase.co/storage/v1/object/public/[bucket]/[path]
+    const path = url.split(`${bucketName}/`).pop();
+    
+    if (!path) {
+      console.error('Could not extract path from URL:', url);
+      return;
+    }
+
+    const { error } = await supabase.storage
+      .from(bucketName)
+      .remove([path]);
+
+    if (error) {
+      throw error;
+    }
   }
 };

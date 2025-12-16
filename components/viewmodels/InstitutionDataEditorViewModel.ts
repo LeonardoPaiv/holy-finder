@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useConfirm } from '@/hooks/useConfirm';
 import { Company, Event } from '@/types';
 import { CompanyService } from '@/services/companyService';
 import { StorageService } from '@/services/storageService';
@@ -12,6 +13,7 @@ export const useInstitutionDataEditorViewModel = () => {
   const [formData, setFormData] = useState<Partial<Company>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const { confirm } = useConfirm();
   
   // Local state for new schedule entry (Missas)
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -128,6 +130,29 @@ export const useInstitutionDataEditorViewModel = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const deletePhoto = async () => {
+    if (!institution?._id) return;
+    if (!formData.photo) return;
+    
+    confirm('Tem certeza que deseja excluir a foto de capa?', async () => {
+        setIsSaving(true);
+        try {
+          if (formData.photo) {
+             await StorageService.deleteCoverImage(formData.photo);
+          }
+          const updated = await CompanyService.deleteCoverImage(institution._id!);
+          setInstitution(updated);
+          setFormData(prev => ({ ...prev, photo: undefined }));
+          toast.success('Foto de capa excluída com sucesso!');
+        } catch (error) {
+          console.error('Error deleting cover image:', error);
+          toast.error('Erro ao excluir foto de capa.');
+        } finally {
+          setIsSaving(false);
+        }
+    });
   };
 
   const handleLogout = async () => {
@@ -282,5 +307,6 @@ export const useInstitutionDataEditorViewModel = () => {
     saveLocation,
     saveMapsUrl,
     saveCoverImage,
+    deletePhoto,
   };
 };

@@ -105,4 +105,17 @@ export const CompanyService = {
         if (!response.ok) throw new Error('Failed to update cover image');
         return await response.json();
     },
+
+    deleteCoverImage: async (cnpj: string): Promise<Company> => {
+        const response = await fetch(`/api/companies/${cnpj}/cover-image`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
+            },
+            body: JSON.stringify({ photoUrl: null })
+        });
+        if (!response.ok) throw new Error('Failed to delete cover image');
+        return await response.json();
+    },
 };
