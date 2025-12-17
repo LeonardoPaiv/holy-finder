@@ -41,7 +41,8 @@ export const useInstitutionDataEditorViewModel = () => {
       const updated = await CompanyService.updateBasicInfo(institution._id, {
         name: formData.name,
         tel: formData.tel,
-        address: formData.address
+        address: formData.address,
+        type: formData.type
       });
       setInstitution(updated);
       toast.success('Informações básicas salvas!');

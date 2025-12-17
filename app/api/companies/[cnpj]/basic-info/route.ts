@@ -18,7 +18,7 @@ export async function PATCH(
     if (errorResponse) return errorResponse;
 
     // 3. Update Basic Info
-    const allowedFields = ['name', 'email', 'tel', 'address'];
+    const allowedFields = ['name', 'email', 'tel', 'address', 'type'];
     const updateData: any = {};
     
     for (const field of allowedFields) {

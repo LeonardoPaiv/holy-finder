@@ -10,16 +10,7 @@ export enum WeekDays {
     DOMINGO = 'Domingo'
 }
 
-export enum Religions {
-    CATOLICA = 'Católica',
-    EVANGELICA = 'Evangélica',
-    ESPIRITA = 'Espírita',
-    MATRIZ_AFRICANA = 'Matriz Africana',
-    JUDAICA = 'Judaica',
-    BUDDISTA = 'Budista',
-    MUÇULMANA = 'Muçulmana',
-    OUTRAS = 'Outras'
-}
+export { Religions } from '@/types';
 
 export enum UserType {
     INACTIVE = 'inactive',

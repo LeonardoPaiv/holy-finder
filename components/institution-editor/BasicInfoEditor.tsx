@@ -1,6 +1,6 @@
 import React from 'react';
 import { Info, Save, MapPin, Phone, Loader2 } from 'lucide-react';
-import { Company } from '@/types';
+import { Company, Religions } from '@/types';
 
 interface BasicInfoEditorProps {
     formData: Partial<Company>;
@@ -66,6 +66,30 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({ formData, setF
                   className="w-full bg-transparent outline-none"
                   disabled={!isAdmin}
                 />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase">Religião</label>
+              <div className="relative">
+                <select
+                  value={formData.type || ''}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value as Religions })}
+                  className="w-full p-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-blue-500 outline-none transition-colors appearance-none"
+                  disabled={!isAdmin}
+                >
+                  <option value="" disabled>Selecione uma religião</option>
+                  {Object.values(Religions).map((religion) => (
+                    <option key={religion} value={religion}>
+                      {religion}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd" />
+                  </svg>
+                </div>
               </div>
             </div>
           </div>

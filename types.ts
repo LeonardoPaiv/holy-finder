@@ -26,15 +26,18 @@ export interface Transaction {
   receiptUrl: string;
 }
 
-export type CompanyType =
-  | 'Católica'
-  | 'Evangélica'
-  | 'Espírita'
-  | 'Matriz Africana'
-  | 'Judaica'
-  | 'Budista'
-  | 'Muçulmana'
-  | 'Outras';
+export enum Religions {
+  CATOLICA = 'Católica',
+  EVANGELICA = 'Evangélica',
+  ESPIRITA = 'Espírita',
+  MATRIZ_AFRICANA = 'Matriz Africana',
+  JUDAICA = 'Judaica',
+  BUDDISTA = 'Budista',
+  MUÇULMANA = 'Muçulmana',
+  OUTRAS = 'Outras'
+}
+
+export type CompanyType = Religions;
 
 export interface Geo {
   type: 'Point';
