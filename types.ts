@@ -69,11 +69,13 @@ export interface Company {
 export interface Post {
   _id: string;
   cnpj: string;
+  creator: string;
   type: CompanyType;
-  photo?: string;
-  description?: string;
+  description: string;
+  photo: string;
   geo: Geo;
-  events: Event[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type UserType = 'inactive' | 'comum' | 'institution admin' | 'moderator' | 'super admin';

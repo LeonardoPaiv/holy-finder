@@ -13,11 +13,18 @@ export async function GET(
     const { cnpj } = params;
 
     // 1. Verify Authentication & Permissions
-    const { errorResponse } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN]);
+    const { errorResponse, userProfile } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN, UserType.COMUM]);
     if (errorResponse) return errorResponse;
 
     // 2. Fetch Users
-    const users = await UserModel.find({ institution: cnpj }).select('_id fullName email type');
+    let users;
+    if (userProfile!.type === UserType.COMUM) {
+      // For comum users, return only _id and fullName
+      users = await UserModel.find({ institution: cnpj }).select('_id fullName');
+    } else {
+      // For institution admins, return all fields
+      users = await UserModel.find({ institution: cnpj }).select('_id fullName email type');
+    }
 
     return NextResponse.json(users);
 
