@@ -122,4 +122,27 @@ export const CompanyService = {
         if (!response.ok) throw new Error('Failed to delete cover image');
         return await response.json();
     },
+
+    getCompanyUsers: async (cnpj: string): Promise<any[]> => {
+        const response = await fetch(`/api/companies/${cnpj}/users`, {
+            headers: {
+                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
+            }
+        });
+        if (!response.ok) throw new Error('Failed to fetch users');
+        return await response.json();
+    },
+
+    updateCompanyUserRole: async (cnpj: string, userId: string, type: string): Promise<any> => {
+        const response = await fetch(`/api/companies/${cnpj}/users`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
+            },
+            body: JSON.stringify({ _id: userId, type })
+        });
+        if (!response.ok) throw new Error('Failed to update user role');
+        return await response.json();
+    },
 };

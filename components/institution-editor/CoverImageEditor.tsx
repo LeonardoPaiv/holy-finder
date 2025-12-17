@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Camera, Save, X, Trash2, Maximize2 } from 'lucide-react';
 import { ImagePreviewDialog } from '../ImagePreviewDialog';
+import toast from 'react-hot-toast';
 
 interface CoverImageEditorProps {
     photoUrl?: string;
@@ -17,6 +18,10 @@ export const CoverImageEditor: React.FC<CoverImageEditorProps> = ({ photoUrl, on
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (!isAdmin) {
+            toast.error('Apenas administradores podem alterar a foto de capa.');
+            return;
+        }
         const file = event.target.files?.[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {

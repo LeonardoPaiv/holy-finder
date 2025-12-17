@@ -17,7 +17,7 @@ export async function GET(
     if (errorResponse) return errorResponse;
 
     // 2. Fetch Users
-    const users = await UserModel.find({ institution: cnpj }).select('_id name email type');
+    const users = await UserModel.find({ institution: cnpj }).select('_id fullName email type');
 
     return NextResponse.json(users);
 

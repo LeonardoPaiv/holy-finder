@@ -2,6 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Settings, FileText, Users, Shield, LogOut, Map } from 'lucide-react';
 import { useInstitution } from '@/components/contexts/InstitutionContext';
+import { ReportForm } from '@/components/church-dialog/ReportForm';
 
 interface DashboardOptionProps {
   icon: React.ReactNode;
@@ -32,11 +33,22 @@ const DashboardOption: React.FC<DashboardOptionProps> = ({ icon, title, descript
 
 export const InstitutionDashboard: React.FC = () => {
   const router = useRouter();
-  const { signOut } = useInstitution();
+  const { signOut, user } = useInstitution();
 
   const handleLogout = async () => {
     await signOut();
     router.push('/');
+  };
+
+  const [isReportDialogOpen, setIsReportDialogOpen] = React.useState(false);
+  const [reportText, setReportText] = React.useState('');
+  const isInactive = user?.type === 'inactive';
+
+  const handleReportSubmit = () => {
+    // TODO: Implement report submission logic
+    console.log('Report submitted:', reportText);
+    setIsReportDialogOpen(false);
+    setReportText('');
   };
 
   const options = [
@@ -45,14 +57,14 @@ export const InstitutionDashboard: React.FC = () => {
       title: 'Alterar dados da instituição',
       description: 'Gerencie informações, horários e fotos.',
       onClick: () => router.push('/institution/data'),
-      disabled: false
+      disabled: isInactive
     },
     {
       icon: <Map size={32} />,
       title: 'Voltar ao Mapa',
       description: 'Retornar para a visualização do mapa principal.',
       onClick: () => router.push('/'),
-      disabled: false
+      disabled: isInactive
     },
     {
       icon: <FileText size={32} />,
@@ -61,13 +73,13 @@ export const InstitutionDashboard: React.FC = () => {
       onClick: () => {},
       disabled: true
     },
-    {
+    ...(user?.type === 'institution admin' ? [{
       icon: <Users size={32} />,
       title: 'Controle de usuários',
       description: 'Gerencie membros e permissões de acesso.',
-      onClick: () => {},
-      disabled: true
-    },
+      onClick: () => router.push('/institution/users'),
+      disabled: isInactive
+    }] : []),
     {
       icon: <Shield size={32} />,
       title: 'Ajude na Moderação',
@@ -78,7 +90,7 @@ export const InstitutionDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col relative">
       {/* Header */}
       <div className="bg-white px-4 py-4 shadow-sm border-b border-slate-100 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center space-x-3">
@@ -94,6 +106,31 @@ export const InstitutionDashboard: React.FC = () => {
         </button>
       </div>
 
+      {/* Inactive User Warning */}
+      {isInactive && (
+        <div className="bg-orange-50 border-b border-orange-100 p-4">
+          <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-orange-100 rounded-full text-orange-600 shrink-0">
+                <Shield size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-orange-800">Conta Aguardando Ativação</h3>
+                <p className="text-sm text-orange-700 mt-1">
+                  Seu usuário precisa ser ativado pelo administrador da instituição para acessar os recursos do painel.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsReportDialogOpen(true)}
+              className="px-4 py-2 bg-white border border-orange-200 text-orange-700 font-bold text-sm rounded-lg hover:bg-orange-50 transition-colors shadow-sm whitespace-nowrap"
+            >
+              Reportar Problema
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Content */}
       <div className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
         <div className="mb-8">
@@ -107,6 +144,21 @@ export const InstitutionDashboard: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Report Dialog Overlay */}
+      {isReportDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <ReportForm
+              churchName={user?.institution || 'Minha Instituição'}
+              reportText={reportText}
+              setReportText={setReportText}
+              onCancel={() => setIsReportDialogOpen(false)}
+              onSubmit={handleReportSubmit}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
