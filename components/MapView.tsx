@@ -44,6 +44,7 @@ interface MapViewProps {
   onSelectCompany: (company: Company) => void;
   currentReligion: string;
   onSearchArea?: (center: { lat: number; lng: number }) => void;
+  center?: { lat: number; lng: number };
 }
 
 // Component to handle map resizing and centering
@@ -77,13 +78,14 @@ const MapEvents = ({
     return null;
 };
 
-export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, currentReligion, onSearchArea }) => {
+export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, currentReligion, onSearchArea, center }) => {
   const { userLocation, setUserLocation } = useApp();
   
   const position: [number, number] = React.useMemo(() => {
+     if (center) return [center.lat, center.lng];
      const defaultPosition: [number, number] = [-23.550520, -46.633308];
      return userLocation ? [userLocation.lat, userLocation.lng] : defaultPosition;
-  }, [userLocation]);
+  }, [userLocation, center]);
 
   const [lastSearchCenter, setLastSearchCenter] = useState<L.LatLng | null>(null);
   const [showSearchButton, setShowSearchButton] = useState(false);
@@ -97,6 +99,14 @@ export const MapView: React.FC<MapViewProps> = ({ companies, onSelectCompany, cu
            setLastSearchCenter(new L.LatLng(-23.550520, -46.633308));
       }
   }, [userLocation, lastSearchCenter]);
+
+  // Update lastSearchCenter when center prop changes (programmatic move)
+  useEffect(() => {
+      if (center) {
+          setLastSearchCenter(new L.LatLng(center.lat, center.lng));
+          setShowSearchButton(false);
+      }
+  }, [center]);
 
   useEffect(() => {
       if (!userLocation && "geolocation" in navigator) {
