@@ -6,9 +6,10 @@ import { Company } from '../types';
 import { ChurchDialog } from '../components/ChurchDialog';
 import { CompanyService } from '../services/companyService';
 import { useApp } from '../components/AppContext';
+import { useFindNearest } from '../hooks/useFindNearest';
 import toast from 'react-hot-toast';
 
-const MapView = dynamic(() => import('../components/MapView').then(mod => mod.MapView), {
+const MapView = dynamic(() => import('../components/mapview/MapView').then(mod => mod.MapView), {
   ssr: false,
   loading: () => <div className="w-full h-full bg-slate-100 animate-pulse" />
 });
@@ -18,6 +19,7 @@ const App: FC = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | undefined>(undefined);
   const { religion, userLocation } = useApp();
+  const { showFindNearestToast } = useFindNearest();
 
   const handleFindNearest = async () => {
     if (!userLocation) return;
@@ -41,40 +43,12 @@ const App: FC = () => {
     }
   };
 
-  const FindNearestToast = ({ t }: { t: any }) => (
-    <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
-      <div className="flex-1 w-0 p-4">
-        <div className="flex items-start">
-          <div className="ml-3 flex-1">
-            <p className="text-sm font-medium text-gray-900">
-              Nenhuma instituição encontrada nesta área
-            </p>
-            <p className="mt-1 text-sm text-gray-500">
-              Deseja buscar a instituição mais próxima da sua localização atual?
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="flex border-l border-gray-200">
-        <button
-          onClick={() => {
-            toast.dismiss(t.id);
-            handleFindNearest();
-          }}
-          className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          Buscar Próxima
-        </button>
-      </div>
-    </div>
-  );
-
   // Load data from services
   const fetchCompaniesData = async (lat: number, lng: number, radius?: number, limit?: number) => {
     try {
       const companiesData = await CompanyService.getCompanies(lat, lng, radius, limit, religion);
       if (companiesData.length === 0 && radius) {
-        toast.custom((t) => <FindNearestToast t={t} />, { duration: 5000 });
+        showFindNearestToast(handleFindNearest);
       } else if (companiesData.length === 0) {
         toast('Nenhuma instituição encontrada.');
       }
