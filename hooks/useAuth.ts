@@ -100,7 +100,7 @@ export const useAuth = () => {
     }
   };
 
-  const signUp = async (email: string, password: string, cnpj: string, fullName: string): Promise<void> => {
+  const signUp = async (email: string, password: string, cnpj: string, fullName: string, location?: { lat: number; lng: number } | null): Promise<void> => {
     setLoading(true);
     try {
       // 1. Create user in Supabase
@@ -128,6 +128,7 @@ export const useAuth = () => {
           email,
           fullName,
           institution: cnpj,
+          location,
         }),
       });
 

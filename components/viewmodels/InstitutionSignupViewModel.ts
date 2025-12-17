@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useInstitution } from '@/components/contexts/InstitutionContext';
+import { useApp } from '@/components/AppContext';
 import { cnpj } from 'cpf-cnpj-validator';
 import toast from 'react-hot-toast';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
@@ -9,6 +10,7 @@ import { ROUTES } from '@/lib/constants';
 export const useInstitutionSignupViewModel = () => {
   const router = useRouter();
   const { signUp, loading } = useInstitution();
+  const { userLocation } = useApp();
   
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
@@ -57,7 +59,7 @@ export const useInstitutionSignupViewModel = () => {
 
     try {
       const rawCnpj = cnpjValue.replace(/\D/g, '');
-      await signUp(email, password, rawCnpj, fullName);
+      await signUp(email, password, rawCnpj, fullName, userLocation);
       toast.success('Cadastro realizado com sucesso! Verifique seu email.');
       router.push(ROUTES.INSTITUTION.LOGIN);
     } catch (error: any) {

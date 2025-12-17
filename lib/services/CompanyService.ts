@@ -17,10 +17,10 @@ export class CompanyService extends BaseService<CompanyDocument> {
         return this.repository.findById(cnpj);
     }
 
-    async createDefaultCompany(cnpj: string): Promise<CompanyDocument> {
+    async createDefaultCompany(cnpj: string, location?: { lat: number; lng: number } | null): Promise<{ company: CompanyDocument; isNew: boolean }> {
         const existing = await this.getCompanyByCnpj(cnpj);
         if (existing) {
-            return existing;
+            return { company: existing, isNew: false };
         }
 
         const defaultCompany: Partial<ICompany> = {
@@ -31,13 +31,14 @@ export class CompanyService extends BaseService<CompanyDocument> {
             active: false,
             geo: {
                 type: "Point",
-                coordinates: [-47.8919, -15.7975] // Brasilia
+                coordinates: location ? [location.lng, location.lat] : [-47.8919, -15.7975] // User location or Brasilia
             },
             events: [],
             missas: []
         };
 
-        return this.repository.create(defaultCompany as any);
+        const newCompany = await this.repository.create(defaultCompany as any);
+        return { company: newCompany, isNew: true };
     }
 
     async updateLocation(cnpj: string, coordinates: [number, number]): Promise<ICompany> {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { UserService } from '@/lib/services/UserService';
 import { CompanyService } from '@/lib/services/CompanyService';
 import dbConnect from '@/lib/dbConnect';
+import { UserType } from '@/lib/models/common';
 
 export async function POST(request: NextRequest) {
     await dbConnect();
@@ -9,7 +10,6 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { email, fullName, institution } = body;
-        console.log("🚀 ~ POST ~ institution:", institution)
 
         if (!email || !fullName || !institution) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -24,13 +24,13 @@ export async function POST(request: NextRequest) {
 
         // Create or ensure company exists
         const companyService = new CompanyService();
-        await companyService.createDefaultCompany(institution);
+        const { isNew } = await companyService.createDefaultCompany(institution, body.location);
 
         const newUser = await userService.createUser({
             email,
             fullName,
             institution,
-            // type is defaulted to INACTIVE in schema
+            type: isNew ? UserType.INSTITUTION_ADMIN : UserType.INACTIVE,
         });
         
         return NextResponse.json(newUser, { status: 201 });

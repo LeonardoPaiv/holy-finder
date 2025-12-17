@@ -12,7 +12,7 @@ interface InstitutionContextType {
   loading: boolean;
   refreshData: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, cnpj: string, fullName: string) => Promise<void>;
+  signUp: (email: string, password: string, cnpj: string, fullName: string, location?: { lat: number; lng: number } | null) => Promise<void>;
   signOut: () => Promise<void>;
   checkSession: (callback?: () => void) => Promise<void>;
 }
