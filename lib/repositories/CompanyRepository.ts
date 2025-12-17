@@ -30,4 +30,24 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
 
         return this.model.find(query);
     }
+
+    async findNearest(lat: number, lng: number, limit: number, type?: string): Promise<CompanyDocument[]> {
+        const query: any = {
+            geo: {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [lng, lat]
+                    }
+                }
+            },
+            active: true
+        };
+
+        if (type) {
+            query.type = type;
+        }
+
+        return this.model.find(query).limit(limit);
+    }
 }

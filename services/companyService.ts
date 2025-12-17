@@ -19,6 +19,23 @@ export const CompanyService = {
         }
     },
 
+    getNearestCompanies: async (lat: number, lng: number, type?: string, limit: number = 30): Promise<{ companies: Company[], center: { lat: number, lng: number } }> => {
+        try {
+            let url = `/api/companies/nearest?lat=${lat}&lng=${lng}&limit=${limit}`;
+            if (type) {
+                url += `&type=${encodeURIComponent(type)}`;
+            }
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Failed to fetch nearest companies');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching nearest companies:', error);
+            return { companies: [], center: { lat, lng } };
+        }
+    },
+
     getCompanyByCnpj: async (cnpj: string): Promise<Company | null> => {
         try {
             const response = await fetch(`/api/companies/${cnpj}`);

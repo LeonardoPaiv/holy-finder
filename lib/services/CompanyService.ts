@@ -13,6 +13,21 @@ export class CompanyService extends BaseService<CompanyDocument> {
     async getCompaniesByRadius(lat: number, lng: number, radiusInKm: number = 5, type?: string): Promise<CompanyDocument[]> {
         return (this.repository as CompanyRepository).findByRadius(lat, lng, radiusInKm, type);
     }
+
+    async getNearestCompanies(lat: number, lng: number, limit: number = 30, type?: string): Promise<{ companies: CompanyDocument[], center: { lat: number, lng: number } }> {
+        const companies = await (this.repository as CompanyRepository).findNearest(lat, lng, limit, type);
+        
+        let center = { lat, lng };
+        if (companies.length > 0 && companies[0].geo?.coordinates) {
+            // GeoJSON coordinates are [lng, lat]
+            center = {
+                lat: companies[0].geo.coordinates[1],
+                lng: companies[0].geo.coordinates[0]
+            };
+        }
+
+        return { companies, center };
+    }
     async getCompanyByCnpj(cnpj: string): Promise<CompanyDocument | null> {
         return this.repository.findById(cnpj);
     }
