@@ -47,7 +47,7 @@ export default function PostCard({ post }: PostCardProps) {
       </div>
 
       {/* Image */}
-      <div className="relative w-full aspect-square bg-slate-100">
+      <div className="relative w-full md:max-w-[600px] md:mx-auto aspect-square bg-slate-100">
         <Image
           src={post.photo}
           alt="Post"
