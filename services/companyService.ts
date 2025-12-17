@@ -2,9 +2,13 @@ import { Company } from '../types';
 import Cookies from 'js-cookie';
 
 export const CompanyService = {
-    getCompanies: async (lat: number, lng: number, radius: number = 5, limit: number = 30): Promise<Company[]> => {
+    getCompanies: async (lat: number, lng: number, radius: number = 5, limit: number = 30, type?: string): Promise<Company[]> => {
         try {
-            const response = await fetch(`/api/companies/nearby?lat=${lat}&lng=${lng}&radius=${radius}&limit=${limit}`);
+            let url = `/api/companies/nearby?lat=${lat}&lng=${lng}&radius=${radius}&limit=${limit}`;
+            if (type) {
+                url += `&type=${encodeURIComponent(type)}`;
+            }
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Failed to fetch companies');
             }

@@ -21,7 +21,7 @@ const App: FC = () => {
   // Load data from services
   const fetchCompaniesData = async (lat: number, lng: number, radius?: number, limit?: number) => {
     try {
-      const companiesData = await CompanyService.getCompanies(lat, lng, radius, limit);
+      const companiesData = await CompanyService.getCompanies(lat, lng, radius, limit, religion);
       if (companiesData.length === 0) {
         toast('Nenhuma instituição encontrada nesta área.');
       }
@@ -39,7 +39,7 @@ const App: FC = () => {
       }
     };
     fetchData();
-  }, [userLocation]);
+  }, [userLocation, religion]);
 
   const handleSearchArea = async (center: { lat: number; lng: number }) => {
     await fetchCompaniesData(center.lat, center.lng, 5, 30);

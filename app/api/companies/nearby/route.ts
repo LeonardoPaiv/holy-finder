@@ -14,12 +14,15 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Latitude and Longitude are required' }, { status: 400 });
     }
 
+    const type = searchParams.get('type');
+
     const service = new CompanyService();
     try {
         const companies = await service.getCompaniesByRadius(
             parseFloat(lat), 
             parseFloat(lng), 
-            radius ? parseFloat(radius) : 5
+            radius ? parseFloat(radius) : 5,
+            type || undefined
         );
         return NextResponse.json(companies);
     } catch (error) {

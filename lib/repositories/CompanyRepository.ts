@@ -10,8 +10,8 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
     constructor() {
         super(Company);
     }
-    async findByRadius(lat: number, lng: number, radiusInKm: number): Promise<CompanyDocument[]> {
-        return this.model.find({
+    async findByRadius(lat: number, lng: number, radiusInKm: number, type?: string): Promise<CompanyDocument[]> {
+        const query: any = {
             geo: {
                 $near: {
                     $geometry: {
@@ -20,7 +20,14 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
                     },
                     $maxDistance: radiusInKm * 1000
                 }
-            }
-        });
+            },
+            active: true
+        };
+
+        if (type) {
+            query.type = type;
+        }
+
+        return this.model.find(query);
     }
 }
