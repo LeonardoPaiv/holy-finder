@@ -8,6 +8,16 @@ import { ReligionDialog } from '../components/ReligionDialog';
 import { ReportAppDialog } from '../components/ReportAppDialog';
 import { AppProvider, useApp } from './AppContext';
 import { Toaster } from 'react-hot-toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const AppShellContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const pathname = usePathname();
@@ -73,8 +83,10 @@ const AppShellContent: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
-        <AppProvider>
-            <AppShellContent>{children}</AppShellContent>
-        </AppProvider>
+        <QueryClientProvider client={queryClient}>
+            <AppProvider>
+                <AppShellContent>{children}</AppShellContent>
+            </AppProvider>
+        </QueryClientProvider>
     );
 };

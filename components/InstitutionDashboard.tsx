@@ -70,8 +70,8 @@ export const InstitutionDashboard: React.FC = () => {
       icon: <FileText size={32} />,
       title: 'Postagens da Instituição',
       description: 'Publique novidades e avisos para a comunidade.',
-      onClick: () => {},
-      disabled: true
+      onClick: () => router.push('/institution/posts'),
+      disabled: isInactive
     },
     ...(user?.type === 'institution admin' ? [{
       icon: <Users size={32} />,
