@@ -28,33 +28,43 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [religion, setReligion] = useState<string>('Católica');
-    const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-    const [companies, setCompanies] = useState<Company[]>([]);
-    const [feedFilters, setFeedFilters] = useState<FeedFilters>({});
-
-    useEffect(() => {
+    // Lazy initialization: load from localStorage before first render
+    const [religion, setReligion] = useState<string>(() => {
         if (typeof window !== 'undefined') {
             const storedReligion = localStorage.getItem('ecclesia_religion');
-            if (storedReligion) setReligion(storedReligion);
+            return storedReligion || 'Católica';
+        }
+        return 'Católica';
+    });
 
+    const [userLocation, setUserLocation] = useState<UserLocation | null>(() => {
+        if (typeof window !== 'undefined') {
             const storedLocation = localStorage.getItem('ecclesia_user_location');
             if (storedLocation) {
                 try {
-                    setUserLocation(JSON.parse(storedLocation));
+                    return JSON.parse(storedLocation);
                 } catch (e) {
                     console.error("Failed to parse stored location", e);
+                    return null;
                 }
             }
         }
-    }, []);
+        return null;
+    });
 
+    const [companies, setCompanies] = useState<Company[]>([]);
+    const [feedFilters, setFeedFilters] = useState<FeedFilters>({});
+
+    // Save religion to localStorage when it changes
     useEffect(() => {
-        localStorage.setItem('ecclesia_religion', religion);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('ecclesia_religion', religion);
+        }
     }, [religion]);
 
+    // Save location to localStorage when it changes
     useEffect(() => {
-        if (userLocation) {
+        if (typeof window !== 'undefined' && userLocation) {
             localStorage.setItem('ecclesia_user_location', JSON.stringify(userLocation));
         }
     }, [userLocation]);
