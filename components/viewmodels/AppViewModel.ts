@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 export const useAppViewModel = () => {
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | undefined>(undefined);
-  const { religion, userLocation, companies, setCompanies } = useApp();
+  const { religion, userLocation, companies, setCompanies, searchRadius } = useApp();
   const { showFindNearestToast } = useFindNearest();
 
   const handleFindNearest = async () => {
@@ -32,12 +32,10 @@ export const useAppViewModel = () => {
     }
   };
 
-  const fetchCompaniesData = async (lat: number, lng: number, radius?: number, limit?: number) => {
+  const fetchCompaniesData = async (lat: number, lng: number, limit?: number) => {
     try {
-      const companiesData = await CompanyService.getCompanies(lat, lng, radius, limit, religion);
-      if (companiesData.length === 0 && radius) {
-        showFindNearestToast(handleFindNearest);
-      } else if (companiesData.length === 0) {
+      const companiesData = await CompanyService.getCompanies(lat, lng, searchRadius, limit, religion);
+      if (companiesData.length === 0) {
         toast('Nenhuma instituição encontrada.');
       }
       setCompanies(companiesData);
@@ -50,7 +48,7 @@ export const useAppViewModel = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (userLocation) {
-        await fetchCompaniesData(userLocation.lat, userLocation.lng, 5);
+        await fetchCompaniesData(userLocation.lat, userLocation.lng);
       }
     };
     fetchData();
@@ -59,7 +57,7 @@ export const useAppViewModel = () => {
   const handleSearchArea = async (center: { lat: number; lng: number }) => {
     // Reset map center to allow free movement after search
     setMapCenter(undefined);
-    await fetchCompaniesData(center.lat, center.lng, 5, 30);
+    await fetchCompaniesData(center.lat, center.lng, 30);
   };
 
   return {

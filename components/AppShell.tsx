@@ -22,10 +22,9 @@ const queryClient = new QueryClient({
 const AppShellContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const pathname = usePathname();
     const router = useRouter();
-    const { religion, setReligion } = useApp();
+    const { religion, setReligion, isReligionDialogOpen, setIsReligionDialogOpen } = useApp();
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [isReligionDialogOpen, setIsReligionDialogOpen] = useState(false);
     const [isReportAppDialogOpen, setIsReportAppDialogOpen] = useState(false);
 
     // Helper to toggle settings menu - passed to BottomNav

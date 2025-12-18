@@ -3,7 +3,7 @@ import { FeedService } from '@/services/feedService';
 import { useApp } from '@/components/AppContext';
 
 export function useInfiniteFeedPosts() {
-  const { religion, userLocation, feedFilters } = useApp();
+  const { religion, userLocation, feedFilters, searchRadius } = useApp();
 
   // Build query filters based on context
   const queryFilters = feedFilters.postId
@@ -14,7 +14,7 @@ export function useInfiniteFeedPosts() {
     ? { // Otherwise use geolocation
         lat: userLocation.lat,
         lng: userLocation.lng,
-        radius: 5,
+        radius: searchRadius,
         religion: religion
       }
     : {};

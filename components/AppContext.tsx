@@ -23,6 +23,10 @@ interface AppContextType {
     setCompanies: (companies: Company[]) => void;
     feedFilters: FeedFilters;
     setFeedFilters: (filters: FeedFilters) => void;
+    searchRadius: number;
+    setSearchRadius: (radius: number) => void;
+    isReligionDialogOpen: boolean;
+    setIsReligionDialogOpen: (isOpen: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -52,8 +56,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return null;
     });
 
+    const [searchRadius, setSearchRadius] = useState<number>(() => {
+        if (typeof window !== 'undefined') {
+            const storedRadius = localStorage.getItem('ecclesia_search_radius');
+            return storedRadius ? parseInt(storedRadius, 10) : 5;
+        }
+        return 5;
+    });
+
     const [companies, setCompanies] = useState<Company[]>([]);
     const [feedFilters, setFeedFilters] = useState<FeedFilters>({});
+    const [isReligionDialogOpen, setIsReligionDialogOpen] = useState(false);
 
     // Save religion to localStorage when it changes
     useEffect(() => {
@@ -69,6 +82,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
     }, [userLocation]);
 
+    // Save search radius to localStorage when it changes
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('ecclesia_search_radius', searchRadius.toString());
+        }
+    }, [searchRadius]);
+
     return (
         <AppContext.Provider value={{ 
             religion, 
@@ -79,6 +99,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             setCompanies,
             feedFilters,
             setFeedFilters,
+            searchRadius,
+            setSearchRadius,
+            isReligionDialogOpen,
+            setIsReligionDialogOpen,
         }}>
             {children}
         </AppContext.Provider>
