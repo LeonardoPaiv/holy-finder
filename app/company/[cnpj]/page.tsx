@@ -4,7 +4,19 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Company } from '@/types';
 import { CompanyService } from '@/services/companyService';
-import { MapView } from '@/components/mapview/MapView';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(
+  () => import('@/components/mapview/MapView').then((mod) => mod.MapView),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-screen flex items-center justify-center bg-slate-100">
+        <p className="text-slate-500">Carregando mapa...</p>
+      </div>
+    )
+  }
+);
 import { ChurchDialog } from '@/components/ChurchDialog';
 
 export default function CompanyMapPage() {

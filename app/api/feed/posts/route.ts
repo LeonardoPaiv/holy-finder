@@ -4,6 +4,8 @@ import { PostService } from '@/lib/services/PostService';
 
 const postService = new PostService();
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     await dbConnect();

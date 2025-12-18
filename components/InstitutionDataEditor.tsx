@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 import { useInstitutionDataEditorViewModel } from './viewmodels/InstitutionDataEditorViewModel';
-import { Toaster } from 'react-hot-toast';
 import { EditorHeader } from './institution-editor/EditorHeader';
 import { CoverImageEditor } from './institution-editor/CoverImageEditor';
 import { BasicInfoEditor } from './institution-editor/BasicInfoEditor';
 import { ScheduleEditor } from './institution-editor/ScheduleEditor';
 import { EventsEditor } from './institution-editor/EventsEditor';
-import { LocationEditor } from './institution-editor/LocationEditor';
+import dynamic from 'next/dynamic';
+
+const LocationEditor = dynamic(
+  () => import('./institution-editor/LocationEditor').then((mod) => mod.LocationEditor),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[400px] bg-slate-100 animate-pulse rounded-xl flex items-center justify-center text-slate-400">
+        Carregando mapa...
+      </div>
+    )
+  }
+);
 import { Info, MapPin, Clock, Calendar } from 'lucide-react';
 
 interface InstitutionDataEditorProps {
@@ -77,7 +88,6 @@ export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ on
 
   return (
     <div className="w-full min-h-screen bg-slate-50 flex flex-col">
-      <Toaster position="top-center" reverseOrder={false} />
       
       <EditorHeader 
         onBack={onBack} 

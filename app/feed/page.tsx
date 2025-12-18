@@ -7,7 +7,9 @@ import { useInfiniteFeedPosts } from '@/hooks/useInfiniteFeedPosts';
 import { useApp } from '@/components/AppContext';
 import FeedPostList from '@/components/feed/FeedPostList';
 
-export default function FeedPage() {
+import { Suspense } from 'react';
+
+function FeedContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userLocation, feedFilters, setFeedFilters, companies } = useApp();
@@ -189,5 +191,13 @@ export default function FeedPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function FeedPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center">Carregando...</div>}>
+      <FeedContent />
+    </Suspense>
   );
 }
