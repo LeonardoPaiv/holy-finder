@@ -9,6 +9,11 @@ interface UserLocation {
     lng: number;
 }
 
+interface FeedFilters {
+    cnpj?: string;
+    postId?: string;
+}
+
 interface AppContextType {
     religion: string;
     setReligion: (religion: string) => void;
@@ -16,6 +21,8 @@ interface AppContextType {
     setUserLocation: (location: UserLocation) => void;
     companies: Company[];
     setCompanies: (companies: Company[]) => void;
+    feedFilters: FeedFilters;
+    setFeedFilters: (filters: FeedFilters) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -24,6 +31,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const [religion, setReligion] = useState<string>('Católica');
     const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
     const [companies, setCompanies] = useState<Company[]>([]);
+    const [feedFilters, setFeedFilters] = useState<FeedFilters>({});
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -59,6 +67,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             setUserLocation,
             companies,
             setCompanies,
+            feedFilters,
+            setFeedFilters,
         }}>
             {children}
         </AppContext.Provider>

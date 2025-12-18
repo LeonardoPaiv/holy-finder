@@ -23,7 +23,13 @@ export function useInfinitePosts(cnpj: string, filters: Filters = {}) {
     staleTime: 30000, // 30 seconds
   });
 
-  const posts = query.data?.pages.flatMap((page: any) => page.posts) || [];
+  // Map posts and ensure cnpj data is included
+  const posts = query.data?.pages.flatMap((page: any) => 
+    page.posts.map((post: any) => ({
+      ...post,
+      cnpj: post.cnpj || { _id: cnpj, name: 'Instituição' }
+    }))
+  ) || [];
 
   return {
     ...query,

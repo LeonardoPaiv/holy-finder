@@ -133,13 +133,23 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
             </div>
             
             {/* Footer Actions */}
-            <div className="p-4 border-t bg-slate-50 shrink-0">
+            <div className="p-4 border-t bg-slate-50 shrink-0 space-y-2">
               <button 
                 onClick={handleGetDirections}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2 shadow-md hover:shadow-lg active:scale-95"
               >
                 <MapPin size={18} />
                 <span>Como Chegar</span>
+              </button>
+              
+              <button 
+                onClick={() => {
+                  window.location.href = `/feed?cnpj=${church._id}`;
+                }}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2 shadow-md hover:shadow-lg active:scale-95"
+              >
+                <Calendar size={18} />
+                <span>Ver Postagens</span>
               </button>
             </div>
           </>

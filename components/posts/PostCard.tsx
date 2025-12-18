@@ -2,7 +2,8 @@
 
 import { Post } from '@/types';
 import Image from 'next/image';
-import { Calendar, User } from 'lucide-react';
+import { Calendar, User, Share2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface PostCardProps {
   post: Post & {
@@ -10,6 +11,10 @@ interface PostCardProps {
       _id: string;
       fullName: string;
     };
+    cnpj?: {
+      _id: string;
+      name: string;
+    } | string;
   };
 }
 
@@ -24,6 +29,39 @@ export default function PostCard({ post }: PostCardProps) {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/feed?postId=${post._id}`;
+    const institutionName = typeof post.cnpj === 'object' && post.cnpj !== null && 'name' in post.cnpj
+      ? post.cnpj.name 
+      : 'Instituição';
+    const shareData = {
+      title: `Post de ${institutionName}`,
+      text: post.description.substring(0, 100) + (post.description.length > 100 ? '...' : ''),
+      url: shareUrl,
+    };
+
+    // Try native share API (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        // User cancelled or error occurred
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Error sharing:', error);
+        }
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Link copiado para a área de transferência!');
+      } catch (error) {
+        console.error('Error copying to clipboard:', error);
+        toast.error('Erro ao copiar link');
+      }
+    }
   };
 
   return (
@@ -66,9 +104,19 @@ export default function PostCard({ post }: PostCardProps) {
 
       {/* Footer Info */}
       <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <span>Post ID: {post._id}</span>
-          {post.creator && <span>Criador ID: {post.creator._id}</span>}
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col text-xs text-slate-500">
+            <span>Post ID: {post._id}</span>
+            {post.creator && <span>Criador ID: {post.creator._id}</span>}
+          </div>
+          
+          <button
+            onClick={handleShare}
+            className="flex items-center space-x-1 text-slate-600 hover:text-blue-600 transition-colors px-2 py-1"
+          >
+            <Share2 size={16} />
+            <span className="text-xs font-medium">Compartilhar</span>
+          </button>
         </div>
       </div>
     </div>
