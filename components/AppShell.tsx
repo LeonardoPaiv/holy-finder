@@ -7,7 +7,6 @@ import { SettingsMenu } from '../components/SettingsMenu';
 import { ReligionDialog } from '../components/ReligionDialog';
 import { ReportAppDialog } from '../components/ReportAppDialog';
 import { AppProvider, useApp } from './AppContext';
-import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
@@ -39,7 +38,6 @@ const AppShellContent: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <main className="flex-1 relative overflow-auto">
                 {children}
             </main>
-            <Toaster />
 
             {/* Settings Popper Menu */}
             <SettingsMenu

@@ -1,8 +1,7 @@
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { Settings, FileText, Users, Shield, LogOut, Map } from 'lucide-react';
-import { useInstitution } from '@/components/contexts/InstitutionContext';
 import { ReportForm } from '@/components/church-dialog/ReportForm';
+import { useInstitutionDashboardViewModel } from './viewmodels/InstitutionDashboardViewModel';
 
 interface DashboardOptionProps {
   icon: React.ReactNode;
@@ -32,52 +31,46 @@ const DashboardOption: React.FC<DashboardOptionProps> = ({ icon, title, descript
 );
 
 export const InstitutionDashboard: React.FC = () => {
-  const router = useRouter();
-  const { signOut, user } = useInstitution();
-
-  const handleLogout = async () => {
-    await signOut();
-    router.push('/');
-  };
-
-  const [isReportDialogOpen, setIsReportDialogOpen] = React.useState(false);
-  const [reportText, setReportText] = React.useState('');
-  const isInactive = user?.type === 'inactive';
-
-  const handleReportSubmit = () => {
-    // TODO: Implement report submission logic
-    console.log('Report submitted:', reportText);
-    setIsReportDialogOpen(false);
-    setReportText('');
-  };
+  const {
+    user,
+    isInactive,
+    isReportDialogOpen,
+    reportText,
+    setReportText,
+    handleLogout,
+    handleReportSubmit,
+    handleNavigation,
+    handleOpenReportDialog,
+    handleCloseReportDialog
+  } = useInstitutionDashboardViewModel();
 
   const options = [
     {
       icon: <Settings size={32} />,
       title: 'Alterar dados da instituição',
       description: 'Gerencie informações, horários e fotos.',
-      onClick: () => router.push('/institution/data'),
+      onClick: () => handleNavigation('/institution/data'),
       disabled: isInactive
     },
     {
       icon: <Map size={32} />,
       title: 'Voltar ao Mapa',
       description: 'Retornar para a visualização do mapa principal.',
-      onClick: () => router.push('/'),
+      onClick: () => handleNavigation('/'),
       disabled: isInactive
     },
     {
       icon: <FileText size={32} />,
       title: 'Postagens da Instituição',
       description: 'Publique novidades e avisos para a comunidade.',
-      onClick: () => router.push('/institution/posts'),
+      onClick: () => handleNavigation('/institution/posts'),
       disabled: isInactive
     },
     ...(user?.type === 'institution admin' ? [{
       icon: <Users size={32} />,
       title: 'Controle de usuários',
       description: 'Gerencie membros e permissões de acesso.',
-      onClick: () => router.push('/institution/users'),
+      onClick: () => handleNavigation('/institution/users'),
       disabled: isInactive
     }] : []),
     {
@@ -122,7 +115,7 @@ export const InstitutionDashboard: React.FC = () => {
               </div>
             </div>
             <button
-              onClick={() => setIsReportDialogOpen(true)}
+              onClick={handleOpenReportDialog}
               className="px-4 py-2 bg-white border border-orange-200 text-orange-700 font-bold text-sm rounded-lg hover:bg-orange-50 transition-colors shadow-sm whitespace-nowrap"
             >
               Reportar Problema
@@ -153,7 +146,7 @@ export const InstitutionDashboard: React.FC = () => {
               churchName={user?.institution || 'Minha Instituição'}
               reportText={reportText}
               setReportText={setReportText}
-              onCancel={() => setIsReportDialogOpen(false)}
+              onCancel={handleCloseReportDialog}
               onSubmit={handleReportSubmit}
             />
           </div>

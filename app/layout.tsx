@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { AppShell } from "../components/AppShell";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Mapa da Fé",
@@ -24,6 +25,7 @@ export default function RootLayout({
         <AppShell>
           <div id="root">{children}</div>
         </AppShell>
+        <Toaster />
       </body>
     </html>
   );

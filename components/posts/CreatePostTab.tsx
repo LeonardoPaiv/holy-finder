@@ -7,13 +7,13 @@ import ImageUpload from './ImageUpload';
 export default function CreatePostTab() {
   const {
     description,
-    setDescription,
     imagePreview,
     isLoading,
     isUploading,
     isCreating,
     handleImageSelect,
     handleRemoveImage,
+    handleDescriptionChange,
     handleSubmit,
   } = useCreatePostViewModel();
 
@@ -43,7 +43,7 @@ export default function CreatePostTab() {
             </label>
             <textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={handleDescriptionChange}
               placeholder="Escreva uma descrição para o post..."
               rows={6}
               disabled={isLoading}

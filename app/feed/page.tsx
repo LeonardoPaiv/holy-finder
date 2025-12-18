@@ -13,6 +13,12 @@ export default function FeedPage() {
   const { userLocation, feedFilters, setFeedFilters, companies } = useApp();
   const [showFilters, setShowFilters] = useState(false);
   
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Load filters from query params on mount
   useEffect(() => {
     const cnpj = searchParams.get('cnpj');
@@ -66,6 +72,11 @@ export default function FeedPage() {
   const handleClearFilters = () => {
     setFeedFilters({});
   };
+
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return null;
+  }
 
   const activeFiltersCount = Object.values(feedFilters).filter(Boolean).length;
   const hasFilters = !!feedFilters.cnpj || !!feedFilters.postId;

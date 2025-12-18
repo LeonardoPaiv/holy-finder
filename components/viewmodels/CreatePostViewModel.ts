@@ -88,9 +88,12 @@ export const useCreatePostViewModel = () => {
 
   const isLoading = isUploading || isCreating;
 
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value);
+  };
+
   return {
     description,
-    setDescription,
     imageFile,
     imagePreview,
     isLoading,
@@ -98,6 +101,7 @@ export const useCreatePostViewModel = () => {
     isCreating,
     handleImageSelect,
     handleRemoveImage,
+    handleDescriptionChange,
     handleSubmit,
   };
 };

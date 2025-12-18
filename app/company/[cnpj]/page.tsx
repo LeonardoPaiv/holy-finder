@@ -38,7 +38,7 @@ export default function CompanyMapPage() {
     router.push('/');
   };
 
-  if (loading) {
+  if (loading || !company) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-slate-50">
         <p className="text-slate-600">Carregando...</p>

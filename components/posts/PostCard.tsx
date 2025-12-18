@@ -6,15 +6,15 @@ import { Calendar, User, Share2 } from 'lucide-react';
 import { shareContent, getPostShareData } from '@/utils/shareUtils';
 
 interface PostCardProps {
-  post: Post & {
-    creator?: {
-      _id: string;
-      fullName: string;
-    };
+  post: Omit<Post, 'cnpj'> & {
     cnpj?: {
       _id: string;
       name: string;
     } | string;
+    creator?: {
+      _id: string;
+      fullName: string;
+    };
   };
 }
 

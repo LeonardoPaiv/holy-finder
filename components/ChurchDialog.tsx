@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { X, Clock, MapPin, Phone, AlertTriangle, Calendar, Maximize2, Share2 } from 'lucide-react';
 import { Company } from '../types';
 import { useChurchDialogViewModel } from './viewmodels/ChurchDialogViewModel';
-import { GOOGLE_MAPS_URL } from '../utils/constants';
 import { ScheduleSection } from './church-dialog/ScheduleSection';
 import { ReportForm } from './church-dialog/ReportForm';
 import { ImagePreviewDialog } from './ImagePreviewDialog';
@@ -13,31 +12,23 @@ interface ChurchDialogProps {
 }
 
 export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) => {
-  const [showPreview, setShowPreview] = useState(false);
   const {
     isReporting,
-    setIsReporting,
     reportText,
     setReportText,
+    showPreview,
     handleSendReport,
     handleClose,
     handleShare,
+    handleGetDirections,
+    handleOpenPreview,
+    handleClosePreview,
+    handleOpenReport,
+    handleCancelReport,
+    handleNavigateToPosts
   } = useChurchDialogViewModel(church, onClose);
 
   if (!church) return null;
-
-  const handleGetDirections = () => {
-    if (church.dedicatedMapsUrl) {
-      window.open(church.dedicatedMapsUrl, '_blank');
-    } else {
-      const { coordinates } = church.geo;
-      // Leaflet uses [lat, lng] but GeoJSON is [lng, lat]. 
-      // Based on previous MapView code, coordinates[1] is lat and coordinates[0] is lng.
-      const lat = coordinates[1];
-      const lng = coordinates[0];
-      window.open(GOOGLE_MAPS_URL(lat, lng), '_blank');
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 md:p-4">
@@ -56,7 +47,7 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
             churchName={church.name}
             reportText={reportText}
             setReportText={setReportText}
-            onCancel={() => setIsReporting(false)}
+            onCancel={handleCancelReport}
             onSubmit={handleSendReport}
           />
         ) : (
@@ -72,7 +63,7 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
               
               {/* Report Button */}
               <button 
-                onClick={() => setIsReporting(true)}
+                onClick={handleOpenReport}
                 className="absolute top-4 right-24 z-20 p-2 bg-black/40 hover:bg-red-600 text-white rounded-full backdrop-blur-md transition-all border border-white/10 shadow-sm"
                 title="Reportar problema ou informação incorreta"
               >
@@ -81,7 +72,7 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
 
               {/* Preview Button */}
               <button 
-                onClick={() => setShowPreview(true)}
+                onClick={handleOpenPreview}
                 className="absolute top-4 right-14 z-20 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-all border border-white/10 shadow-sm"
                 title="Expandir imagem"
               >
@@ -147,9 +138,7 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
                 
                 {/* Posts Button */}
                 <button 
-                  onClick={() => {
-                    window.location.href = `/feed?cnpj=${church._id}`;
-                  }}
+                  onClick={handleNavigateToPosts}
                   className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
                   <Calendar size={18} />
@@ -172,7 +161,7 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
       
       <ImagePreviewDialog 
         isOpen={showPreview} 
-        onClose={() => setShowPreview(false)} 
+        onClose={handleClosePreview} 
         imageUrl={church.photo || 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2073&auto=format&fit=crop'} 
       />
     </div>

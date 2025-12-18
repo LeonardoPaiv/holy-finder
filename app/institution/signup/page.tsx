@@ -11,21 +11,22 @@ export default function InstitutionSignUp() {
   const router = useRouter();
   const {
     email,
-    setEmail,
     fullName,
-    setFullName,
     password,
-    setPassword,
     passwordRequirements,
+    isPasswordFocused,
     cnpjValue,
-    handleCnpjChange,
     loading,
     setCaptchaToken,
     captchaRef,
+    handleNameChange,
+    handleEmailChange,
+    handlePasswordChange,
+    handleCnpjChange,
+    handleFocusPassword,
+    handleBlurPassword,
     handleSubmit,
   } = useInstitutionSignupViewModel();
-
-  const [isPasswordFocused, setIsPasswordFocused] = React.useState(false);
 
   return (
     <div className="w-full h-full bg-slate-50 flex flex-col overflow-y-auto min-h-screen">
@@ -60,7 +61,7 @@ export default function InstitutionSignUp() {
                   <input 
                     type="text" 
                     value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    onChange={handleNameChange}
                     placeholder="Seu nome completo"
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 pl-10"
                     required
@@ -95,7 +96,7 @@ export default function InstitutionSignUp() {
                   <input 
                     type="email" 
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}
                     placeholder="seu@email.com"
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 pl-10"
                     required
@@ -112,9 +113,9 @@ export default function InstitutionSignUp() {
                   <input 
                     type="password" 
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onFocus={() => setIsPasswordFocused(true)}
-                    onBlur={() => setIsPasswordFocused(false)}
+                    onChange={handlePasswordChange}
+                    onFocus={handleFocusPassword}
+                    onBlur={handleBlurPassword}
                     placeholder="••••••••"
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 pl-10"
                     required

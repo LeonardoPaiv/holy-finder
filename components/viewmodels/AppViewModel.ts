@@ -36,7 +36,7 @@ export const useAppViewModel = () => {
     try {
       const companiesData = await CompanyService.getCompanies(lat, lng, searchRadius, limit, religion);
       if (companiesData.length === 0) {
-        toast('Nenhuma instituição encontrada.');
+         showFindNearestToast(handleFindNearest);
       }
       setCompanies(companiesData);
     } catch (error) {

@@ -11,10 +11,10 @@ interface InstitutionLoginProps {
 export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSuccess, onBack }) => {
   const {
     email,
-    setEmail,
     password,
-    setPassword,
     loading,
+    handleEmailChange,
+    handlePasswordChange,
     handleSubmit,
   } = useInstitutionLoginViewModel(onLoginSuccess);
 
@@ -51,7 +51,7 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
                   <input 
                     type="email" 
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}
                     placeholder="seu@email.com"
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 pl-10"
                     required
@@ -68,7 +68,7 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
                   <input 
                     type="password" 
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                     placeholder="••••••••"
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 pl-10"
                     required

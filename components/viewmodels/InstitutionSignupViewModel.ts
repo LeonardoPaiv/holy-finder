@@ -19,10 +19,27 @@ export const useInstitutionSignupViewModel = () => {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const captchaRef = useRef<HCaptcha>(null);
 
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
   const handleCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '');
     setCnpjValue(cnpj.format(value));
   };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFullName(e.target.value);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleFocusPassword = () => setIsPasswordFocused(true);
+  const handleBlurPassword = () => setIsPasswordFocused(false);
 
   const passwordRequirements = {
     minLength: password.length >= 8,
@@ -71,19 +88,22 @@ export const useInstitutionSignupViewModel = () => {
 
   return {
     email,
-    setEmail,
     fullName,
-    setFullName,
     password,
-    setPassword,
     passwordRequirements,
     isPasswordValid,
+    isPasswordFocused,
     cnpjValue,
-    handleCnpjChange,
     loading,
     captchaToken,
     setCaptchaToken,
     captchaRef,
+    handleNameChange,
+    handleEmailChange,
+    handlePasswordChange,
+    handleCnpjChange,
+    handleFocusPassword,
+    handleBlurPassword,
     handleSubmit,
   };
 };

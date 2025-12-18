@@ -1,7 +1,7 @@
 import { Post } from '@/types';
 import Image from 'next/image';
 import { Calendar, MapPin, Share2 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useFeedPostCardViewModel } from '@/components/viewmodels/FeedPostCardViewModel';
 
 interface FeedPostCardProps {
   post: Post & {
@@ -13,47 +13,7 @@ interface FeedPostCardProps {
 }
 
 export default function FeedPostCard({ post }: FeedPostCardProps) {
-  const formatDate = (date: Date | string | undefined) => {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/feed?postId=${post._id}`;
-    const shareData = {
-      title: `Post de ${post.cnpj?.name || 'Instituição'}`,
-      text: post.description.substring(0, 100) + (post.description.length > 100 ? '...' : ''),
-      url: shareUrl,
-    };
-
-    // Try native share API (mobile)
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        // User cancelled or error occurred
-        if ((error as Error).name !== 'AbortError') {
-          console.error('Error sharing:', error);
-        }
-      }
-    } else {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success('Link copiado para a área de transferência!');
-      } catch (error) {
-        console.error('Error copying to clipboard:', error);
-        toast.error('Erro ao copiar link');
-      }
-    }
-  };
+  const { formatDate, handleShare } = useFeedPostCardViewModel(post);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">

@@ -26,12 +26,20 @@ export const useInstitutionLoginViewModel = (onLoginSuccess: () => void) => {
     }
   };
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
   return {
     email,
-    setEmail,
     password,
-    setPassword,
     loading,
+    handleEmailChange,
+    handlePasswordChange,
     handleSubmit,
   };
 };
