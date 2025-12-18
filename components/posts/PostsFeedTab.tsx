@@ -37,7 +37,8 @@ export default function PostsFeedTab() {
     registerRefreshCallback(() => {
       refetch();
     });
-  }, [registerRefreshCallback, refetch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!institution) {
     return (

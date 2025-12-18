@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { useInstitution } from './InstitutionContext';
 import { CompanyService } from '@/services/companyService';
 
@@ -23,7 +23,7 @@ export const InstitutionPostProvider: React.FC<{ children: ReactNode }> = ({ chi
   const { institution } = useInstitution();
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  const [refreshCallback, setRefreshCallback] = useState<(() => void) | null>(null);
+  const refreshCallbackRef = useRef<(() => void) | null>(null);
 
   const loadUsers = async () => {
     if (!institution?._id) return;
@@ -45,12 +45,12 @@ export const InstitutionPostProvider: React.FC<{ children: ReactNode }> = ({ chi
   }, [institution?._id]);
 
   const registerRefreshCallback = (callback: () => void) => {
-    setRefreshCallback(() => callback);
+    refreshCallbackRef.current = callback;
   };
 
   const onPostCreated = () => {
-    if (refreshCallback) {
-      refreshCallback();
+    if (refreshCallbackRef.current) {
+      refreshCallbackRef.current();
     }
   };
 
