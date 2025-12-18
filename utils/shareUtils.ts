@@ -37,10 +37,11 @@ export async function shareContent(data: ShareData): Promise<void> {
  * Generate share data for a company/institution
  */
 export function getCompanyShareData(companyId: string, companyName: string): ShareData {
+  const origin = process.env.NEXT_PUBLIC_APP_URL;
   return {
     title: companyName,
     text: `Confira ${companyName} no mapa`,
-    url: `${window.location.origin}/company/${companyId}`,
+    url: `${origin}/company/${companyId}`,
   };
 }
 
@@ -48,9 +49,10 @@ export function getCompanyShareData(companyId: string, companyName: string): Sha
  * Generate share data for a post
  */
 export function getPostShareData(postId: string, title: string, description: string): ShareData {
+  const origin = process.env.NEXT_PUBLIC_APP_URL;
   return {
     title: `Post de ${title}`,
     text: description.substring(0, 100) + (description.length > 100 ? '...' : ''),
-    url: `${window.location.origin}/feed?postId=${postId}`,
+    url: `${origin}/feed?postId=${postId}`,
   };
 }

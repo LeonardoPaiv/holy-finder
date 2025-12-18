@@ -15,7 +15,8 @@ export const useFeedPostCardViewModel = (post: Post & { cnpj?: { _id: string; na
   };
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/feed?postId=${post._id}`;
+    const origin = process.env.NEXT_PUBLIC_APP_URL;
+    const shareUrl = `${origin}/feed?postId=${post._id}`;
     const shareData = {
       title: `Post de ${post.cnpj?.name || 'Instituição'}`,
       text: post.description.substring(0, 100) + (post.description.length > 100 ? '...' : ''),

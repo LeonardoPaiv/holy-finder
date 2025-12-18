@@ -112,7 +112,7 @@ export const useAuth = () => {
             cnpj,
             fullName,
           },
-          emailRedirectTo: `${window.location.origin}${ROUTES.INSTITUTION.DASHBOARD}`,
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}${ROUTES.INSTITUTION.DASHBOARD}`,
         },
       });
 
