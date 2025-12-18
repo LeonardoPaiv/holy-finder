@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Clock, MapPin, Phone, AlertTriangle, Calendar, Maximize2 } from 'lucide-react';
+import { X, Clock, MapPin, Phone, AlertTriangle, Calendar, Maximize2, Share2 } from 'lucide-react';
 import { Company } from '../types';
 import { useChurchDialogViewModel } from './viewmodels/ChurchDialogViewModel';
 import { GOOGLE_MAPS_URL } from '../utils/constants';
@@ -21,6 +21,7 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
     setReportText,
     handleSendReport,
     handleClose,
+    handleShare,
   } = useChurchDialogViewModel(church, onClose);
 
   if (!church) return null;
@@ -133,24 +134,37 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
             </div>
             
             {/* Footer Actions */}
-            <div className="p-4 border-t bg-slate-50 shrink-0 space-y-2">
-              <button 
-                onClick={handleGetDirections}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2 shadow-md hover:shadow-lg active:scale-95"
-              >
-                <MapPin size={18} />
-                <span>Como Chegar</span>
-              </button>
-              
-              <button 
-                onClick={() => {
-                  window.location.href = `/feed?cnpj=${church._id}`;
-                }}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2 shadow-md hover:shadow-lg active:scale-95"
-              >
-                <Calendar size={18} />
-                <span>Ver Postagens</span>
-              </button>
+            <div className="p-4 border-t bg-slate-50 shrink-0">
+              <div className="flex items-center gap-2">
+                {/* Rotas Button */}
+                <button 
+                  onClick={handleGetDirections}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <MapPin size={18} />
+                  <span>Rotas</span>
+                </button>
+                
+                {/* Posts Button */}
+                <button 
+                  onClick={() => {
+                    window.location.href = `/feed?cnpj=${church._id}`;
+                  }}
+                  className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <Calendar size={18} />
+                  <span>Posts</span>
+                </button>
+
+                {/* Share Button - Icon Only */}
+                <button 
+                  onClick={handleShare}
+                  className="bg-green-600 hover:bg-green-700 text-white p-2.5 rounded-lg transition-colors flex items-center justify-center"
+                  title="Compartilhar"
+                >
+                  <Share2 size={18} />
+                </button>
+              </div>
             </div>
           </>
         )}

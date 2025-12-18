@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Company } from '@/types';
+import { shareContent, getCompanyShareData } from '@/utils/shareUtils';
 
 export const useChurchDialogViewModel = (church: Company | null, onClose: () => void) => {
   const [isReporting, setIsReporting] = useState(false);
@@ -23,6 +24,12 @@ export const useChurchDialogViewModel = (church: Company | null, onClose: () => 
     onClose();
   };
 
+  const handleShare = async () => {
+    if (!church) return;
+    const shareData = getCompanyShareData(church._id, church.name);
+    await shareContent(shareData);
+  };
+
   return {
     isReporting,
     setIsReporting,
@@ -30,5 +37,6 @@ export const useChurchDialogViewModel = (church: Company | null, onClose: () => 
     setReportText,
     handleSendReport,
     handleClose,
+    handleShare,
   };
 };
