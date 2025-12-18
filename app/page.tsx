@@ -1,10 +1,15 @@
 'use client';
 
 import { type FC } from 'react';
+import dynamic from 'next/dynamic';
 import { ChurchDialog } from '../components/ChurchDialog';
 import { useAppViewModel } from '../components/viewmodels/AppViewModel';
-import { MapView } from '@/components/MapView';
 import { useApp } from '@/components/AppContext';
+
+const MapView = dynamic(() => import('../components/mapview/MapView').then(mod => mod.MapView), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-slate-100 animate-pulse" />
+});
 
 const App: FC = () => {
   const {

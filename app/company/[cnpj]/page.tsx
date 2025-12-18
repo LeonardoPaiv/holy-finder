@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Company } from '@/types';
 import { CompanyService } from '@/services/companyService';
-import { MapView } from '@/components/MapView';
+import { MapView } from '@/components/mapview/MapView';
 import { ChurchDialog } from '@/components/ChurchDialog';
 
 export default function CompanyMapPage() {

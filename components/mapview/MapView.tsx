@@ -7,7 +7,7 @@ import { MapController } from './MapController';
 import { MapEvents } from './MapEvents';
 import { LocationPermissionOverlay } from './LocationPermissionOverlay';
 import { SearchAreaButton } from './SearchAreaButton';
-import { FloatingSearchBar } from './FloatingSearchBar';
+import { MapFilters } from './MapFilters';
 import { RecenterButton } from './RecenterButton';
 
 // Custom Marker Icon using DivIcon and Tailwind classes
@@ -49,6 +49,7 @@ interface MapViewProps {
   currentReligion: string;
   onSearchArea?: (center: { lat: number; lng: number }) => void;
   center?: { lat: number; lng: number };
+  onToggleSettings?: () => void;
 }
 
 export const MapView: React.FC<MapViewProps> = ({ 
@@ -56,7 +57,8 @@ export const MapView: React.FC<MapViewProps> = ({
   onSelectCompany, 
   currentReligion, 
   onSearchArea, 
-  center 
+  center,
+  onToggleSettings
 }) => {
   const {
     position,
@@ -109,7 +111,12 @@ export const MapView: React.FC<MapViewProps> = ({
         <LocationPermissionOverlay onRequestLocation={handleManualLocationRequest} />
       )}
       
-      <FloatingSearchBar currentReligion={currentReligion} />
+      <MapFilters 
+        currentReligion={currentReligion}
+        onToggleSettings={onToggleSettings}
+        onSearchArea={onSearchArea}
+        mapRef={mapRef}
+      />
       
       <RecenterButton show={!!userLocation} onRecenter={handleRecenter} />
     </div>

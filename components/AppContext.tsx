@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-import { User, Company } from '@/types';
+import { Company } from '@/types';
 
 interface UserLocation {
     lat: number;
