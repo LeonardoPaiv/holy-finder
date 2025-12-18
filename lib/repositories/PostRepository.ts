@@ -122,11 +122,34 @@ export class PostRepository extends BaseRepository<PostDocument> {
             const countResult = await this.model.aggregate(countPipeline);
             const total = countResult.length > 0 ? countResult[0].total : 0;
 
-            // Get paginated data
+            // Get paginated data with company lookup
             const dataPipeline = [
                 ...pipeline,
                 { $skip: skip },
-                { $limit: options.limit }
+                { $limit: options.limit },
+                {
+                    $lookup: {
+                        from: 'companies',
+                        localField: 'cnpj',
+                        foreignField: '_id',
+                        as: 'cnpj'
+                    }
+                },
+                { $unwind: { path: '$cnpj', preserveNullAndEmptyArrays: true } },
+                {
+                    $project: {
+                        _id: 1,
+                        description: 1,
+                        photo: 1,
+                        type: 1,
+                        geo: 1,
+                        createdAt: 1,
+                        updatedAt: 1,
+                        distance: 1,
+                        'cnpj._id': 1,
+                        'cnpj.name': 1
+                    }
+                }
             ];
 
             const data = await this.model.aggregate(dataPipeline);
