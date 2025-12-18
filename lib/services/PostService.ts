@@ -1,5 +1,5 @@
 import { BaseService } from './BaseService';
-import { PostRepository, PostFilters, PaginationOptions, PaginatedResult } from '../repositories/PostRepository';
+import { PostRepository, PostFilters, FeedFilters, PaginationOptions, PaginatedResult } from '../repositories/PostRepository';
 import { Post as IPost, Geo, CompanyType } from '../../types';
 import { Document } from 'mongoose';
 
@@ -30,7 +30,14 @@ export class PostService extends BaseService<PostDocument> {
         return (this.repository as PostRepository).findPaginated(filters, options);
     }
 
+    async getFeedPosts(
+        filters: FeedFilters,
+        options: PaginationOptions
+    ): Promise<PaginatedResult<PostDocument>> {
+        return (this.repository as PostRepository).findNearby(filters, options);
+    }
+
     async getPostById(id: string): Promise<PostDocument | null> {
-        return this.repository.findById(id);
+        return (this.repository as PostRepository).findById(id);
     }
 }

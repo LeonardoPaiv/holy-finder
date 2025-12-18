@@ -13,6 +13,15 @@ export interface PostFilters {
     dateTo?: Date;
 }
 
+export interface FeedFilters {
+    lat?: number;
+    lng?: number;
+    radius?: number; // in km
+    religion?: string;
+    cnpj?: string;
+    postId?: string;
+}
+
 export interface PaginationOptions {
     page: number;
     limit: number;
@@ -80,5 +89,91 @@ export class PostRepository extends BaseRepository<PostDocument> {
                 hasMore: options.page * options.limit < total
             }
         };
+    }
+
+    async findNearby(
+        filters: FeedFilters,
+        options: PaginationOptions
+    ): Promise<PaginatedResult<PostDocument>> {
+        const skip = (options.page - 1) * options.limit;
+
+        // For geospatial search, we MUST use aggregation pipeline ($geoNear must be first stage)
+        if (filters.lat !== undefined && filters.lng !== undefined) {
+            const radiusInMeters = (filters.radius || 5) * 1000;
+            
+            const pipeline: any[] = [
+                {
+                    $geoNear: {
+                        near: {
+                            type: 'Point',
+                            coordinates: [filters.lng, filters.lat]
+                        },
+                        distanceField: 'distance',
+                        maxDistance: radiusInMeters,
+                        spherical: true,
+                        query: filters.religion ? { type: filters.religion } : {}
+                    }
+                },
+                { $sort: { createdAt: -1 } }
+            ];
+
+            // Get total count
+            const countPipeline = [...pipeline, { $count: 'total' }];
+            const countResult = await this.model.aggregate(countPipeline);
+            const total = countResult.length > 0 ? countResult[0].total : 0;
+
+            // Get paginated data
+            const dataPipeline = [
+                ...pipeline,
+                { $skip: skip },
+                { $limit: options.limit }
+            ];
+
+            const data = await this.model.aggregate(dataPipeline);
+
+            return {
+                data: data as any,
+                pagination: {
+                    page: options.page,
+                    limit: options.limit,
+                    total,
+                    totalPages: Math.ceil(total / options.limit),
+                    hasMore: options.page * options.limit < total
+                }
+            };
+        }
+
+        // For CNPJ filter, use regular query with populate (simpler and works fine)
+        const query: any = {};
+        if (filters.cnpj) {
+            query.cnpj = filters.cnpj;
+        }
+
+        const [data, total] = await Promise.all([
+            this.model
+                .find(query)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(options.limit)
+                .select('-__v'),
+            this.model.countDocuments(query)
+        ]);
+
+        return {
+            data,
+            pagination: {
+                page: options.page,
+                limit: options.limit,
+                total,
+                totalPages: Math.ceil(total / options.limit),
+                hasMore: options.page * options.limit < total
+            }
+        };
+    }
+
+    async findById(postId: string): Promise<PostDocument | null> {
+        return this.model
+            .findById(postId)
+            .select('-__v');
     }
 }

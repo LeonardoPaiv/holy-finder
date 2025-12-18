@@ -17,4 +17,22 @@ const PostSchema = new Schema<Post>({
     timestamps: true
 });
 
-export default mongoose.models.Post || mongoose.model<Post>('Post', PostSchema);
+PostSchema.index({ geo: '2dsphere' });
+
+const PostModel = mongoose.models.Post || mongoose.model<Post>('Post', PostSchema);
+
+const syncIndexes = () => {
+    PostModel.syncIndexes().then(() => {
+        console.log('Post indexes synced');
+    }).catch((err: any) => {
+        console.error('Post index sync failed', err);
+    });
+};
+
+if (mongoose.connection.readyState === 1) {
+    syncIndexes();
+} else {
+    mongoose.connection.once('connected', syncIndexes);
+}
+
+export default PostModel;
