@@ -7,8 +7,8 @@ export interface IReport {
     cnpj?: string;
     userId?: string;
     status: ReportStatus;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export interface ReportDocument extends IReport, Document {
