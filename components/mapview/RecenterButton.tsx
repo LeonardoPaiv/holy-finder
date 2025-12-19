@@ -12,7 +12,7 @@ export const RecenterButton: React.FC<RecenterButtonProps> = ({ show, onRecenter
   return (
     <button 
       onClick={onRecenter}
-      className="absolute bottom-32 md:bottom-24 right-4 z-[400] bg-white p-3 rounded-full shadow-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
+      className="w-fit z-[400] bg-white p-3 rounded-full shadow-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
     >
       <Navigation size={24} className="text-blue-600" />
     </button>

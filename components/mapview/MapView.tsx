@@ -116,9 +116,9 @@ export const MapView: React.FC<MapViewProps> = ({
         onToggleSettings={onToggleSettings}
         onSearchArea={onSearchArea}
         mapRef={mapRef}
+        showRecenterButtom={!!userLocation}
+        onRecenter={handleRecenter}
       />
-      
-      <RecenterButton show={!!userLocation} onRecenter={handleRecenter} />
     </div>
   );
 };

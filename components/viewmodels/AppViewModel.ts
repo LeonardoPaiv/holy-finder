@@ -22,9 +22,9 @@ export const useAppViewModel = () => {
         if (result.center) {
           setMapCenter(result.center);
         }
-        toast.success('Instituições encontradas!', { id: toastId });
+        toast.success('Instituições encontradas!', { id: toastId, duration: 3000 });
       } else {
-        toast.error('Nenhuma instituição encontrada.', { id: toastId });
+        toast.error('Nenhuma instituição encontrada.', { id: toastId, duration: 3000 });
       }
     } catch (error) {
       console.error('Erro ao buscar próximas:', error);

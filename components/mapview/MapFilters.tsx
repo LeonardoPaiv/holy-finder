@@ -3,12 +3,15 @@
 import React from 'react';
 import { MapPin, Filter, Navigation } from 'lucide-react';
 import { useApp } from '../AppContext';
+import { RecenterButton } from './RecenterButton';
 
 interface MapFiltersProps {
   currentReligion: string;
   onToggleSettings?: () => void;
   onSearchArea?: (center: { lat: number; lng: number }) => void;
   mapRef?: React.RefObject<any>;
+  showRecenterButtom: boolean;
+  onRecenter: () => void;
 }
 
 export const MapFilters: React.FC<MapFiltersProps> = ({
@@ -16,6 +19,8 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
   onToggleSettings,
   onSearchArea,
   mapRef,
+  showRecenterButtom,
+  onRecenter,
 }) => {
   const { searchRadius, setSearchRadius } = useApp();
 
@@ -47,9 +52,6 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
         {/* Vertical Radius Slider */}
         <div className="flex items-center w-fit pointer-events-none">
           <div className="flex flex-col items-center gap-1 pointer-events-auto">
-            <div className="text-blue-600 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-md" title={`${searchRadius}km`}>
-              <Navigation size={14} />
-            </div>
             <input
               type="range"
               min="1"
@@ -80,6 +82,7 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
             <span className="text-[10px] font-bold text-slate-700 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded-full shadow-sm">
               {searchRadius}km
             </span>
+            <RecenterButton show={showRecenterButtom} onRecenter={onRecenter} />
           </div>
         </div>
       </div>
