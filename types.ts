@@ -87,3 +87,15 @@ export interface User {
   institution: string;
   type: UserType;
 }
+
+export enum ReportType {
+  APP_BUG = 'APP_BUG',
+  INSTITUTION_INTERN_REPORT = 'INSTITUTION_INTERN_REPORT',
+  INSTITUTION_PUBLIC_REPORT = 'INSTITUTION_PUBLIC_REPORT'
+}
+
+export enum ReportStatus {
+  PENDING = 'PENDING',
+  SOLVED = 'SOLVED',
+  REJECTED = 'REJECTED'
+}
