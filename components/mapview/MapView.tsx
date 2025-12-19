@@ -118,6 +118,7 @@ export const MapView: React.FC<MapViewProps> = ({
         mapRef={mapRef}
         showRecenterButtom={!!userLocation}
         onRecenter={handleRecenter}
+        onSelectCompany={onSelectCompany}
       />
     </div>
   );

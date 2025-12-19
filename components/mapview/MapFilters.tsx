@@ -1,9 +1,9 @@
-'use client';
-
 import React from 'react';
-import { MapPin, Filter, Navigation } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import { useApp } from '../AppContext';
 import { RecenterButton } from './RecenterButton';
+import { Company } from '../../types';
+import { CompanySearch } from './CompanySearch';
 
 interface MapFiltersProps {
   currentReligion: string;
@@ -12,6 +12,7 @@ interface MapFiltersProps {
   mapRef?: React.RefObject<any>;
   showRecenterButtom: boolean;
   onRecenter: () => void;
+  onSelectCompany?: (company: Company) => void;
 }
 
 export const MapFilters: React.FC<MapFiltersProps> = ({
@@ -21,20 +22,32 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
   mapRef,
   showRecenterButtom,
   onRecenter,
+  onSelectCompany,
 }) => {
-  const { searchRadius, setSearchRadius } = useApp();
+  const { searchRadius, setSearchRadius, userLocation } = useApp();
+
+  const handleCompanySelect = (company: Company) => {
+    if (onSelectCompany) {
+      onSelectCompany(company);
+    }
+    
+    if (mapRef?.current) {
+      mapRef.current.flyTo(
+        [company.geo.coordinates[1], company.geo.coordinates[0]], 
+        16, 
+        { duration: 1.5 }
+      );
+    }
+  };
 
   return (
     <div className="absolute top-4 left-4 right-4 z-[400] md:w-[400px] md:left-4 space-y-2 pointer-events-none">
-      {/* Search Bar */}
-      <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200 pointer-events-auto">
-        <MapPin className="text-blue-600" size={20} />
-        <input 
-          type="text" 
-          placeholder="Buscar paróquia ou bairro..." 
-          className="flex-1 bg-transparent outline-none text-slate-900 placeholder:text-slate-500 font-medium"
-        />
-      </div>
+      {/* Search Bar Component */}
+      <CompanySearch 
+        userLocation={userLocation}
+        mapCenter={mapRef?.current?.getCenter()}
+        onSelectCompany={handleCompanySelect}
+      />
 
       {/* Religion Badge and Vertical Radius Slider */}
       <div className="flex flex-col gap-2 w-fit pointer-events-none">
