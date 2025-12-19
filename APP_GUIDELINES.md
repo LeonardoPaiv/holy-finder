@@ -1,4 +1,4 @@
-# Guia de Refatoração - Holy Finder
+# Guia de Código - Holy Finder
 
 ## 📋 Índice
 

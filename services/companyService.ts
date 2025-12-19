@@ -36,6 +36,23 @@ export const CompanyService = {
         }
     },
 
+    searchCompanies: async (q: string, lat: number, lng: number, limit: number = 5, type?: string): Promise<Company[]> => {
+        try {
+            let url = `/api/companies/search?q=${encodeURIComponent(q)}&lat=${lat}&lng=${lng}&limit=${limit}`;
+            if (type) {
+                url += `&type=${encodeURIComponent(type)}`;
+            }
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Failed to search companies');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error searching companies:', error);
+            return [];
+        }
+    },
+
     getCompanyByCnpj: async (cnpj: string): Promise<Company | null> => {
         try {
             const response = await fetch(`/api/companies/${cnpj}`);

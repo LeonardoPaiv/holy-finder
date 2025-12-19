@@ -28,6 +28,10 @@ export class CompanyService extends BaseService<CompanyDocument> {
 
         return { companies, center };
     }
+
+    async searchCompanies(name: string, lat: number, lng: number, limit: number = 5, type?: string): Promise<CompanyDocument[]> {
+        return (this.repository as CompanyRepository).searchByName(name, lat, lng, limit, type);
+    }
     async getCompanyByCnpj(cnpj: string): Promise<CompanyDocument | null> {
         return this.repository.findById(cnpj);
     }
