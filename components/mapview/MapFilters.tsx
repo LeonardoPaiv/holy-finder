@@ -20,9 +20,9 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
   const { searchRadius, setSearchRadius } = useApp();
 
   return (
-    <div className="absolute top-4 left-4 right-4 z-[400] md:w-[400px] md:left-4 space-y-2">
+    <div className="absolute top-4 left-4 right-4 z-[400] md:w-[400px] md:left-4 space-y-2 pointer-events-none">
       {/* Search Bar */}
-      <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200">
+      <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200 pointer-events-auto">
         <MapPin className="text-blue-600" size={20} />
         <input 
           type="text" 
@@ -32,12 +32,12 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
       </div>
 
       {/* Religion Badge and Vertical Radius Slider */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 w-fit pointer-events-none">
         {/* Selected Religion Badge - Clickable */}
         <button
           type="button"
           onClick={onToggleSettings}
-          className="w-fit bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-full shadow-md flex items-center gap-2 text-xs font-medium hover:bg-slate-800/90 active:bg-slate-700/90 transition-all cursor-pointer border-none outline-none"
+          className="w-fit bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-full shadow-md flex items-center gap-2 text-xs font-medium hover:bg-slate-800/90 active:bg-slate-700/90 transition-all cursor-pointer border-none outline-none pointer-events-auto"
           title="Clique para mudar a religião"
         >
           <Filter size={12} className="text-purple-300 flex-shrink-0" />
@@ -45,8 +45,8 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
         </button>
 
         {/* Vertical Radius Slider */}
-        <div className="flex items-center">
-          <div className="flex flex-col items-center gap-1">
+        <div className="flex items-center w-fit pointer-events-none">
+          <div className="flex flex-col items-center gap-1 pointer-events-auto">
             <div className="text-blue-600 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-md" title={`${searchRadius}km`}>
               <Navigation size={14} />
             </div>
@@ -61,14 +61,12 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
                 setSearchRadius(newRadius);
               }}
               onMouseUp={() => {
-                // Trigger search when user releases the slider
                 if (onSearchArea && mapRef?.current) {
                   const center = mapRef.current.getCenter();
                   onSearchArea({ lat: center.lat, lng: center.lng });
                 }
               }}
               onTouchEnd={() => {
-                // Trigger search on mobile when user releases
                 if (onSearchArea && mapRef?.current) {
                   const center = mapRef.current.getCenter();
                   onSearchArea({ lat: center.lat, lng: center.lng });
