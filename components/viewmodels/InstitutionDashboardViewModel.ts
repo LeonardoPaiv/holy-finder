@@ -4,7 +4,7 @@ import { useInstitution } from '@/components/contexts/InstitutionContext';
 
 export const useInstitutionDashboardViewModel = () => {
   const router = useRouter();
-  const { signOut, user } = useInstitution();
+  const { signOut, user, institution } = useInstitution();
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [reportText, setReportText] = useState('');
 
@@ -31,6 +31,7 @@ export const useInstitutionDashboardViewModel = () => {
 
   return {
     user,
+    institution,
     isInactive,
     isReportDialogOpen,
     reportText,

@@ -33,6 +33,7 @@ const DashboardOption: React.FC<DashboardOptionProps> = ({ icon, title, descript
 export const InstitutionDashboard: React.FC = () => {
   const {
     user,
+    institution,
     isInactive,
     isReportDialogOpen,
     reportText,
@@ -120,6 +121,26 @@ export const InstitutionDashboard: React.FC = () => {
             >
               Reportar Problema
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Inactive Institution Warning */}
+      {institution && !institution.active && !isInactive && (
+        <div className="bg-yellow-50 border-b border-yellow-100 p-4">
+          <div className="max-w-5xl mx-auto flex flex-start gap-3">
+            <div className="h-fit p-2 bg-yellow-100 rounded-full text-yellow-600 shrink-0">
+              <Shield size={20} />
+            </div>
+            <div>
+              <h3 className="font-bold text-yellow-800">Instituição em Análise</h3>
+              <p className="text-sm text-yellow-700 mt-1">
+                Sua instituição está atualmente inativa e não aparecerá nas buscas. Ela entrará na fila de aprovação assim que os dados forem atualizados e diferirem do padrão de criação, caso já tenha alterado os dados, aguarde a aprovação. Obrigado pela compreensão.
+              </p>
+              <p className="text-sm text-amber-600 mt-2">
+                Nota: O status também pode ter sido alterado por um moderador devido a violação dos termos de uso.
+              </p>
+            </div>
           </div>
         </div>
       )}
