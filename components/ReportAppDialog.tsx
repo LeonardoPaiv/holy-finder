@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { X, AlertTriangle, Send, Bug } from 'lucide-react';
+import { useReportAppDialogViewModel } from './viewmodels/ReportAppDialogViewModel';
 
 interface ReportAppDialogProps {
   isOpen: boolean;
@@ -7,16 +8,14 @@ interface ReportAppDialogProps {
 }
 
 export const ReportAppDialog: React.FC<ReportAppDialogProps> = ({ isOpen, onClose }) => {
-  const [reportText, setReportText] = useState('');
+  const {
+    reportText,
+    setReportText,
+    isLoading,
+    handleSendReport
+  } = useReportAppDialogViewModel(onClose);
 
   if (!isOpen) return null;
-
-  const handleSendReport = () => {
-    // Simulação de envio para backend
-    alert('Seu report foi enviado com sucesso! Nossa equipe técnica irá analisar.');
-    setReportText('');
-    onClose();
-  };
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
@@ -74,11 +73,11 @@ export const ReportAppDialog: React.FC<ReportAppDialogProps> = ({ isOpen, onClos
         <div className="p-4 bg-white border-t border-slate-100 shrink-0">
           <button 
             onClick={handleSendReport}
-            disabled={!reportText.trim()}
+            disabled={!reportText.trim() || isLoading}
             className="w-full bg-slate-900 disabled:bg-slate-300 disabled:cursor-not-allowed hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition-all flex items-center justify-center space-x-2 shadow-lg disabled:shadow-none active:scale-95"
           >
             <Send size={18} />
-            <span>Enviar Report Técnico</span>
+            <span>{isLoading ? 'Enviando...' : 'Enviar Report Técnico'}</span>
           </button>
         </div>
 

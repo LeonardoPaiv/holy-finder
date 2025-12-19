@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { Company } from '@/types';
 import { shareContent, getCompanyShareData } from '@/utils/shareUtils';
 import { GOOGLE_MAPS_URL } from '@/utils/constants';
+import { ReportService } from '@/services/reportService';
+import { ReportType } from '@/types';
+import toast from 'react-hot-toast';
 
 export const useChurchDialogViewModel = (church: Company | null, onClose: () => void) => {
   const [isReporting, setIsReporting] = useState(false);
@@ -15,11 +18,22 @@ export const useChurchDialogViewModel = (church: Company | null, onClose: () => 
     setShowPreview(false);
   }, [church]);
 
-  const handleSendReport = () => {
-    // Aqui seria a integração com backend
-    alert('Problema reportado com sucesso! Agradecemos sua contribuição para manter os dados atualizados.');
-    setReportText('');
-    setIsReporting(false);
+  const handleSendReport = async () => {
+    if (!church || !reportText.trim()) return;
+
+    try {
+      await ReportService.createReport({
+        type: ReportType.INSTITUTION_PUBLIC_REPORT,
+        description: reportText,
+        cnpj: church._id
+      });
+      toast.success('Problema reportado com sucesso! Agradecemos sua contribuição.');
+      setReportText('');
+      setIsReporting(false);
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      toast.error('Erro ao enviar report. Tente novamente.');
+    }
   };
 
   const handleClose = () => {
