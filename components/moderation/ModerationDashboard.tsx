@@ -1,9 +1,81 @@
 import React from 'react';
-import { Shield, ArrowLeft } from 'lucide-react';
+import { Shield, ArrowLeft, Building2, Users, FileText, AlertTriangle, ChevronRight } from 'lucide-react';
 import { useModerationDashboardViewModel } from '@/components/viewmodels/ModerationDashboardViewModel';
+import { useRouter } from 'next/navigation';
+import { AnalyticsCard } from './AnalyticsCard';
 
 export const ModerationDashboard: React.FC = () => {
   const { user, loading, handleBack } = useModerationDashboardViewModel();
+  const router = useRouter();
+
+  // Mock data - will be replaced with real data later
+  const analyticsData = [
+    { icon: Building2, count: 142, label: 'Instituições Ativas', color: 'blue' },
+    { icon: Users, count: 1247, label: 'Usuários Ativos', color: 'green' },
+    { icon: FileText, count: 3891, label: 'Posts Publicados', color: 'purple' },
+    { icon: AlertTriangle, count: 23, label: 'Reports Pendentes', color: 'orange' },
+  ];
+
+  const navigationCards = [
+    {
+      title: 'Instituições para análise',
+      count: 15,
+      icon: Building2,
+      href: '/institution/moderation/companies',
+      color: 'blue',
+    },
+    {
+      title: 'Gerenciamento de usuários',
+      count: 8,
+      icon: Users,
+      href: '#',
+      color: 'green',
+    },
+    {
+      title: 'Gerenciamento de posts',
+      count: 42,
+      icon: FileText,
+      href: '#',
+      color: 'purple',
+    },
+    {
+      title: 'Visualizar reports',
+      count: 23,
+      icon: AlertTriangle,
+      href: '#',
+      color: 'orange',
+    },
+  ];
+
+  const getColorClasses = (color: string) => {
+    const colors: Record<string, { bg: string; hover: string; icon: string; badge: string }> = {
+      blue: {
+        bg: 'bg-blue-50',
+        hover: 'hover:bg-blue-100',
+        icon: 'text-blue-600',
+        badge: 'bg-blue-600',
+      },
+      green: {
+        bg: 'bg-green-50',
+        hover: 'hover:bg-green-100',
+        icon: 'text-green-600',
+        badge: 'bg-green-600',
+      },
+      purple: {
+        bg: 'bg-purple-50',
+        hover: 'hover:bg-purple-100',
+        icon: 'text-purple-600',
+        badge: 'bg-purple-600',
+      },
+      orange: {
+        bg: 'bg-orange-50',
+        hover: 'hover:bg-orange-100',
+        icon: 'text-orange-600',
+        badge: 'bg-orange-600',
+      },
+    };
+    return colors[color] || colors.blue;
+  };
 
   if (loading || !user) {
     return (
@@ -42,14 +114,53 @@ export const ModerationDashboard: React.FC = () => {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto p-4 md:p-8">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-8 text-center">
-          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
-            <Shield size={32} />
-          </div>
-          <h2 className="text-xl font-bold text-slate-800 mb-2">Bem-vindo à Moderação</h2>
-          <p className="text-slate-500 max-w-md mx-auto">
-            Esta área é dedicada para moderadores e administradores gerenciarem denúncias e aprovações da plataforma.
-          </p>
+        {/* Analytics Row */}
+        <div className="grid grid-cols-4 gap-3 md:gap-4 mb-6">
+          {analyticsData.map((data, index) => (
+            <AnalyticsCard
+              key={index}
+              icon={data.icon}
+              count={data.count}
+              label={data.label}
+              color={data.color}
+            />
+          ))}
+        </div>
+
+        {/* Navigation Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {navigationCards.map((card) => {
+            const Icon = card.icon;
+            const colors = getColorClasses(card.color);
+
+            return (
+              <button
+                key={card.title}
+                onClick={() => router.push(card.href)}
+                className={`${colors.bg} ${colors.hover} rounded-xl border border-slate-200 p-6 transition-all hover:shadow-md text-left group`}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`p-3 rounded-lg bg-white shadow-sm`}>
+                    <Icon className={colors.icon} size={28} />
+                  </div>
+                  <span className={`${colors.badge} text-white text-sm font-bold px-3 py-1 rounded-full`}>
+                    {card.count}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-1">{card.title}</h3>
+                    <p className="text-sm text-slate-600">Clique para acessar</p>
+                  </div>
+                  <ChevronRight
+                    className="text-slate-400 group-hover:text-slate-600 transition-colors"
+                    size={24}
+                  />
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
