@@ -10,6 +10,7 @@ interface ValidationResult {
 
 export async function verifyAuth(
   request: Request,
+  allowedTypes: string[] = [],
   allowedRoles: string[] = []
 ): Promise<ValidationResult> {
   try {
@@ -29,8 +30,12 @@ export async function verifyAuth(
       return { errorResponse: NextResponse.json({ error: 'User profile not found' }, { status: 404 }) };
     }
 
-    if (allowedRoles.length > 0 && !allowedRoles.includes(userProfile.type)) {
-      return { errorResponse: NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 }) };
+    if (allowedTypes.length > 0 && !allowedTypes.includes(userProfile.type)) {
+      return { errorResponse: NextResponse.json({ error: 'Forbidden: Insufficient permissions (Type)' }, { status: 403 }) };
+    }
+
+    if (allowedRoles.length > 0 && !allowedRoles.includes(userProfile.role)) {
+      return { errorResponse: NextResponse.json({ error: 'Forbidden: Insufficient permissions (Role)' }, { status: 403 }) };
     }
 
     return { userProfile };
@@ -43,10 +48,10 @@ export async function verifyAuth(
 export async function validateCompanyRequest(
   request: Request,
   cnpj: string,
-  allowedRoles: string[] = []
+  allowedTypes: string[] = []
 ): Promise<ValidationResult> {
   try {
-    const { userProfile, errorResponse } = await verifyAuth(request, allowedRoles);
+    const { userProfile, errorResponse } = await verifyAuth(request, allowedTypes);
 
     if (errorResponse) {
       return { errorResponse };

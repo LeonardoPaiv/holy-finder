@@ -78,7 +78,9 @@ export interface Post {
   updatedAt?: Date;
 }
 
-export type UserType = 'inactive' | 'comum' | 'institution admin' | 'moderator' | 'super admin';
+export type UserType = 'inactive' | 'comum' | 'institution admin';
+
+export type UserRole = 'basic' | 'moderator' | 'super admin';
 
 export interface User {
   _id: string;
@@ -86,6 +88,7 @@ export interface User {
   fullName: string;
   institution: string;
   type: UserType;
+  role: UserRole;
 }
 
 export enum ReportType {

@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { User } from '../../types';
-import { UserType } from './common';
+import { UserType, UserRole } from './common';
 
 const UserSchema = new Schema<User>({
     email: { type: String, required: true, unique: true },
@@ -11,6 +11,12 @@ const UserSchema = new Schema<User>({
         enum: Object.values(UserType),
         required: true,
         default: UserType.INACTIVE
+    },
+    role: {
+        type: String,
+        enum: Object.values(UserRole),
+        required: true,
+        default: UserRole.BASIC
     }
 }, {
     timestamps: true

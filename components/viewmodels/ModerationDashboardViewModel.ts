@@ -14,7 +14,7 @@ export const useModerationDashboardViewModel = () => {
         return;
       }
 
-      const isModerator = user.type === 'moderator' || user.type === 'super admin';
+      const isModerator = user.role === 'moderator' || user.role === 'super admin';
       if (!isModerator) {
         router.push(ROUTES.INSTITUTION.DASHBOARD);
       }

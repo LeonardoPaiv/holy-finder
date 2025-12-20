@@ -13,7 +13,7 @@ export const ModerationDashboard: React.FC = () => {
     );
   }
 
-  const isModerator = user.type === 'moderator' || user.type === 'super admin';
+  const isModerator = user.role === 'moderator' || user.role === 'super admin';
   if (!isModerator) {
     return null; // Will redirect in ViewModel
   }

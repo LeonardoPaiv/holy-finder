@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { UserService } from '@/lib/services/UserService';
 import { CompanyService } from '@/lib/services/CompanyService';
 import dbConnect from '@/lib/dbConnect';
-import { UserType } from '@/lib/models/common';
+import { UserType, UserRole } from '@/lib/models/common';
 
 export async function POST(request: NextRequest) {
     await dbConnect();
@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
             fullName,
             institution,
             type: isNew ? UserType.INSTITUTION_ADMIN : UserType.INACTIVE,
+            role: UserRole.BASIC,
         });
         
         return NextResponse.json(newUser, { status: 201 });
