@@ -74,13 +74,23 @@ export const InstitutionDashboard: React.FC = () => {
       onClick: () => handleNavigation('/institution/users'),
       disabled: isInactive
     }] : []),
-    {
+    ...(user?.type === 'moderator' || user?.type === 'super admin' ? [{
       icon: <Shield size={32} />,
-      title: 'Ajude na Moderação',
-      description: 'Contribua para manter a comunidade segura.',
-      onClick: () => {},
-      disabled: true
-    },
+      title: 'Área da moderação',
+      description: 'Acesse o painel de moderação para gerenciar denúncias e aprovações.',
+      onClick: () => handleNavigation('/institution/moderation'),
+      disabled: false
+    }] : []),
+    ...(user?.type === 'institution admin' ? [{
+      icon: <Shield size={32} />,
+      title: 'Inscrever a Moderador',
+      description: 'Candidate-se para ajudar na moderação da comunidade.',
+      onClick: () => {
+        // Placeholder for now
+        alert('Funcionalidade em breve!');
+      },
+      disabled: false
+    }] : []),
   ];
 
   return (

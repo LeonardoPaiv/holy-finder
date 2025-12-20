@@ -6,6 +6,7 @@ export const ROUTES = {
     LOGIN: '/institution/login',
     DASHBOARD: '/institution/dashboard',
     SIGNUP: '/institution/signup',
+    MODERATION: '/institution/moderation',
   },
 };
 
