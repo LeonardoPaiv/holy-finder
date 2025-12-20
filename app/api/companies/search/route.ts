@@ -8,6 +8,8 @@ export async function GET(request: NextRequest) {
     const lng = parseFloat(searchParams.get('lng') || '0');
     const limit = parseInt(searchParams.get('limit') || '5', 10);
     const type = searchParams.get('type') || undefined;
+    const active = searchParams.get('active');
+    const isActive = !active || active === 'true';
 
     if (!q) {
         return NextResponse.json({ error: 'Query parameter "q" is required' }, { status: 400 });
@@ -19,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     try {
         const service = new CompanyService();
-        const companies = await service.searchCompanies(q, lat, lng, limit, type);
+        const companies = await service.searchCompanies(q, lat, lng, limit, type, isActive);
         return NextResponse.json(companies);
     } catch (error) {
         console.error('Error searching companies:', error);

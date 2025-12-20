@@ -1,4 +1,4 @@
-import { Company } from '../types';
+import { Company, PaginatedResult } from '../types';
 import Cookies from 'js-cookie';
 
 export const CompanyService = {
@@ -36,9 +36,9 @@ export const CompanyService = {
         }
     },
 
-    searchCompanies: async (q: string, lat: number, lng: number, limit: number = 5, type?: string): Promise<Company[]> => {
+    searchCompanies: async (q: string, lat: number, lng: number, limit: number = 5, type?: string, active: boolean = true): Promise<Company[]> => {
         try {
-            let url = `/api/companies/search?q=${encodeURIComponent(q)}&lat=${lat}&lng=${lng}&limit=${limit}`;
+            let url = `/api/companies/search?q=${encodeURIComponent(q)}&lat=${lat}&lng=${lng}&limit=${limit}&active=${active}`;
             if (type) {
                 url += `&type=${encodeURIComponent(type)}`;
             }
@@ -179,4 +179,61 @@ export const CompanyService = {
         if (!response.ok) throw new Error('Failed to update user role');
         return await response.json();
     },
+
+     getInactiveCompanies: async (page: number = 1, limit: number = 10): Promise<PaginatedResult<Company>> => {
+    try {
+      const token = Cookies.get('sb-access-token');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`/api/moderation/companies?page=${page}&limit=${limit}`, {
+        method: 'GET',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch inactive companies');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching inactive companies:', error);
+      throw error;
+    }
+  },
+
+  toggleCompanyActive: async (cnpj: string, active: boolean): Promise<Company> => {
+    try {
+      const token = Cookies.get('sb-access-token');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`/api/moderation/companies/${cnpj}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ active }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to toggle company status');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error toggling company status:', error);
+      throw error;
+    }
+  },
 };

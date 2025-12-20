@@ -6,12 +6,14 @@ interface UseCompanySearchViewModelProps {
     userLocation: { lat: number; lng: number } | null;
     mapCenter: { lat: number; lng: number } | undefined;
     onSelectCompany?: (company: Company) => void;
+    active?: boolean;
 }
 
 export const useCompanySearchViewModel = ({
     userLocation,
     mapCenter,
-    onSelectCompany
+    onSelectCompany,
+    active = true
 }: UseCompanySearchViewModelProps) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<Company[]>([]);
@@ -29,7 +31,7 @@ export const useCompanySearchViewModel = ({
                 const lng = userLocation?.lng || mapCenter?.lng || -47.8919;
 
                 try {
-                    const companies = await CompanyService.searchCompanies(query, lat, lng);
+                    const companies = await CompanyService.searchCompanies(query, lat, lng, 5, undefined, active);
                     setResults(companies);
                     setShowResults(true);
                 } catch (error) {

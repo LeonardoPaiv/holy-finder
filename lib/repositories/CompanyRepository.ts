@@ -52,7 +52,7 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
         return this.model.find(query).limit(limit);
     }
 
-    async searchByName(name: string, lat: number, lng: number, limit: number = 5, type?: string): Promise<CompanyDocument[]> {
+    async searchByName(name: string, lat: number, lng: number, limit: number = 5, type?: string, active: boolean = true): Promise<CompanyDocument[]> {
         const query: any = {
             name: { $regex: createDiacriticRegex(name) },
             geo: {
@@ -63,7 +63,7 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
                     }
                 }
             },
-            active: true
+            ...active && { active }
         };
 
         if (type) {
@@ -82,7 +82,7 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
         const skip = (page - 1) * limit;
 
         const [data, total] = await Promise.all([
-            this.model.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+            this.model.find(query).skip(skip).limit(limit).sort({ updatedAt: -1 }),
             this.model.countDocuments(query)
         ]);
 
