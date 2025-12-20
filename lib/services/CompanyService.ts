@@ -96,4 +96,8 @@ export class CompanyService extends BaseService<CompanyDocument> {
         const DEFAULT_NAME = "Nova Instituição";
         return (this.repository as CompanyRepository).findInactiveCompanies(page, limit, DEFAULT_NAME);
     }
+
+    async toggleCompanyActive(cnpj: string, active: boolean): Promise<CompanyDocument | null> {
+        return (this.repository as CompanyRepository).updateActiveStatus(cnpj, active);
+    }
 }

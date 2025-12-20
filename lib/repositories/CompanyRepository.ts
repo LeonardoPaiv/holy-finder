@@ -97,4 +97,12 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
             }
         };
     }
+
+    async updateActiveStatus(cnpj: string, active: boolean): Promise<CompanyDocument | null> {
+        return this.model.findByIdAndUpdate(
+            cnpj,
+            { active },
+            { new: true }
+        );
+    }
 }
