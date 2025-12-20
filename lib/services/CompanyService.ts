@@ -1,6 +1,6 @@
 import { BaseService } from './BaseService';
 import { CompanyRepository } from '../repositories/CompanyRepository';
-import { Company as ICompany } from '../../types';
+import { Company as ICompany, PaginatedResult } from '../../types';
 import { Document } from 'mongoose';
 import { Religions } from '../models/common';
 
@@ -90,5 +90,10 @@ export class CompanyService extends BaseService<CompanyDocument> {
         }
 
         return response.json();
+    }
+
+    async getInactiveCompanies(page: number = 1, limit: number = 10): Promise<PaginatedResult<CompanyDocument>> {
+        const DEFAULT_NAME = "Nova Instituição";
+        return (this.repository as CompanyRepository).findInactiveCompanies(page, limit, DEFAULT_NAME);
     }
 }

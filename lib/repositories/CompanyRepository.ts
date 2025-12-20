@@ -1,6 +1,6 @@
 import { BaseRepository } from './BaseRepository';
 import Company from '../models/Company';
-import { Company as ICompany } from '../../types';
+import { Company as ICompany, PaginatedResult } from '../../types';
 import { Document } from 'mongoose';
 import { createDiacriticRegex } from '../utils/stringUtils';
 
@@ -71,5 +71,30 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
         }
 
         return this.model.find(query, '_id name geo type').limit(limit);
+    }
+
+    async findInactiveCompanies(page: number, limit: number, defaultName: string): Promise<PaginatedResult<CompanyDocument>> {
+        const query = {
+            active: false,
+            name: { $ne: defaultName }
+        };
+
+        const skip = (page - 1) * limit;
+
+        const [data, total] = await Promise.all([
+            this.model.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+            this.model.countDocuments(query)
+        ]);
+
+        return {
+            data,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasMore: page * limit < total
+            }
+        };
     }
 }
