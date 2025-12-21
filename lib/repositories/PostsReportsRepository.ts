@@ -26,7 +26,7 @@ export class PostsReportsRepository extends BaseRepository<PostsReportsDocument>
         );
     }
 
-    async countByStatus(minReports: number = 1): Promise<number> {
-        return this.model.countDocuments({ count: { $gte: minReports } });
+    async countAll(): Promise<number> {
+        return this.model.countDocuments();
     }
 }

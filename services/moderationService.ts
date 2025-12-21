@@ -6,6 +6,7 @@ export interface ModerationStatus {
   activeUsers: number;
   totalPosts: number;
   pendingReports: number;
+  postsWithReports: number;
 }
 
 export const ModerationService = {

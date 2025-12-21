@@ -28,7 +28,7 @@ export const useModerationDashboardViewModel = () => {
     },
     {
       title: 'Gerenciamento de posts',
-      count: 0,
+      count: status?.postsWithReports || 0,
       icon: FileText,
       href: '#',
       color: 'purple',
