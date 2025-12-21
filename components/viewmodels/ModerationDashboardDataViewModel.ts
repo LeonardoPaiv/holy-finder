@@ -14,7 +14,7 @@ export const useModerationDashboardViewModel = () => {
   const navigationCards = [
     {
       title: 'Instituições para análise',
-      count: status?.pendingReports || 0,
+      count: status?.inactiveCompanies || 0,
       icon: Building2,
       href: '/institution/moderation/companies',
       color: 'blue',

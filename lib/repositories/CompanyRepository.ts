@@ -106,7 +106,25 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
         );
     }
 
-    async countActive(): Promise<number> {
-        return this.model.countDocuments({ active: true });
+    async countByStatus(): Promise<{ active: number; inactive: number }> {
+        const result = await this.model.aggregate([
+            {
+                $group: {
+                    _id: '$active',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const counts = { active: 0, inactive: 0 };
+        result.forEach((item) => {
+            if (item._id === true) {
+                counts.active = item.count;
+            } else {
+                counts.inactive = item.count;
+            }
+        });
+
+        return counts;
     }
 }

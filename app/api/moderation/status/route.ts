@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
         }
 
         // 2. Fetch all counts in parallel using Promise.all
-        const [activeCompanies, activeUsers, totalPosts, pendingReports] = await Promise.all([
-            new CompanyRepository().countActive(),
+        const [companyCounts, activeUsers, totalPosts, pendingReports] = await Promise.all([
+            new CompanyRepository().countByStatus(),
             new UserRepository().countActive(),
             new PostRepository().countAll(),
             new ReportRepository().countPending(),
@@ -27,7 +27,8 @@ export async function GET(request: NextRequest) {
 
         // 3. Return status
         return NextResponse.json({
-            activeCompanies,
+            activeCompanies: companyCounts.active,
+            inactiveCompanies: companyCounts.inactive,
             activeUsers,
             totalPosts,
             pendingReports,

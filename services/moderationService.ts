@@ -2,6 +2,7 @@ import Cookies from 'js-cookie';
 
 export interface ModerationStatus {
   activeCompanies: number;
+  inactiveCompanies: number;
   activeUsers: number;
   totalPosts: number;
   pendingReports: number;
