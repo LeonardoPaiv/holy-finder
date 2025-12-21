@@ -103,6 +103,13 @@ export enum ReportStatus {
   REJECTED = 'REJECTED'
 }
 
+export interface PostsReports {
+  post: string;
+  postCreator: string;
+  count: number;
+  reports: string[];
+}
+
 export interface PaginatedResult<T> {
   data: T[];
   pagination: {
