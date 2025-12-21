@@ -1,52 +1,63 @@
+import { useState } from 'react';
 import { Post } from '@/types';
-import toast from 'react-hot-toast';
 
 export const useFeedPostCardViewModel = (post: Post & { cnpj?: { _id: string; name: string } }) => {
-  const formatDate = (date: Date | string | undefined) => {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+
+  const formatDate = (dateString: Date | string | undefined) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInHours < 1) {
+      return 'Agora';
+    } else if (diffInHours < 24) {
+      return `${diffInHours}h atrás`;
+    } else if (diffInDays === 1) {
+      return 'Ontem';
+    } else if (diffInDays < 7) {
+      return `${diffInDays} dias atrás`;
+    } else {
+      return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
   };
 
   const handleShare = async () => {
-    const origin = process.env.NEXT_PUBLIC_APP_URL;
-    const shareUrl = `${origin}/feed?postId=${post._id}`;
-    const shareData = {
-      title: `Post de ${post.cnpj?.name || 'Instituição'}`,
-      text: post.description.substring(0, 100) + (post.description.length > 100 ? '...' : ''),
-      url: shareUrl,
-    };
-
-    // Try native share API (mobile)
     if (navigator.share) {
       try {
-        await navigator.share(shareData);
+        await navigator.share({
+          title: post.cnpj?.name || 'Post',
+          text: post.description || 'Confira este post',
+          url: window.location.href,
+        });
       } catch (error) {
-        // User cancelled or error occurred
-        if ((error as Error).name !== 'AbortError') {
+        if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Error sharing:', error);
         }
       }
-    } else {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success('Link copiado para a área de transferência!');
-      } catch (error) {
-        console.error('Error copying to clipboard:', error);
-        toast.error('Erro ao copiar link');
-      }
     }
+  };
+
+  const handleOpenReportDialog = () => {
+    setIsReportDialogOpen(true);
+  };
+
+  const handleCloseReportDialog = () => {
+    setIsReportDialogOpen(false);
   };
 
   return {
     formatDate,
     handleShare,
+    isReportDialogOpen,
+    handleOpenReportDialog,
+    handleCloseReportDialog,
   };
 };
