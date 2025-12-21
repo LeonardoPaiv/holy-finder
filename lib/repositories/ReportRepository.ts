@@ -5,4 +5,8 @@ export class ReportRepository extends BaseRepository<ReportDocument> {
     constructor() {
         super(Report);
     }
+
+    async countPending(): Promise<number> {
+        return this.model.countDocuments({ status: 'PENDING' });
+    }
 }

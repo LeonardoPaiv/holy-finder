@@ -105,4 +105,8 @@ export class CompanyRepository extends BaseRepository<CompanyDocument> {
             { new: true }
         );
     }
+
+    async countActive(): Promise<number> {
+        return this.model.countDocuments({ active: true });
+    }
 }

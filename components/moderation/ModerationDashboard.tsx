@@ -1,51 +1,14 @@
 import React from 'react';
-import { Shield, ArrowLeft, Building2, Users, FileText, AlertTriangle, ChevronRight } from 'lucide-react';
-import { useModerationDashboardViewModel } from '@/components/viewmodels/ModerationDashboardViewModel';
+import { Shield, ArrowLeft, ChevronRight } from 'lucide-react';
+import { useModerationDashboardViewModel as useAuthViewModel } from '@/components/viewmodels/ModerationDashboardViewModel';
+import { useModerationDashboardViewModel } from '@/components/viewmodels/ModerationDashboardDataViewModel';
 import { useRouter } from 'next/navigation';
 import { AnalyticsCard } from './AnalyticsCard';
 
 export const ModerationDashboard: React.FC = () => {
-  const { user, loading, handleBack } = useModerationDashboardViewModel();
+  const { user, loading, handleBack } = useAuthViewModel();
+  const { analyticsData, navigationCards, loadingStatus } = useModerationDashboardViewModel();
   const router = useRouter();
-
-  // Mock data - will be replaced with real data later
-  const analyticsData = [
-    { icon: Building2, count: 142, label: 'Instituições Ativas', color: 'blue' },
-    { icon: Users, count: 1247, label: 'Usuários Ativos', color: 'green' },
-    { icon: FileText, count: 3891, label: 'Posts Publicados', color: 'purple' },
-    { icon: AlertTriangle, count: 23, label: 'Reports Pendentes', color: 'orange' },
-  ];
-
-  const navigationCards = [
-    {
-      title: 'Instituições para análise',
-      count: 15,
-      icon: Building2,
-      href: '/institution/moderation/companies',
-      color: 'blue',
-    },
-    {
-      title: 'Gerenciamento de usuários',
-      count: 8,
-      icon: Users,
-      href: '#',
-      color: 'green',
-    },
-    {
-      title: 'Gerenciamento de posts',
-      count: 42,
-      icon: FileText,
-      href: '#',
-      color: 'purple',
-    },
-    {
-      title: 'Visualizar reports',
-      count: 23,
-      icon: AlertTriangle,
-      href: '#',
-      color: 'orange',
-    },
-  ];
 
   const getColorClasses = (color: string) => {
     const colors: Record<string, { bg: string; hover: string; icon: string; badge: string }> = {
@@ -116,15 +79,28 @@ export const ModerationDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto p-4 md:p-8">
         {/* Analytics Row */}
         <div className="grid grid-cols-4 gap-3 md:gap-4 mb-6">
-          {analyticsData.map((data, index) => (
-            <AnalyticsCard
-              key={index}
-              icon={data.icon}
-              count={data.count}
-              label={data.label}
-              color={data.color}
-            />
-          ))}
+          {loadingStatus ? (
+            // Loading skeleton
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="bg-white rounded-lg md:rounded-xl shadow-sm border border-slate-200 p-3 md:p-6 animate-pulse">
+                <div className="flex items-center justify-between mb-2 md:mb-3">
+                  <div className="w-5 h-5 bg-slate-200 rounded"></div>
+                  <div className="w-12 h-6 md:w-16 md:h-8 bg-slate-200 rounded"></div>
+                </div>
+                <div className="w-20 h-3 md:h-4 bg-slate-200 rounded"></div>
+              </div>
+            ))
+          ) : (
+            analyticsData.map((data, index) => (
+              <AnalyticsCard
+                key={index}
+                icon={data.icon}
+                count={data.count}
+                label={data.label}
+                color={data.color}
+              />
+            ))
+          )}
         </div>
 
         {/* Navigation Cards */}

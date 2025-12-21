@@ -228,4 +228,8 @@ export class PostRepository extends BaseRepository<PostDocument> {
             cnpj: company || { _id: (post as any).cnpj, name: 'Instituição' }
         } as any;
     }
+
+    async countAll(): Promise<number> {
+        return this.model.countDocuments();
+    }
 }

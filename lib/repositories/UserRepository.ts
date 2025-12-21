@@ -13,4 +13,8 @@ export class UserRepository extends BaseRepository<UserDocument> {
     async findByEmail(email: string): Promise<UserDocument | null> {
         return this.model.findOne({ email }).exec();
     }
+
+    async countActive(): Promise<number> {
+        return this.model.countDocuments({ type: { $ne: 'inactive' } });
+    }
 }
