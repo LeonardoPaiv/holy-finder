@@ -206,7 +206,7 @@ Quando identificar código duplicado ou similar, extraia para:
 export const getCompanyShareData = (cnpj: string, name: string) => ({
   title: `${name} - Holy Finder`,
   text: `Confira ${name} no Holy Finder`,
-  url: `${window.location.origin}/company/${cnpj}`
+  url: `${process.env.NEXT_PUBLIC_APP_URL}/company/${cnpj}`
 });
 
 export const shareContent = async (data: ShareData) => {
@@ -896,7 +896,7 @@ const handleShare = async () => {
     await navigator.share({
       title: `${company.name} - Holy Finder`,
       text: `Confira ${company.name}`,
-      url: `${window.location.origin}/company/${company._id}`
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/company/${company._id}`
     });
   }
 };
@@ -907,7 +907,7 @@ const shareCompany = async () => {
     await navigator.share({
       title: `${institution.name} - Holy Finder`,
       text: `Confira ${institution.name}`,
-      url: `${window.location.origin}/company/${institution._id}`
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/company/${institution._id}`
     });
   }
 };
@@ -927,7 +927,7 @@ export interface ShareData {
 export const getCompanyShareData = (cnpj: string, name: string): ShareData => ({
   title: `${name} - Holy Finder`,
   text: `Confira ${name} no Holy Finder`,
-  url: `${window.location.origin}/company/${cnpj}`
+  url: `${process.env.NEXT_PUBLIC_APP_URL}/company/${cnpj}`
 });
 
 export const shareContent = async (data: ShareData): Promise<void> => {

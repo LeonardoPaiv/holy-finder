@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Post } from '@/types';
+import { shareContent } from '@/utils/shareUtils';
 
 export const useFeedPostCardViewModel = (post: Post & { cnpj?: { _id: string; name: string } }) => {
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
@@ -30,19 +31,14 @@ export const useFeedPostCardViewModel = (post: Post & { cnpj?: { _id: string; na
   };
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: post.cnpj?.name || 'Post',
-          text: post.description || 'Confira este post',
-          url: window.location.href,
-        });
-      } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Error sharing:', error);
-        }
-      }
-    }
+    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/feed?postId=${post._id}`;
+    const shareData = {
+      title: post.cnpj?.name || 'Post',
+      text: post.description || 'Confira este post',
+      url: shareUrl,
+    };
+
+    shareContent(shareData);
   };
 
   const handleOpenReportDialog = () => {

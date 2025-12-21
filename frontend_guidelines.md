@@ -172,7 +172,7 @@ Quando identificar código duplicado ou similar, extraia para:
 export const getCompanyShareData = (cnpj: string, name: string) => ({
   title: `${name} - Holy Finder`,
   text: `Confira ${name} no Holy Finder`,
-  url: `${window.location.origin}/company/${cnpj}`
+  url: `${process.env.NEXT_PUBLIC_APP_URL}/company/${cnpj}`
 });
 
 export const shareContent = async (data: ShareData) => {

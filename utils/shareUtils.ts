@@ -25,7 +25,7 @@ export async function shareContent(data: ShareData): Promise<void> {
     // Fallback: copy to clipboard (desktop)
     try {
       await navigator.clipboard.writeText(data.url);
-      toast.success('Link copiado para a área de transferência!');
+      toast.success('Link copiado!');
     } catch (error) {
       console.error('Error copying to clipboard:', error);
       toast.error('Erro ao copiar link');
