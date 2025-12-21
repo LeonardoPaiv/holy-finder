@@ -14,6 +14,18 @@ export class PostsReportsRepository extends BaseRepository<PostsReportsDocument>
         return this.model.find({ postCreator: creatorId }).sort({ count: -1 });
     }
 
+    async addReport(postId: string, postCreatorId: string, reportComment: string): Promise<PostsReportsDocument | null> {
+        return this.model.findOneAndUpdate(
+            { post: postId },
+            {
+                $inc: { count: 1 },
+                $push: { reports: reportComment },
+                $setOnInsert: { postCreator: postCreatorId }
+            },
+            { new: true, upsert: true }
+        );
+    }
+
     async countByStatus(minReports: number = 1): Promise<number> {
         return this.model.countDocuments({ count: { $gte: minReports } });
     }
