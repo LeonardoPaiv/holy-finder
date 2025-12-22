@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
             new UserRepository().countActive(),
             new PostRepository().countAll(),
             new ReportRepository().countPending(),
-            new PostsReportsRepository().countAll(),
+            new PostsReportsRepository().countAllByStatus(),
         ]);
 
         // 3. Return status

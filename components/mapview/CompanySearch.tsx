@@ -8,13 +8,15 @@ interface CompanySearchProps {
     mapCenter?: { lat: number; lng: number };
     onSelectCompany?: (company: Company) => void;
     active?: boolean;
+    selectedCompany?: Company | null;
 }
 
 export const CompanySearch: React.FC<CompanySearchProps> = ({
     userLocation,
     mapCenter,
     onSelectCompany,
-    active = true
+    active = true,
+    selectedCompany = null
 }) => {
     const {
         query,
@@ -26,7 +28,7 @@ export const CompanySearch: React.FC<CompanySearchProps> = ({
         searchRef,
         handleSelectResult,
         clearSearch
-    } = useCompanySearchViewModel({ userLocation, mapCenter, onSelectCompany, active });
+    } = useCompanySearchViewModel({ userLocation, mapCenter, onSelectCompany, active, selectedCompany });
 
     return (
         <div ref={searchRef} className="relative pointer-events-auto z-[1000]">

@@ -7,19 +7,30 @@ interface UseCompanySearchViewModelProps {
     mapCenter: { lat: number; lng: number } | undefined;
     onSelectCompany?: (company: Company) => void;
     active?: boolean;
+    selectedCompany?: Company | null;
 }
 
 export const useCompanySearchViewModel = ({
     userLocation,
     mapCenter,
     onSelectCompany,
-    active = true
+    active = true,
+    selectedCompany = null
 }: UseCompanySearchViewModelProps) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<Company[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
+
+    // Update query when selectedCompany changes
+    useEffect(() => {
+        if (selectedCompany) {
+            setQuery(selectedCompany.name);
+        } else {
+            setQuery('');
+        }
+    }, [selectedCompany]);
 
     // Debounce search
     useEffect(() => {

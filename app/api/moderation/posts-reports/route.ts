@@ -44,7 +44,6 @@ export async function GET(request: NextRequest) {
             if (status) filters.status = status;
         }
         
-        console.log("🚀 ~ GET ~ filters:", filters)
         // 5. Fetch Posts Reports
         const service = new PostsReportsService();
         const result = await service.getPostsReports(filters, page, limit);

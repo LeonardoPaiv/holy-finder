@@ -28,7 +28,7 @@ export class PostsReportsRepository extends BaseRepository<PostsReportsDocument>
             {
                 $inc: { count: 1 },
                 $push: { reports: reportComment },
-                $setOnInsert: { postCreator: postCreatorId, cnpj }
+                $setOnInsert: { postCreator: postCreatorId, cnpj, status: ReportStatus.PENDING }
             },
             { new: true, upsert: true }
         );
@@ -63,7 +63,7 @@ export class PostsReportsRepository extends BaseRepository<PostsReportsDocument>
             this.model
                 .find(query)
                 .populate('post', 'description photo createdAt')
-                .populate('postCreator', 'name email')
+                .populate('postCreator', '_id fullName email')
                 .populate('cnpj', '_id name type')
                 .skip(skip)
                 .limit(limit)
@@ -83,7 +83,7 @@ export class PostsReportsRepository extends BaseRepository<PostsReportsDocument>
         };
     }
 
-    async countAll(): Promise<number> {
-        return this.model.countDocuments();
+    async countAllByStatus(status: ReportStatus = ReportStatus.PENDING): Promise<number> {
+        return this.model.countDocuments({ status });
     }
 }
