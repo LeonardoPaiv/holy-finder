@@ -7,7 +7,7 @@ import { translateSupabaseError } from '@/lib/supabaseErrors';
 
 export const useAuth = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [institution, setInstitution] = useState<any>(null);
 
@@ -21,6 +21,7 @@ export const useAuth = () => {
     
     try {
       // Fetch User
+      setLoading(true);
       const userResponse = await fetch(`/api/users/${email}`);
       if (!userResponse.ok) throw new Error('Failed to fetch user');
       const userProfile = await userResponse.json();
@@ -40,6 +41,7 @@ export const useAuth = () => {
       console.error('Error fetching user data:', error);
     } finally {
       fetchingRef.current = false;
+      setLoading(false);
     }
   };
 
