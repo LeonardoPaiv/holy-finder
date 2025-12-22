@@ -1,6 +1,5 @@
-import { COOKIES } from '@/lib/constants';
 import { ReportType } from '@/types';
-import jsCookie from 'js-cookie';
+import { api } from '@/lib/apiClient';
 
 interface CreateReportDTO {
   type: ReportType;
@@ -12,20 +11,7 @@ interface CreateReportDTO {
 export const ReportService = {
   createReport: async (data: CreateReportDTO) => {
     try {
-      const token = jsCookie.get(COOKIES.ACCESS_TOKEN);
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const response = await fetch('/api/reports', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(data),
-      });
+      const response = await api.post('/api/reports', data);
 
       if (!response.ok) {
         const errorData = await response.json();

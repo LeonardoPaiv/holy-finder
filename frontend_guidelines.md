@@ -479,6 +479,94 @@ import { shareContent } from '@/utils/shareUtils';
 import { CompanyService } from '@/services/companyService';
 ```
 
+### 4. API Client - Chamadas Autenticadas
+
+> [!IMPORTANT]
+> **Sempre use `apiClient` para requisições autenticadas**. Ele gerencia automaticamente o refresh de tokens quando recebe 401.
+
+#### **Quando usar `apiClient`**
+- Requisições que requerem autenticação (token de acesso)
+- Operações CRUD em recursos protegidos
+- Qualquer endpoint que retorna 401 quando o token expira
+
+#### **Quando usar `fetch` diretamente**
+- Requisições públicas (sem autenticação)
+- Endpoints que não requerem token
+- Casos especiais onde você precisa controle total
+
+#### **Uso Básico**
+```typescript
+// services/companyService.ts
+import { api } from '@/lib/apiClient';
+
+export const CompanyService = {
+  // GET request
+  getCompanyUsers: async (cnpj: string): Promise<any[]> => {
+    const response = await api.get(`/api/companies/${cnpj}/users`);
+    if (!response.ok) throw new Error('Failed to fetch users');
+    return await response.json();
+  },
+
+  // POST request
+  updateBasicInfo: async (cnpj: string, data: Partial<Company>): Promise<Company> => {
+    const response = await api.post(`/api/companies/${cnpj}/basic-info`, data);
+    if (!response.ok) throw new Error('Failed to update');
+    return await response.json();
+  },
+
+  // PATCH request
+  updateMissas: async (cnpj: string, missas: any[]): Promise<Company> => {
+    const response = await api.patch(`/api/companies/${cnpj}/missas`, { missas });
+    if (!response.ok) throw new Error('Failed to update missas');
+    return await response.json();
+  },
+};
+```
+
+#### **Upload de Arquivos (FormData)**
+```typescript
+import { apiClient } from '@/lib/apiClient';
+
+uploadPostImage: async (cnpj: string, file: File): Promise<{ url: string }> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await apiClient(`/api/companies/${cnpj}/posts/upload`, {
+    method: 'POST',
+    body: formData  // Não adicione Content-Type, o browser faz automaticamente
+  });
+
+  if (!response.ok) throw new Error('Failed to upload');
+  return await response.json();
+};
+```
+
+#### **Como Funciona o Token Refresh**
+
+1. **Request com Token Expirado** → Recebe 401
+2. **Interceptor Detecta 401** → Inicia refresh automaticamente
+3. **Refresh Token** → Obtém novo access token
+4. **Retry Request** → Reexecuta request original com novo token
+5. **Se Refresh Falhar** → Redireciona para `/institution/login`
+
+**Prevenção de Loops**:
+- Flag `isRefreshing` previne múltiplos refreshes simultâneos
+- Requests concorrentes aguardam o mesmo refresh
+- Apenas uma tentativa de retry por request
+
+#### **Opções Avançadas**
+```typescript
+// Pular autenticação (não adicionar Authorization header)
+const response = await apiClient('/api/public/data', { 
+  skipAuth: true 
+});
+
+// Pular retry em 401 (não tentar refresh)
+const response = await apiClient('/api/data', { 
+  skipRetry: true 
+});
+```
+
 ### 3. TypeScript
 
 Sempre defina tipos para:

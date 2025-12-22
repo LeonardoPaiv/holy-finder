@@ -1,15 +1,9 @@
-import Cookies from 'js-cookie';
+import { api } from '@/lib/apiClient';
 
 export const PostReportService = {
   reportPost: async (postId: string, comment: string): Promise<{ message: string; reportCount: number }> => {
     try {
-      const response = await fetch(`/api/posts/${postId}/report`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comment }),
-      });
+      const response = await api.post(`/api/posts/${postId}/report`, { comment });
 
       if (!response.ok) {
         const errorData = await response.json();

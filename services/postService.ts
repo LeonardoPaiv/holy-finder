@@ -1,6 +1,5 @@
-import { COOKIES } from '@/lib/constants';
-import { Post } from '../types';
-import Cookies from 'js-cookie';
+import { Post, PaginatedResult } from '../types';
+import { api, apiClient } from '@/lib/apiClient';
 
 interface PostsResponse {
   posts: (Post & {
@@ -9,13 +8,7 @@ interface PostsResponse {
       fullName: string;
     };
   })[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
-  };
+  pagination: PaginatedResult<Post>;
 }
 
 interface PostFilters {
@@ -39,11 +32,7 @@ export const PostService = {
       )
     });
 
-    const response = await fetch(`/api/companies/${cnpj}/posts?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-      }
-    });
+    const response = await api.get(`/api/companies/${cnpj}/posts?${params}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch posts');
@@ -53,15 +42,7 @@ export const PostService = {
   },
 
   createPost: async (cnpj: string, data: { description: string; photo: string }): Promise<Post> => {
-    const token = Cookies.get(COOKIES.ACCESS_TOKEN)
-    const response = await fetch(`/api/companies/${cnpj}/posts`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(data)
-    });
+    const response = await api.post(`/api/companies/${cnpj}/posts`, data);
 
     if (!response.ok) {
       throw new Error('Failed to create post');
@@ -74,11 +55,8 @@ export const PostService = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch(`/api/companies/${cnpj}/posts/upload`, {
+    const response = await apiClient(`/api/companies/${cnpj}/posts/upload`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-      },
       body: formData
     });
 

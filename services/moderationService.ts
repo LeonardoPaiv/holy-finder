@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie';
+import { api } from '@/lib/apiClient';
 
 export interface ModerationStatus {
   activeCompanies: number;
@@ -12,12 +12,7 @@ export interface ModerationStatus {
 export const ModerationService = {
   getStatus: async (): Promise<ModerationStatus | null> => {
     try {
-      const token = Cookies.get('sb-access-token');
-      const response = await fetch('/api/moderation/status', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await api.get('/api/moderation/status');
 
       if (response.ok) {
         return await response.json();

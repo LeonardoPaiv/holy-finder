@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie';
+import { api } from '@/lib/apiClient';
 import { PaginatedResult } from '@/types';
 
 export interface PostsReportsFilters {
@@ -15,8 +15,6 @@ export const PostsReportsService = {
     limit: number = 10
   ): Promise<PaginatedResult<any>> => {
     try {
-      const token = Cookies.get('sb-access-token');
-      
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
@@ -27,11 +25,7 @@ export const PostsReportsService = {
       if (filters.postCreator) params.append('postCreator', filters.postCreator);
       if (filters.status) params.append('status', filters.status);
 
-      const response = await fetch(`/api/moderation/posts-reports?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(`/api/moderation/posts-reports?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch posts reports');

@@ -1,5 +1,5 @@
 import { Company, PaginatedResult } from '../types';
-import Cookies from 'js-cookie';
+import { api } from '@/lib/apiClient';
 
 export const CompanyService = {
     getCompanies: async (lat: number, lng: number, radius: number = 5, limit: number = 30, type?: string): Promise<Company[]> => {
@@ -67,134 +67,62 @@ export const CompanyService = {
     },
 
     updateBasicInfo: async (cnpj: string, data: Partial<Company>): Promise<Company> => {
-        const response = await fetch(`/api/companies/${cnpj}/basic-info`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-            },
-            body: JSON.stringify(data)
-        });
+        const response = await api.patch(`/api/companies/${cnpj}/basic-info`, data);
         if (!response.ok) throw new Error('Failed to update basic info');
         return await response.json();
     },
 
     updateMissas: async (cnpj: string, missas: any[]): Promise<Company> => {
-        const response = await fetch(`/api/companies/${cnpj}/missas`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-            },
-            body: JSON.stringify({ missas })
-        });
+        const response = await api.patch(`/api/companies/${cnpj}/missas`, { missas });
         if (!response.ok) throw new Error('Failed to update missas');
         return await response.json();
     },
 
     updateEvents: async (cnpj: string, events: any[]): Promise<Company> => {
-        const response = await fetch(`/api/companies/${cnpj}/events`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-            },
-            body: JSON.stringify({ events })
-        });
+        const response = await api.patch(`/api/companies/${cnpj}/events`, { events });
         if (!response.ok) throw new Error('Failed to update events');
         return await response.json();
     },
 
     updateLocation: async (cnpj: string, coordinates: [number, number]): Promise<Company> => {
-        const response = await fetch(`/api/companies/${cnpj}/location`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-            },
-            body: JSON.stringify({ coordinates })
-        });
+        const response = await api.patch(`/api/companies/${cnpj}/location`, { coordinates });
         if (!response.ok) throw new Error('Failed to update location');
         return await response.json();
     },
 
     updateMapsUrl: async (cnpj: string, dedicatedMapsUrl: string): Promise<Company> => {
-        const response = await fetch(`/api/companies/${cnpj}/maps-url`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-            },
-            body: JSON.stringify({ dedicatedMapsUrl })
-        });
+        const response = await api.patch(`/api/companies/${cnpj}/maps-url`, { dedicatedMapsUrl });
         if (!response.ok) throw new Error('Failed to update maps URL');
         return await response.json();
     },
 
     updateCoverImage: async (cnpj: string, photoUrl: string): Promise<Company> => {
-        const response = await fetch(`/api/companies/${cnpj}/cover-image`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-            },
-            body: JSON.stringify({ photoUrl })
-        });
+        const response = await api.patch(`/api/companies/${cnpj}/cover-image`, { photoUrl });
         if (!response.ok) throw new Error('Failed to update cover image');
         return await response.json();
     },
 
     deleteCoverImage: async (cnpj: string): Promise<Company> => {
-        const response = await fetch(`/api/companies/${cnpj}/cover-image`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-            },
-            body: JSON.stringify({ photoUrl: null })
-        });
+        const response = await api.patch(`/api/companies/${cnpj}/cover-image`, { photoUrl: null });
         if (!response.ok) throw new Error('Failed to delete cover image');
         return await response.json();
     },
 
     getCompanyUsers: async (cnpj: string): Promise<any[]> => {
-        const response = await fetch(`/api/companies/${cnpj}/users`, {
-            headers: {
-                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-            }
-        });
+        const response = await api.get(`/api/companies/${cnpj}/users`);
         if (!response.ok) throw new Error('Failed to fetch users');
         return await response.json();
     },
 
     updateCompanyUserRole: async (cnpj: string, userId: string, type: string): Promise<any> => {
-        const response = await fetch(`/api/companies/${cnpj}/users`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Cookies.get('sb-access-token')}`
-            },
-            body: JSON.stringify({ _id: userId, type })
-        });
+        const response = await api.patch(`/api/companies/${cnpj}/users`, { _id: userId, type });
         if (!response.ok) throw new Error('Failed to update user role');
         return await response.json();
     },
 
      getInactiveCompanies: async (page: number = 1, limit: number = 10): Promise<PaginatedResult<Company>> => {
     try {
-      const token = Cookies.get('sb-access-token');
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const response = await fetch(`/api/moderation/companies?page=${page}&limit=${limit}`, {
-        method: 'GET',
-        headers,
-      });
+      const response = await api.get(`/api/moderation/companies?page=${page}&limit=${limit}`);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -210,20 +138,7 @@ export const CompanyService = {
 
   toggleCompanyActive: async (cnpj: string, active: boolean): Promise<Company> => {
     try {
-      const token = Cookies.get('sb-access-token');
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const response = await fetch(`/api/moderation/companies/${cnpj}`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({ active }),
-      });
+      const response = await api.patch(`/api/moderation/companies/${cnpj}`, { active });
 
       if (!response.ok) {
         const errorData = await response.json();
