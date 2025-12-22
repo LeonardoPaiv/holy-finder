@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface PostsReports {
     post: string; // ref to Post
     postCreator: string; // ref to User
+    cnpj: string; // ref to Company
     count: number;
     reports: string[]; // array of report IDs or descriptions
 }
@@ -27,6 +28,11 @@ const PostsReportsSchema = new Schema<PostsReportsDocument>({
         ref: 'User',
         required: true 
     },
+    cnpj: { 
+        type: String, 
+        ref: 'Company',
+        required: true 
+    },
     count: { 
         type: Number, 
         required: true,
@@ -41,8 +47,7 @@ const PostsReportsSchema = new Schema<PostsReportsDocument>({
 });
 
 // Índices para otimização de queries
-PostsReportsSchema.index({ post: 1 });
-PostsReportsSchema.index({ postCreator: 1 });
+// Note: post field already has an index due to unique: true
 PostsReportsSchema.index({ count: -1 }); // Para ordenar por quantidade de reports
 
 export const PostsReportsModel = mongoose.models.PostsReports || mongoose.model<PostsReportsDocument>('PostsReports', PostsReportsSchema);

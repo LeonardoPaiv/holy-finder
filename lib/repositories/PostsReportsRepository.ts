@@ -14,13 +14,13 @@ export class PostsReportsRepository extends BaseRepository<PostsReportsDocument>
         return this.model.find({ postCreator: creatorId }).sort({ count: -1 });
     }
 
-    async addReport(postId: string, postCreatorId: string, reportComment: string): Promise<PostsReportsDocument | null> {
+    async addReport(postId: string, postCreatorId: string, cnpj: string, reportComment: string): Promise<PostsReportsDocument | null> {
         return this.model.findOneAndUpdate(
             { post: postId },
             {
                 $inc: { count: 1 },
                 $push: { reports: reportComment },
-                $setOnInsert: { postCreator: postCreatorId }
+                $setOnInsert: { postCreator: postCreatorId, cnpj }
             },
             { new: true, upsert: true }
         );

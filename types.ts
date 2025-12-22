@@ -106,6 +106,7 @@ export enum ReportStatus {
 export interface PostsReports {
   post: string;
   postCreator: string;
+  cnpj: string;
   count: number;
   reports: string[];
 }

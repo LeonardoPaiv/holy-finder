@@ -196,7 +196,7 @@ export class PostRepository extends BaseRepository<PostDocument> {
         };
     }
 
-    async findById(postId: string): Promise<PostDocument | null> {
+    async findById(postId: string): Promise<PostDocument & { cnpj: { _id: string; name: string } } | null> {
         const post = await this.model
             .findById(postId)
             .select('-__v')
@@ -205,7 +205,7 @@ export class PostRepository extends BaseRepository<PostDocument> {
 
         if (!post) return null;
 
-        return post;
+        return post as unknown as PostDocument & { cnpj: { _id: string; name: string } };
     }
 
     async countAll(): Promise<number> {

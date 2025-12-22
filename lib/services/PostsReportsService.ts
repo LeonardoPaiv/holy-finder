@@ -12,7 +12,7 @@ export class PostsReportsService extends BaseService<PostsReportsDocument> {
     }
 
     async reportPost(postId: string, reportComment: string): Promise<PostsReportsDocument> {
-        // 1. Verificar se o post existe e obter o criador
+        // 1. Verificar se o post existe e obter o criador e cnpj
         const post = await this.postRepository.findById(postId);
         
         if (!post) {
@@ -23,6 +23,7 @@ export class PostsReportsService extends BaseService<PostsReportsDocument> {
         const result = await (this.repository as PostsReportsRepository).addReport(
             postId,
             post.creator,
+            post.cnpj._id,
             reportComment
         );
 
