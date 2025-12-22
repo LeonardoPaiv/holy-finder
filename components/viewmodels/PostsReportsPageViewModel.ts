@@ -3,6 +3,12 @@ import { PostsReportsService, PostsReportsFilters } from '@/services/postsReport
 import { Company } from '@/types';
 import toast from 'react-hot-toast';
 
+interface User {
+  _id: string;
+  fullName: string;
+  email: string;
+}
+
 export const usePostsReportsPageViewModel = () => {
   const [postsReports, setPostsReports] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +18,7 @@ export const usePostsReportsPageViewModel = () => {
 
   // Filters
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-  const [userId, setUserId] = useState('');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [status, setStatus] = useState('PENDING');
   const [postId, setPostId] = useState('');
 
@@ -25,7 +31,7 @@ export const usePostsReportsPageViewModel = () => {
         filters.postId = postId;
       } else {
         if (selectedCompany) filters.cnpj = selectedCompany._id;
-        if (userId) filters.postCreator = userId;
+        if (selectedUser) filters.postCreator = selectedUser._id;
         if (status) filters.status = status;
       }
 
@@ -44,15 +50,15 @@ export const usePostsReportsPageViewModel = () => {
 
   useEffect(() => {
     fetchPostsReports(page);
-  }, [page, selectedCompany, userId, status, postId]);
+  }, [page, selectedCompany, selectedUser, status, postId]);
 
   const handleCompanySelect = (company: Company) => {
     setSelectedCompany(company);
     setPage(1);
   };
 
-  const handleUserIdChange = (value: string) => {
-    setUserId(value);
+  const handleUserSelect = (user: User | null) => {
+    setSelectedUser(user);
     setPage(1);
   };
 
@@ -68,7 +74,7 @@ export const usePostsReportsPageViewModel = () => {
 
   const handleClearFilters = () => {
     setSelectedCompany(null);
-    setUserId('');
+    setSelectedUser(null);
     setStatus('PENDING');
     setPostId('');
     setPage(1);
@@ -86,7 +92,7 @@ export const usePostsReportsPageViewModel = () => {
     }
   };
 
-  const activeFiltersCount = [selectedCompany, userId, postId].filter(Boolean).length;
+  const activeFiltersCount = [selectedCompany, selectedUser, postId].filter(Boolean).length;
 
   return {
     postsReports,
@@ -95,12 +101,12 @@ export const usePostsReportsPageViewModel = () => {
     totalPages,
     hasMore,
     selectedCompany,
-    userId,
+    selectedUser,
     status,
     postId,
     activeFiltersCount,
     handleCompanySelect,
-    handleUserIdChange,
+    handleUserSelect,
     handleStatusChange,
     handlePostIdChange,
     handleClearFilters,
