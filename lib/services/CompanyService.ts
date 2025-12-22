@@ -1,5 +1,6 @@
 import { BaseService } from './BaseService';
 import { CompanyRepository } from '../repositories/CompanyRepository';
+import { PostRepository } from '../repositories/PostRepository';
 import { Company as ICompany, PaginatedResult } from '../../types';
 import { Document } from 'mongoose';
 import { Religions } from '../models/common';
@@ -7,8 +8,11 @@ import { Religions } from '../models/common';
 type CompanyDocument = ICompany & Document;
 
 export class CompanyService extends BaseService<CompanyDocument> {
+    private postRepository: PostRepository;
+
     constructor() {
         super(new CompanyRepository());
+        this.postRepository = new PostRepository();
     }
     async getCompaniesByRadius(lat: number, lng: number, radiusInKm: number = 5, type?: string): Promise<CompanyDocument[]> {
         return (this.repository as CompanyRepository).findByRadius(lat, lng, radiusInKm, type);
@@ -98,6 +102,14 @@ export class CompanyService extends BaseService<CompanyDocument> {
     }
 
     async toggleCompanyActive(cnpj: string, active: boolean): Promise<CompanyDocument | null> {
-        return (this.repository as CompanyRepository).updateActiveStatus(cnpj, active);
+        // 1. Update company active status
+        const company = await (this.repository as CompanyRepository).updateActiveStatus(cnpj, active);
+        
+        // 2. Update all posts from this company with the same active status
+        if (company) {
+            await this.postRepository.updatePostsActiveStatus(cnpj, active);
+        }
+        
+        return company;
     }
 }

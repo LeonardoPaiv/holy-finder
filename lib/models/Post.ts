@@ -17,7 +17,8 @@ const PostSchema = new Schema<Post>({
     description: { type: String, required: true },
     photo: { type: String, required: true },
     geo: { type: GeoSchema, required: true },
-    suspended: { type: Boolean, required: false }
+    suspended: { type: Boolean, required: false },
+    active: { type: Boolean, required: true }
 }, {
     timestamps: true
 });

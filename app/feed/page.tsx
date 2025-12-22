@@ -1,58 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 import { Filter, X } from 'lucide-react';
 import { useInfiniteFeedPosts } from '@/hooks/useInfiniteFeedPosts';
-import { useApp } from '@/components/AppContext';
 import FeedPostList from '@/components/feed/FeedPostList';
-
-import { Suspense } from 'react';
+import { PostNotFound } from '@/components/feed/PostNotFound';
+import { useFeedPageViewModel } from '@/components/viewmodels/FeedPageViewModel';
 
 function FeedContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { userLocation, feedFilters, setFeedFilters, companies } = useApp();
-  const [showFilters, setShowFilters] = useState(false);
-  
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Load filters from query params on mount
-  useEffect(() => {
-    const cnpj = searchParams.get('cnpj');
-    const postId = searchParams.get('postId');
-    
-    if (cnpj || postId) {
-      setFeedFilters({
-        cnpj: cnpj || undefined,
-        postId: postId || undefined,
-      });
-    }
-  }, [searchParams, setFeedFilters]);
-
-  // Update URL when filters change
-  useEffect(() => {
-    const params = new URLSearchParams();
-    
-    if (feedFilters.cnpj) {
-      params.set('cnpj', feedFilters.cnpj);
-    }
-    if (feedFilters.postId) {
-      params.set('postId', feedFilters.postId);
-    }
-
-    const queryString = params.toString();
-    const newUrl = queryString ? `/feed?${queryString}` : '/feed';
-    
-    // Only update if URL changed
-    if (window.location.pathname + window.location.search !== newUrl) {
-      router.replace(newUrl, { scroll: false });
-    }
-  }, [feedFilters, router]);
+  const {
+    mounted,
+    showFilters,
+    feedFilters,
+    companies,
+    activeFiltersCount,
+    hasFilters,
+    canShowPosts,
+    handleFilterChange,
+    handleClearFilters,
+    handleToggleFilters,
+    handleCloseFilters,
+  } = useFeedPageViewModel();
 
   const {
     posts,
@@ -64,25 +32,14 @@ function FeedContent() {
     refetch
   } = useInfiniteFeedPosts();
 
-  const handleFilterChange = (key: 'cnpj' | 'postId', value: string) => {
-    setFeedFilters({
-      ...feedFilters,
-      [key]: value || undefined
-    });
-  };
-
-  const handleClearFilters = () => {
-    setFeedFilters({});
-  };
-
   // Prevent hydration mismatch
   if (!mounted) {
     return null;
   }
 
-  const activeFiltersCount = Object.values(feedFilters).filter(Boolean).length;
-  const hasFilters = !!feedFilters.cnpj || !!feedFilters.postId;
-  const canShowPosts = hasFilters || !!userLocation;
+  // Check if searching for specific post and no posts found
+  const isSearchingPost = !!feedFilters.postId;
+  const noPostsFound = !isLoading && posts.length === 0 && isSearchingPost;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -93,7 +50,7 @@ function FeedContent() {
           
           {/* Filter Toggle Button */}
           <button
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={handleToggleFilters}
             className="flex items-center space-x-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
           >
             <Filter size={18} />
@@ -125,7 +82,7 @@ function FeedContent() {
                   </button>
                 )}
                 <button
-                  onClick={() => setShowFilters(false)}
+                  onClick={handleCloseFilters}
                   className="p-1 hover:bg-slate-100 rounded transition-colors"
                 >
                   <X size={20} />
@@ -170,8 +127,10 @@ function FeedContent() {
           </div>
         )}
 
-        {/* Posts */}
-        {!canShowPosts ? (
+        {/* Post Not Found Fallback */}
+        {noPostsFound ? (
+          <PostNotFound onClearFilters={handleClearFilters} />
+        ) : !canShowPosts ? (
           <div className="text-center py-12 bg-white rounded-lg border border-slate-200">
             <p className="text-slate-600">Ative sua localização ou selecione uma instituição</p>
             <p className="text-sm text-slate-500 mt-1">

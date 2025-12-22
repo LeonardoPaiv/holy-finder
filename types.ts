@@ -75,6 +75,7 @@ export interface Post {
   photo: string;
   geo: Geo;
   suspended?: boolean;
+  active: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

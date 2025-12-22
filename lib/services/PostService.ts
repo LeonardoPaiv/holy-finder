@@ -12,6 +12,7 @@ export interface CreatePostData {
     description: string;
     photo: string;
     geo: Geo;
+    active: boolean;
 }
 
 export class PostService extends BaseService<PostDocument> {

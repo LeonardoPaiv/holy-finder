@@ -47,7 +47,11 @@ export class PostRepository extends BaseRepository<PostDocument> {
         filters: PostFilters,
         options: PaginationOptions
     ): Promise<PaginatedResult<PostDocument>> {
-        const query: any = { cnpj: filters.cnpj };
+        const query: any = { 
+            cnpj: filters.cnpj,
+            active: true,
+            suspended: { $ne: true }
+        };
 
         if (filters.postId) {
             query._id = filters.postId;
@@ -101,6 +105,16 @@ export class PostRepository extends BaseRepository<PostDocument> {
         if (filters.lat !== undefined && filters.lng !== undefined) {
             const radiusInMeters = (filters.radius || 5) * 1000;
             
+            // Build query for geoNear
+            const geoQuery: any = {
+                active: true,
+                suspended: { $ne: true }
+            };
+            
+            if (filters.religion) {
+                geoQuery.type = filters.religion;
+            }
+            
             const pipeline: any[] = [
                 {
                     $geoNear: {
@@ -111,7 +125,7 @@ export class PostRepository extends BaseRepository<PostDocument> {
                         distanceField: 'distance',
                         maxDistance: radiusInMeters,
                         spherical: true,
-                        query: filters.religion ? { type: filters.religion } : {}
+                        query: geoQuery
                     }
                 },
                 { $sort: { createdAt: -1 } }
@@ -167,7 +181,10 @@ export class PostRepository extends BaseRepository<PostDocument> {
         }
 
         // For CNPJ filter, use regular query with populate (simpler and works fine)
-        const query: any = {};
+        const query: any = {
+            active: true,
+            suspended: { $ne: true }
+        };
         if (filters.cnpj) {
             query.cnpj = filters.cnpj;
         }
@@ -203,7 +220,10 @@ export class PostRepository extends BaseRepository<PostDocument> {
             .populate('cnpj', '_id name')
             .lean();
 
+            
         if (!post) return null;
+        if (post.active === false) return null;
+        if (post.suspended === true) return null;
 
         return post as unknown as PostDocument & { cnpj: { _id: string; name: string } };
     }
@@ -216,6 +236,14 @@ export class PostRepository extends BaseRepository<PostDocument> {
         const result = await this.model.updateMany(
             { creator: creatorId },
             { suspended: true }
+        );
+        return result.modifiedCount;
+    }
+
+    async updatePostsActiveStatus(cnpj: string, active: boolean): Promise<number> {
+        const result = await this.model.updateMany(
+            { cnpj },
+            { active }
         );
         return result.modifiedCount;
     }

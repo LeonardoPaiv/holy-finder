@@ -40,7 +40,8 @@ export async function POST(
       type: company.type,
       description,
       photo,
-      geo: company.geo
+      geo: company.geo,
+      active: company.active
     });
 
     return NextResponse.json(newPost, { status: 201 });
