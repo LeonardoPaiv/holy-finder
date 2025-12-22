@@ -30,7 +30,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
     } = useUserSearchViewModel({ onSelectUser, selectedUser });
 
     return (
-        <div ref={searchRef} className="relative pointer-events-auto z-[1000]">
+        <div ref={searchRef} className="relative pointer-events-auto z-10">
             <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200">
                 <Search className="text-slate-400" size={20} />
                 <input
@@ -52,7 +52,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
 
             {/* Results Dropdown */}
             {showResults && results.length > 0 && (
-                <div className="absolute z-[1001] w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+                <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
                     {results.map((user) => (
                         <button
                             key={user._id}
@@ -77,14 +77,14 @@ export const UserSearch: React.FC<UserSearchProps> = ({
 
             {/* Loading State */}
             {isSearching && (
-                <div className="absolute z-[1001] w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-200 p-4">
+                <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-200 p-4">
                     <p className="text-sm text-slate-500 text-center">Buscando...</p>
                 </div>
             )}
 
             {/* No Results */}
             {showResults && !isSearching && query.length >= 2 && results.length === 0 && (
-                <div className="absolute z-[1001] w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-200 p-4">
+                <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-200 p-4">
                     <p className="text-sm text-slate-500 text-center">Nenhum usuário encontrado</p>
                 </div>
             )}

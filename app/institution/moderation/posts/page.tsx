@@ -7,7 +7,9 @@ import { usePostsReportsPageViewModel } from '@/components/viewmodels/PostsRepor
 import { PostReportCard } from '@/components/moderation/PostReportCard';
 import { CompanySearch } from '@/components/mapview/CompanySearch';
 import { UserSearch } from '@/components/moderation/UserSearch';
+import { BanUserDialog } from '@/components/moderation/BanUserDialog';
 import { useApp } from '@/components/AppContext';
+import { useBanUser } from '@/hooks/useBanUser';
 
 export default function PostsModerationPage() {
   const router = useRouter();
@@ -31,6 +33,10 @@ export default function PostsModerationPage() {
     handleNextPage,
     handlePrevPage,
   } = usePostsReportsPageViewModel();
+
+  const { isDialogOpen, selectedUser: userToBan, openBanDialog, closeBanDialog, confirmBan } = useBanUser({
+    onSuccess: () => handleClearFilters(),
+  });
 
   const [showFilters, setShowFilters] = React.useState(true);
 
@@ -176,6 +182,7 @@ export default function PostsModerationPage() {
                 onFilterByUser={(user) => {
                   handleUserSelect(user);
                 }}
+                onBanUser={openBanDialog}
               />
             ))}
           </div>
@@ -218,6 +225,14 @@ export default function PostsModerationPage() {
           </div>
         )}
       </div>
+
+      {/* Ban User Dialog */}
+      <BanUserDialog
+        isOpen={isDialogOpen}
+        userName={userToBan?.fullName || ''}
+        onConfirm={confirmBan}
+        onClose={closeBanDialog}
+      />
     </div>
   );
 }

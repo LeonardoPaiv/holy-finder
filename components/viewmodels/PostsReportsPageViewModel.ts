@@ -78,6 +78,7 @@ export const usePostsReportsPageViewModel = () => {
     setStatus('PENDING');
     setPostId('');
     setPage(1);
+    fetchPostsReports();
   };
 
   const handleNextPage = () => {

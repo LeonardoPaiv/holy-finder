@@ -7,9 +7,10 @@ interface PostReportCardProps {
   postReport: any;
   onFilterByCompany?: (cnpj: string) => void;
   onFilterByUser?: (user: { _id: string; fullName: string; email: string }) => void;
+  onBanUser?: (user: { email: string; fullName: string }) => void;
 }
 
-export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFilterByCompany, onFilterByUser }) => {
+export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFilterByCompany, onFilterByUser, onBanUser }) => {
   const {
     visibleReports,
     hasMoreReports,
@@ -128,6 +129,22 @@ export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFi
               <AlertTriangle size={16} />
               <span className="text-sm font-semibold">{postReport.count} denúncias</span>
             </div>
+            
+            {/* Action Buttons */}
+            {onBanUser && postReport.postCreator && (
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={() => onBanUser({
+                    email: postReport.postCreator.email,
+                    fullName: postReport.postCreator.fullName
+                  })}
+                  className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-semibold rounded-lg transition-colors"
+                  title="Banir usuário"
+                >
+                  Banir
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

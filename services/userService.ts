@@ -1,17 +1,17 @@
-import { User } from '@/types';
+import { api } from '@/lib/apiClient';
 
-export class UserService {
-    static async getUserByEmail(email: string): Promise<User | null> {
-        try {
-            const response = await fetch(`/api/users/${email}`);
-            if (!response.ok) {
-                return null;
-            }
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error('Error fetching user:', error);
-            return null;
-        }
+export const UserService = {
+  banUser: async (email: string): Promise<{
+    user: any;
+    postsSuspended: number;
+    reportsResolved: number;
+  }> => {
+    const response = await api.post(`/api/users/${email}/ban`, {});
+    
+    if (!response.ok) {
+      throw new Error('Failed to ban user');
     }
-}
+    
+    return await response.json();
+  },
+};

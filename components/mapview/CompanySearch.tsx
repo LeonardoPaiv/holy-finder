@@ -31,7 +31,7 @@ export const CompanySearch: React.FC<CompanySearchProps> = ({
     } = useCompanySearchViewModel({ userLocation, mapCenter, onSelectCompany, active, selectedCompany });
 
     return (
-        <div ref={searchRef} className="relative pointer-events-auto z-[1000]">
+        <div ref={searchRef} className="relative pointer-events-auto z-10">
             <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200">
                 <Search className="text-slate-400" size={20} />
                 <input
@@ -54,7 +54,7 @@ export const CompanySearch: React.FC<CompanySearchProps> = ({
 
             {/* Search Results Dropdown */}
             {showResults && (results.length > 0 || isSearching) && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden max-h-[300px] overflow-y-auto z-[1001]">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden max-h-[300px] overflow-y-auto z-20">
                     {isSearching ? (
                         <div className="p-4 text-center text-slate-500 text-sm">
                             Buscando...
