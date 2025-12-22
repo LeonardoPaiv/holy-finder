@@ -2,6 +2,14 @@ import { BaseService } from './BaseService';
 import { PostsReportsRepository } from '../repositories/PostsReportsRepository';
 import { PostsReportsDocument } from '../models/PostsReports';
 import { PostRepository } from '../repositories/PostRepository';
+import { PaginatedResult, ReportStatus } from '../../types';
+
+interface PostsReportsFilters {
+    cnpj?: string;
+    postId?: string;
+    postCreator?: string;
+    status?: ReportStatus;
+}
 
 export class PostsReportsService extends BaseService<PostsReportsDocument> {
     private postRepository: PostRepository;
@@ -32,6 +40,14 @@ export class PostsReportsService extends BaseService<PostsReportsDocument> {
         }
 
         return result;
+    }
+
+    async getPostsReports(
+        filters: PostsReportsFilters,
+        page: number = 1,
+        limit: number = 10
+    ): Promise<PaginatedResult<PostsReportsDocument>> {
+        return (this.repository as PostsReportsRepository).findPaginated(filters, page, limit);
     }
 
     async getPostReports(postId: string): Promise<PostsReportsDocument | null> {
