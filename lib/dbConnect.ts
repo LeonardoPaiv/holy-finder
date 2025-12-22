@@ -20,6 +20,21 @@ if (!cached) {
     cached = global.mongoose = { conn: null, promise: null };
 }
 
+/**
+ * Load all models to ensure they are registered with Mongoose
+ * This prevents issues with populate and references
+ */
+function loadModels() {
+    // Import all models to ensure they are registered
+    // Order matters: load models without dependencies first
+    require('./models/common'); // Load common schemas first
+    require('./models/Company');
+    require('./models/User');
+    require('./models/Post');
+    require('./models/Report');
+    require('./models/PostsReports');
+}
+
 async function dbConnect() {
     const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -39,6 +54,8 @@ async function dbConnect() {
         };
 
         cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+            // Load all models after connection is established
+            loadModels();
             return mongoose.connection;
         });
     }

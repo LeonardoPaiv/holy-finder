@@ -75,9 +75,12 @@ Route (API) → Service → Repository → Model (MongoDB)
 ├── /utils               # Utilitários backend
 │   └── stringUtils.ts
 ├── apiUtils.ts          # Utilitários de API (auth, etc)
-├── dbConnect.ts         # Conexão MongoDB
+├── dbConnect.ts         # Conexão MongoDB (carrega todos os modelos)
 └── supabase.ts          # Cliente Supabase
 ```
+
+> [!IMPORTANT]
+> O arquivo `dbConnect.ts` carrega automaticamente todos os modelos para garantir que referências e populate funcionem corretamente.
 
 ---
 
@@ -123,6 +126,38 @@ export async function GET(request: NextRequest) {
 - Chamar serviços apropriados
 - Retornar respostas HTTP formatadas
 - Tratar erros HTTP (400, 401, 404, 500)
+
+### 1.1. Conexão com Banco de Dados
+
+> [!IMPORTANT]
+> Sempre use `dbConnect()` no início de cada API route para garantir conexão com MongoDB.
+
+```typescript
+// lib/dbConnect.ts
+import mongoose from 'mongoose';
+
+async function dbConnect() {
+  // Mantém cache da conexão para evitar múltiplas conexões
+  // Carrega automaticamente todos os modelos para garantir
+  // que referências (populate) funcionem corretamente
+}
+
+export default dbConnect;
+```
+
+**Por que carregar todos os modelos?**
+- Garante que `populate()` funcione em todas as referências
+- Evita erros de "Model not registered"
+- Inicializa índices corretamente
+- Previne problemas com hot reload em desenvolvimento
+
+**Ordem de carregamento**:
+1. `common.ts` - Schemas compartilhados
+2. `Company.ts` - Modelo sem dependências
+3. `User.ts` - Referencia Company
+4. `Post.ts` - Referencia Company e User
+5. `Report.ts` - Referencia Company e User
+6. `PostsReports.ts` - Referencia Post, User e Company
 
 ### 2. Services - Lógica de Negócio
 
