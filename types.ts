@@ -74,13 +74,14 @@ export interface Post {
   description: string;
   photo: string;
   geo: Geo;
+  suspended?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export type UserType = 'inactive' | 'comum' | 'institution admin';
 
-export type UserRole = 'basic' | 'moderator' | 'super admin';
+export type UserRole = 'basic' | 'moderator' | 'super admin' | 'banned';
 
 export interface User {
   _id: string; // UUID

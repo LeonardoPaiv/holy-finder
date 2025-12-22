@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import UserModel from '@/lib/models/User';
 import { supabase } from '@/lib/supabase';
-import { User } from '@/types';
+import { UserRole } from './models/common';
 
 interface ValidationResult {
   userProfile?: any;
@@ -28,6 +28,10 @@ export async function verifyAuth(
     const userProfile = await UserModel.findOne({ email: user.email });
     if (!userProfile) {
       return { errorResponse: NextResponse.json({ error: 'User profile not found' }, { status: 404 }) };
+    }
+
+    if (userProfile.role === UserRole.BANNED) {
+      return { errorResponse: NextResponse.json({ error: 'User is banned' }, { status: 403 }) };
     }
 
     if (allowedTypes.length > 0 && !allowedTypes.includes(userProfile.type)) {

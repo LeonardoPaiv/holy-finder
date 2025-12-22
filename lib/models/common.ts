@@ -21,7 +21,8 @@ export enum UserType {
 export enum UserRole {
     BASIC = 'basic',
     MODERATOR = 'moderator',
-    SUPER_ADMIN = 'super admin'
+    SUPER_ADMIN = 'super admin',
+    BANNED = 'banned'
 }
 
 export const EventSchema = new Schema({

@@ -211,4 +211,12 @@ export class PostRepository extends BaseRepository<PostDocument> {
     async countAll(): Promise<number> {
         return this.model.countDocuments();
     }
+
+    async suspendUserPosts(creatorId: string): Promise<number> {
+        const result = await this.model.updateMany(
+            { creator: creatorId },
+            { suspended: true }
+        );
+        return result.modifiedCount;
+    }
 }

@@ -47,6 +47,7 @@ export const useAuth = () => {
 
   useEffect(() => {
     const getSession = async () => {
+      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
@@ -54,6 +55,7 @@ export const useAuth = () => {
              fetchUserData(session.user.email);
         }
       }
+      setLoading(false);
     };
 
     getSession();

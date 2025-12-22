@@ -12,6 +12,7 @@ export const useInstitutionDashboardViewModel = () => {
   const [reportText, setReportText] = useState('');
 
   const isInactive = user?.type === 'inactive';
+  const isBanned = user?.role === 'banned';
 
   const handleLogout = async () => {
     await signOut();
@@ -50,6 +51,7 @@ export const useInstitutionDashboardViewModel = () => {
     isInactive,
     isReportDialogOpen,
     reportText,
+    isBanned,
     setReportText,
     handleLogout,
     handleReportSubmit,

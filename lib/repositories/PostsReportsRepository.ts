@@ -86,4 +86,12 @@ export class PostsReportsRepository extends BaseRepository<PostsReportsDocument>
     async countAllByStatus(status: ReportStatus = ReportStatus.PENDING): Promise<number> {
         return this.model.countDocuments({ status });
     }
+
+    async resolveUserReports(creatorId: string): Promise<number> {
+        const result = await this.model.updateMany(
+            { postCreator: creatorId, status: ReportStatus.PENDING },
+            { status: ReportStatus.SOLVED }
+        );
+        return result.modifiedCount;
+    }
 }

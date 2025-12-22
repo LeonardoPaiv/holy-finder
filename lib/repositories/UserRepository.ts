@@ -19,6 +19,18 @@ export class UserRepository extends BaseRepository<UserDocument> {
         return this.model.countDocuments({ type: { $ne: 'inactive' } });
     }
 
+    async updateUserStatus(
+        email: string,
+        type: string,
+        role: string
+    ): Promise<UserDocument | null> {
+        return this.model.findOneAndUpdate(
+            { email },
+            { type, role },
+            { new: true }
+        );
+    }
+
     async searchUsers(query: string, limit: number = 5): Promise<UserDocument[]> {
 
         const regexPattern = createDiacriticRegex(query);

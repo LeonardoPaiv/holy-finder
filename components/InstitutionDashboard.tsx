@@ -37,6 +37,7 @@ export const InstitutionDashboard: React.FC = () => {
     isInactive,
     isReportDialogOpen,
     reportText,
+    isBanned,
     setReportText,
     handleLogout,
     handleReportSubmit,
@@ -111,7 +112,7 @@ export const InstitutionDashboard: React.FC = () => {
       </div>
 
       {/* Inactive User Warning */}
-      {isInactive && (
+      {isInactive && !isBanned && (
         <div className="bg-orange-50 border-b border-orange-100 p-4">
           <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
@@ -128,6 +129,31 @@ export const InstitutionDashboard: React.FC = () => {
             <button
               onClick={handleOpenReportDialog}
               className="px-4 py-2 bg-white border border-orange-200 text-orange-700 font-bold text-sm rounded-lg hover:bg-orange-50 transition-colors shadow-sm whitespace-nowrap"
+            >
+              Reportar Problema
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Banned User Warning */}
+      {isBanned && (
+        <div className="bg-red-50 border-b border-red-100 p-4">
+          <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-red-100 rounded-full text-red-600 shrink-0">
+                <Shield size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-red-800">Conta Bloqueada</h3>
+                <p className="text-sm text-red-700 mt-1">
+                  Sua conta foi bloqueada por questões de segurança. Entre em contato com o suporte para mais informações.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleOpenReportDialog}
+              className="px-4 py-2 bg-white border border-red-200 text-red-700 font-bold text-sm rounded-lg hover:bg-red-50 transition-colors shadow-sm whitespace-nowrap"
             >
               Reportar Problema
             </button>
