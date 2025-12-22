@@ -1,14 +1,15 @@
 import React from 'react';
 import Image from 'next/image';
-import { AlertTriangle, User, Building2, Calendar, ChevronDown, ChevronUp, Copy, Search } from 'lucide-react';
+import { AlertTriangle, User, Building2, Calendar, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { usePostReportCardViewModel } from '../viewmodels/PostReportCardViewModel';
 
 interface PostReportCardProps {
   postReport: any;
   onFilterByCompany?: (cnpj: string) => void;
+  onFilterByUser?: (user: { _id: string; fullName: string; email: string }) => void;
 }
 
-export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFilterByCompany }) => {
+export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFilterByCompany, onFilterByUser }) => {
   const {
     visibleReports,
     hasMoreReports,
@@ -17,7 +18,6 @@ export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFi
     showFullDescription,
     handleToggleReports,
     handleToggleDescription,
-    handleCopyUserId,
   } = usePostReportCardViewModel(postReport.reports || []);
 
   const getStatusColor = (status: string) => {
@@ -78,16 +78,25 @@ export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFi
 
             {/* Creator Info */}
             <div className="flex items-center gap-2 text-sm text-slate-600">
-              <User size={16} className="text-slate-500" />
-              <span>{postReport.postCreator?.fullName || 'Usuário não encontrado'}</span>
-              {postReport.postCreator?._id && (
+              {onFilterByUser && postReport.postCreator?._id ? (
                 <button
-                  onClick={() => handleCopyUserId(postReport.postCreator._id)}
-                  className="p-1 hover:bg-slate-200 rounded transition-colors"
-                  title="Copiar ID do usuário"
+                  onClick={() => onFilterByUser({
+                    _id: postReport.postCreator._id,
+                    fullName: postReport.postCreator.fullName,
+                    email: postReport.postCreator.email
+                  })}
+                  className="flex items-center gap-2 hover:bg-slate-100 px-2 py-1 -mx-2 -my-1 rounded transition-colors group"
+                  title="Filtrar por usuário"
                 >
-                  <Copy size={14} className="text-slate-500" />
+                  <User size={16} className="text-green-500 group-hover:text-green-900" />
+                  <span className="group-hover:text-slate-800">{postReport.postCreator?.fullName || 'Usuário não encontrado'}</span>
+                  <Search size={14} className="text-green-500 group-hover:text-green-900" />
                 </button>
+              ) : (
+                <>
+                  <User size={16} className="text-slate-500" />
+                  <span>{postReport.postCreator?.fullName || 'Usuário não encontrado'}</span>
+                </>
               )}
             </div>
 

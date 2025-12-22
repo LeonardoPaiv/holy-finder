@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 
 export const usePostReportCardViewModel = (reports: string[]) => {
   const [showAllReports, setShowAllReports] = useState(false);
@@ -17,16 +16,6 @@ export const usePostReportCardViewModel = (reports: string[]) => {
     setShowFullDescription(!showFullDescription);
   };
 
-  const handleCopyUserId = async (userId: string) => {
-    try {
-      await navigator.clipboard.writeText(userId);
-      toast.success('ID copiado!');
-    } catch (error) {
-      console.error('Error copying user ID:', error);
-      toast.error('Erro ao copiar ID');
-    }
-  };
-
   return {
     visibleReports,
     hasMoreReports,
@@ -35,6 +24,5 @@ export const usePostReportCardViewModel = (reports: string[]) => {
     showFullDescription,
     handleToggleReports,
     handleToggleDescription,
-    handleCopyUserId,
   };
 };

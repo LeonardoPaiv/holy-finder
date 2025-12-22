@@ -169,6 +169,9 @@ export default function PostsModerationPage() {
                   };
                   handleCompanySelect(company as any);
                 }}
+                onFilterByUser={(user) => {
+                  handleUserSelect(user);
+                }}
               />
             ))}
           </div>
