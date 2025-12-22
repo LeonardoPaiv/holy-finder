@@ -109,6 +109,7 @@ export interface PostsReports {
   cnpj: string;
   count: number;
   reports: string[];
+  status: ReportStatus;
 }
 
 export interface PaginatedResult<T> {

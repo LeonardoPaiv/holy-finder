@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { ReportStatus } from '../../types';
 
 export interface PostsReports {
     post: string; // ref to Post
@@ -6,6 +7,7 @@ export interface PostsReports {
     cnpj: string; // ref to Company
     count: number;
     reports: string[]; // array of report IDs or descriptions
+    status: ReportStatus;
 }
 
 export interface PostsReportsDocument extends Omit<Document, '_id'>, PostsReports {
@@ -41,7 +43,13 @@ const PostsReportsSchema = new Schema<PostsReportsDocument>({
     reports: [{ 
         type: String,
         required: true
-    }]
+    }],
+    status: {
+        type: String,
+        enum: Object.values(ReportStatus),
+        required: true,
+        default: ReportStatus.PENDING
+    }
 }, { 
     timestamps: true 
 });
