@@ -1,6 +1,6 @@
 import { Model, Document, UpdateQuery } from 'mongoose';
 
-export abstract class BaseRepository<T extends Document> {
+export abstract class BaseRepository<T extends Document<any>> {
     constructor(protected readonly model: Model<T>) { }
 
     async create(data: Partial<T>): Promise<T> {

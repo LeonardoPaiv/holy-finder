@@ -1,7 +1,7 @@
 import { BaseRepository } from '../repositories/BaseRepository';
 import { Document, UpdateQuery } from 'mongoose';
 
-export abstract class BaseService<T extends Document> {
+export abstract class BaseService<T extends Document<any>> {
     constructor(protected readonly repository: BaseRepository<T>) { }
 
     async create(data: Partial<T>): Promise<T> {

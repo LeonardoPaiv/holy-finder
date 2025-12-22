@@ -178,27 +178,14 @@ export class PostRepository extends BaseRepository<PostDocument> {
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(options.limit)
+                .populate('cnpj', '_id name')
                 .select('-__v')
                 .lean(),
             this.model.countDocuments(query)
         ]);
 
-        // Manually populate company data
-        const populatedData = await Promise.all(
-            data.map(async (post: any) => {
-                const company = await this.model.db.collection('companies').findOne(
-                    { _id: post.cnpj },
-                    { projection: { _id: 1, name: 1 } }
-                );
-                return {
-                    ...post,
-                    cnpj: company || { _id: post.cnpj, name: 'Instituição' }
-                };
-            })
-        );
-
         return {
-            data: populatedData as any,
+            data,
             pagination: {
                 page: options.page,
                 limit: options.limit,
@@ -213,20 +200,12 @@ export class PostRepository extends BaseRepository<PostDocument> {
         const post = await this.model
             .findById(postId)
             .select('-__v')
+            .populate('cnpj', '_id name')
             .lean();
 
         if (!post) return null;
 
-        // Manually populate company data
-        const company = await this.model.db.collection('companies').findOne(
-            { _id: (post as any).cnpj },
-            { projection: { _id: 1, name: 1 } }
-        );
-
-        return {
-            ...post,
-            cnpj: company || { _id: (post as any).cnpj, name: 'Instituição' }
-        } as any;
+        return post;
     }
 
     async countAll(): Promise<number> {
