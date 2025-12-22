@@ -3,6 +3,10 @@ import { User } from '../../types';
 import { UserType, UserRole } from './common';
 
 const UserSchema = new Schema<User>({
+    _id: { 
+        type: String, 
+        default: () => crypto.randomUUID() 
+    },
     email: { type: String, required: true, unique: true },
     fullName: { type: String, required: true },
     institution: { type: String, required: true, ref: 'Company' },

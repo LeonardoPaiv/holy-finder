@@ -11,11 +11,15 @@ export interface IReport {
     updatedAt?: Date;
 }
 
-export interface ReportDocument extends IReport, Document {
-    _id: mongoose.Types.ObjectId;
+export interface ReportDocument extends Omit<Document, '_id'>, IReport {
+    _id: string; // UUID
 }
 
 const ReportSchema = new Schema<ReportDocument>({
+    _id: { 
+        type: String, 
+        default: () => crypto.randomUUID() 
+    },
     type: {
         type: String,
         enum: Object.values(ReportType),

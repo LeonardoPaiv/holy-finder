@@ -3,6 +3,10 @@ import { Post } from '../../types';
 import { GeoSchema, Religions } from './common';
 
 const PostSchema = new Schema<Post>({
+    _id: { 
+        type: String, 
+        default: () => crypto.randomUUID() 
+    },
     cnpj: { type: String, required: true, ref: 'Company' },
     creator: { type: String, required: true, ref: 'User' },
     type: {

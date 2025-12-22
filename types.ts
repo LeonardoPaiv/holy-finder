@@ -67,7 +67,7 @@ export interface Company {
 }
 
 export interface Post {
-  _id: string;
+  _id: string; // UUID
   cnpj: string;
   creator: string;
   type: CompanyType;
@@ -83,7 +83,7 @@ export type UserType = 'inactive' | 'comum' | 'institution admin';
 export type UserRole = 'basic' | 'moderator' | 'super admin';
 
 export interface User {
-  _id: string;
+  _id: string; // UUID
   email: string;
   fullName: string;
   institution: string;

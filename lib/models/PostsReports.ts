@@ -7,11 +7,15 @@ export interface PostsReports {
     reports: string[]; // array of report IDs or descriptions
 }
 
-export interface PostsReportsDocument extends PostsReports, Document {
-    _id: mongoose.Types.ObjectId;
+export interface PostsReportsDocument extends Omit<Document, '_id'>, PostsReports {
+    _id: string; // UUID
 }
 
 const PostsReportsSchema = new Schema<PostsReportsDocument>({
+    _id: { 
+        type: String, 
+        default: () => crypto.randomUUID() 
+    },
     post: { 
         type: String, 
         ref: 'Post',

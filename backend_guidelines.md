@@ -270,6 +270,43 @@ export default mongoose.models.Company || mongoose.model('Company', CompanySchem
 - Índices de banco
 - Métodos de instância/estáticos
 
+### 5. UUID como Identificador
+
+\u003e [!IMPORTANT]
+\u003e Todos os novos modelos devem usar UUID (String) ao invés de ObjectId para o campo `_id`.
+
+```typescript
+// lib/models/User.ts
+import mongoose, { Schema, Document } from 'mongoose';
+
+const UserSchema = new Schema({
+  _id: { 
+    type: String, 
+    default: () => crypto.randomUUID() 
+  },
+  email: { type: String, required: true, unique: true },
+  fullName: { type: String, required: true },
+  // ... outros campos
+}, { timestamps: true });
+
+// Para interfaces de Document com UUID
+export interface UserDocument extends Omit<Document, '_id'> {
+  _id: string; // UUID
+  email: string;
+  fullName: string;
+  // ... outros campos
+}
+
+export default mongoose.models.User || mongoose.model<UserDocument>('User', UserSchema);
+```
+
+**Benefícios do UUID**:
+- Compatibilidade com sistemas externos
+- IDs únicos gerados no cliente
+- Melhor para sistemas distribuídos
+- Formato padronizado (RFC 4122)
+
+
 ---
 
 ## ✨ Boas Práticas
@@ -550,6 +587,7 @@ Route → Service → Repository → Model
 6. **Autenticação** - use `verifyAuth` para rotas protegidas
 7. **Paginação** - implemente para listas grandes
 8. **Índices** - adicione índices para queries frequentes
+9. **Use UUID** - para `_id` em novos modelos ao invés de ObjectId
 
 ---
 
