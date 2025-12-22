@@ -119,15 +119,17 @@ export default function PostsModerationPage() {
                 <label className="block text-xs font-medium text-slate-700 mb-1">
                   Status
                 </label>
-                <select
-                  value={status}
-                  onChange={(e) => handleStatusChange(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="PENDING">Pendente</option>
-                  <option value="SOLVED">Resolvido</option>
-                  <option value="REJECTED">Rejeitado</option>
-                </select>
+                <div className="bg-white rounded-xl shadow-lg p-3 border border-slate-200 overflow-hidden">
+                  <select
+                    value={status}
+                    onChange={(e) => handleStatusChange(e.target.value)}
+                    className="w-full bg-transparent outline-none text-slate-900 font-medium cursor-pointer"
+                  >
+                    <option value="PENDING">Pendente</option>
+                    <option value="SOLVED">Resolvido</option>
+                    <option value="REJECTED">Rejeitado</option>
+                  </select>
+                </div>
               </div>
 
               {/* Post ID Filter */}
@@ -135,13 +137,15 @@ export default function PostsModerationPage() {
                 <label className="block text-xs font-medium text-slate-700 mb-1">
                   ID do Post
                 </label>
-                <input
-                  type="text"
-                  value={postId}
-                  onChange={(e) => handlePostIdChange(e.target.value)}
-                  placeholder="ID específico do post"
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <div className="bg-white rounded-xl shadow-lg p-3 flex items-center space-x-3 border border-slate-200">
+                  <input
+                    type="text"
+                    value={postId}
+                    onChange={(e) => handlePostIdChange(e.target.value)}
+                    placeholder="ID específico do post"
+                    className="flex-1 bg-transparent outline-none text-slate-900 placeholder:text-slate-500 font-medium"
+                  />
+                </div>
               </div>
             </div>
           </div>
