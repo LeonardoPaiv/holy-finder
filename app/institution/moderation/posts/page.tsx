@@ -10,6 +10,10 @@ import { UserSearch } from '@/components/moderation/UserSearch';
 import { BanUserDialog } from '@/components/moderation/BanUserDialog';
 import { useApp } from '@/components/AppContext';
 import { useBanUser } from '@/hooks/useBanUser';
+import { SuspendPostDialog } from '@/components/moderation/SuspendPostDialog';
+import { useSuspendPost } from '@/hooks/useSuspendPost';
+import { RejectPostReportDialog } from '@/components/moderation/RejectPostReportDialog';
+import { useRejectPostReport } from '@/hooks/useRejectPostReport';
 
 export default function PostsModerationPage() {
   const router = useRouter();
@@ -35,6 +39,14 @@ export default function PostsModerationPage() {
   } = usePostsReportsPageViewModel();
 
   const { isDialogOpen, selectedUser: userToBan, openBanDialog, closeBanDialog, confirmBan } = useBanUser({
+    onSuccess: () => handleClearFilters(),
+  });
+
+  const { isDialogOpen: isSuspendDialogOpen, openSuspendDialog, closeSuspendDialog, confirmSuspend } = useSuspendPost({
+    onSuccess: () => handleClearFilters(),
+  });
+
+  const { isDialogOpen: isRejectDialogOpen, selectedPostReport, openRejectDialog, closeRejectDialog, confirmReject } = useRejectPostReport({
     onSuccess: () => handleClearFilters(),
   });
 
@@ -183,6 +195,8 @@ export default function PostsModerationPage() {
                   handleUserSelect(user);
                 }}
                 onBanUser={openBanDialog}
+                onSuspendPost={openSuspendDialog}
+                onRejectReport={openRejectDialog}
               />
             ))}
           </div>
@@ -232,6 +246,21 @@ export default function PostsModerationPage() {
         userName={userToBan?.fullName || ''}
         onConfirm={confirmBan}
         onClose={closeBanDialog}
+      />
+
+      {/* Suspend Post Dialog */}
+      <SuspendPostDialog
+        isOpen={isSuspendDialogOpen}
+        onConfirm={confirmSuspend}
+        onClose={closeSuspendDialog}
+      />
+
+      {/* Reject Post Report Dialog */}
+      <RejectPostReportDialog
+        isOpen={isRejectDialogOpen}
+        postId={selectedPostReport?.postId || ''}
+        onConfirm={confirmReject}
+        onClose={closeRejectDialog}
       />
     </div>
   );
