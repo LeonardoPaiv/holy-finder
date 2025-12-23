@@ -14,6 +14,8 @@ import { SuspendPostDialog } from '@/components/moderation/SuspendPostDialog';
 import { useSuspendPost } from '@/hooks/useSuspendPost';
 import { RejectPostReportDialog } from '@/components/moderation/RejectPostReportDialog';
 import { useRejectPostReport } from '@/hooks/useRejectPostReport';
+import { RevertToPendingDialog } from '@/components/moderation/RevertToPendingDialog';
+import { useRevertToPending } from '@/hooks/useRevertToPending';
 
 export default function PostsModerationPage() {
   const router = useRouter();
@@ -47,6 +49,10 @@ export default function PostsModerationPage() {
   });
 
   const { isDialogOpen: isRejectDialogOpen, selectedPostReport, openRejectDialog, closeRejectDialog, confirmReject } = useRejectPostReport({
+    onSuccess: () => handleClearFilters(),
+  });
+
+  const { isDialogOpen: isRevertDialogOpen, selectedReport, openRevertDialog, closeRevertDialog, confirmRevert } = useRevertToPending({
     onSuccess: () => handleClearFilters(),
   });
 
@@ -197,6 +203,7 @@ export default function PostsModerationPage() {
                 onBanUser={openBanDialog}
                 onSuspendPost={openSuspendDialog}
                 onRejectReport={openRejectDialog}
+                onRevertToPending={openRevertDialog}
               />
             ))}
           </div>
@@ -261,6 +268,14 @@ export default function PostsModerationPage() {
         postId={selectedPostReport?.postId || ''}
         onConfirm={confirmReject}
         onClose={closeRejectDialog}
+      />
+
+      {/* Revert to Pending Dialog */}
+      <RevertToPendingDialog
+        isOpen={isRevertDialogOpen}
+        postId={selectedReport?.postId || ''}
+        onConfirm={confirmRevert}
+        onClose={closeRevertDialog}
       />
     </div>
   );

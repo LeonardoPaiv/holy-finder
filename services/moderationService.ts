@@ -1,4 +1,5 @@
 import { api } from '@/lib/apiClient';
+import { ReportStatus } from '@/types';
 
 export interface ModerationStatus {
   activeCompanies: number;
@@ -57,5 +58,13 @@ export const ModerationService = {
     }
     
     return await response.json();
+  },
+
+  revertToPending: async (postId: string, postReportId: string): Promise<void> => {
+    // Execute both operations in parallel
+    await Promise.all([
+      ModerationService.updatePostSuspendedStatus(postId, false),
+      ModerationService.updatePostReportStatus(postReportId, ReportStatus.PENDING)
+    ]);
   },
 };

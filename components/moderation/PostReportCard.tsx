@@ -2,6 +2,8 @@ import React from 'react';
 import Image from 'next/image';
 import { AlertTriangle, User, Building2, Calendar, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { usePostReportCardViewModel } from '../viewmodels/PostReportCardViewModel';
+import { ReportStatus } from '@/types';
+import { PostReportActions } from './PostReportActions';
 
 interface PostReportCardProps {
   postReport: any;
@@ -10,9 +12,18 @@ interface PostReportCardProps {
   onBanUser?: (user: { email: string; fullName: string }) => void;
   onSuspendPost?: (postId: string, postReportId: string) => void;
   onRejectReport?: (postReportId: string, postId: string) => void;
+  onRevertToPending?: (postReportId: string, postId: string) => void;
 }
 
-export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFilterByCompany, onFilterByUser, onBanUser, onSuspendPost, onRejectReport }) => {
+export const PostReportCard: React.FC<PostReportCardProps> = ({ 
+  postReport, 
+  onFilterByCompany, 
+  onFilterByUser, 
+  onBanUser, 
+  onSuspendPost, 
+  onRejectReport,
+  onRevertToPending 
+}) => {
   const {
     visibleReports,
     hasMoreReports,
@@ -25,11 +36,11 @@ export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFi
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'PENDING':
+      case ReportStatus.PENDING:
         return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'SOLVED':
+      case ReportStatus.SOLVED:
         return 'bg-green-100 text-green-800 border-green-200';
-      case 'REJECTED':
+      case ReportStatus.REJECTED:
         return 'bg-slate-100 text-slate-800 border-slate-200';
       default:
         return 'bg-slate-100 text-slate-800 border-slate-200';
@@ -38,11 +49,11 @@ export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFi
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'PENDING':
+      case ReportStatus.PENDING:
         return 'Pendente';
-      case 'SOLVED':
+      case ReportStatus.SOLVED:
         return 'Resolvido';
-      case 'REJECTED':
+      case ReportStatus.REJECTED:
         return 'Descartado';
       default:
         return status;
@@ -118,7 +129,7 @@ export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFi
             )}
           </div>
 
-          {/* Status Badge */}
+          {/* Status Badge and Actions */}
           <div className="flex flex-col items-end gap-2">
             <div className="flex items-center gap-1 text-orange-600">
               <AlertTriangle size={16} />
@@ -131,41 +142,18 @@ export const PostReportCard: React.FC<PostReportCardProps> = ({ postReport, onFi
             >
               {getStatusLabel(postReport.status)}
             </span>
+            
             {/* Action Buttons */}
-            {(onBanUser || onSuspendPost || onRejectReport) && postReport.postCreator && (
-              <div className="flex gap-2 mt-2 flex-col md:flex-row">
-                {onBanUser && (
-                  <button
-                    onClick={() => onBanUser({
-                      email: postReport.postCreator.email,
-                      fullName: postReport.postCreator.fullName
-                    })}
-                    className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-semibold rounded-lg transition-colors"
-                    title="Banir usuário"
-                  >
-                    Banir
-                  </button>
-                )}
-                {onSuspendPost && postReport.post?._id && (
-                  <button
-                    onClick={() => onSuspendPost(postReport.post._id, postReport._id)}
-                    className="px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 text-xs font-semibold rounded-lg transition-colors"
-                    title="Suspender post"
-                  >
-                    Suspender
-                  </button>
-                )}
-                {onRejectReport && postReport._id && postReport.post?._id && (
-                  <button
-                    onClick={() => onRejectReport(postReport._id, postReport.post._id)}
-                    className="px-3 py-1.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 text-xs font-semibold rounded-lg transition-colors"
-                    title="Rejeitar denúncia"
-                  >
-                    Rejeitar
-                  </button>
-                )}
-              </div>
-            )}
+            <PostReportActions
+              status={postReport.status}
+              postReportId={postReport._id}
+              postId={postReport.post?._id}
+              postCreator={postReport.postCreator}
+              onBanUser={onBanUser}
+              onSuspendPost={onSuspendPost}
+              onRejectReport={onRejectReport}
+              onRevertToPending={onRevertToPending}
+            />
           </div>
         </div>
       </div>
