@@ -1,5 +1,6 @@
 import { BaseRepository } from './BaseRepository';
 import { Report, ReportDocument } from '../models/Report';
+import { ReportStatus } from '@/types';
 
 export class ReportRepository extends BaseRepository<ReportDocument> {
     constructor() {
@@ -7,6 +8,14 @@ export class ReportRepository extends BaseRepository<ReportDocument> {
     }
 
     async countPending(): Promise<number> {
-        return this.model.countDocuments({ status: 'PENDING' });
+        return this.model.countDocuments({ status: ReportStatus.PENDING });
+    }
+
+    async updateStatus(id: string, status: ReportStatus): Promise<ReportDocument | null> {
+        return this.model.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true }
+        );
     }
 }

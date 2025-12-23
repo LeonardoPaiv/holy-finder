@@ -94,4 +94,12 @@ export class PostsReportsRepository extends BaseRepository<PostsReportsDocument>
         );
         return result.modifiedCount;
     }
+
+    async updateStatus(id: string, status: ReportStatus): Promise<PostsReportsDocument | null> {
+        return this.model.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true }
+        );
+    }
 }

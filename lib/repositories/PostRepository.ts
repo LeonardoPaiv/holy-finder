@@ -247,4 +247,12 @@ export class PostRepository extends BaseRepository<PostDocument> {
         );
         return result.modifiedCount;
     }
+
+    async updateSuspendedStatus(postId: string, suspended: boolean): Promise<PostDocument | null> {
+        return this.model.findByIdAndUpdate(
+            postId,
+            { suspended },
+            { new: true }
+        );
+    }
 }
