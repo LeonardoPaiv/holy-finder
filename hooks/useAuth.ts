@@ -107,7 +107,7 @@ export const useAuth = () => {
   const signUp = async (email: string, password: string, cnpj: string, fullName: string, location?: { lat: number; lng: number } | null): Promise<void> => {
     setLoading(true);
     try {
-      // 1. Create user in Supabase
+      // 1. Create user in Supabase with metadata
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -115,33 +115,15 @@ export const useAuth = () => {
           data: {
             cnpj,
             fullName,
+            location,
           },
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}${ROUTES.INSTITUTION.DASHBOARD}`,
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}${ROUTES.INSTITUTION.CONFIRM}`,
         },
       });
 
       if (error) throw error;
 
-      // 2. Create user in MongoDB
-      const response = await fetch('/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          fullName,
-          institution: cnpj,
-          location,
-        }),
-      });
-
-      if (!response.ok) {
-        // If MongoDB creation fails, we might want to consider rolling back Supabase creation
-        // or handling it gracefully. For now, we'll throw an error.
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create user profile');
-      }
+      // User will be created in MongoDB after email confirmation
       
       return Promise.resolve();
     } catch (error: any) {
