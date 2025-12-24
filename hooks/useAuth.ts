@@ -4,6 +4,8 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { ROUTES, COOKIES } from '@/lib/constants';
 import { translateSupabaseError } from '@/lib/supabaseErrors';
+import { UserService } from '@/services/userService';
+import { CompanyService } from '@/services/companyService';
 
 export const useAuth = () => {
   const router = useRouter();
@@ -20,20 +22,19 @@ export const useAuth = () => {
     fetchingRef.current = true;
     
     try {
-      // Fetch User
+      // Fetch User using service
       setLoading(true);
-      const userResponse = await fetch(`/api/users/${email}`);
-      if (!userResponse.ok) throw new Error('Failed to fetch user');
-      const userProfile = await userResponse.json();
+      const userProfile = await UserService.getUserByEmail(email);
       
       if (userProfile) {
         setUser(userProfile);
         if (userProfile.institution) {
-          // Fetch Company
-          const companyResponse = await fetch(`/api/companies/${userProfile.institution}`);
-          if (companyResponse.ok) {
-            const company = await companyResponse.json();
+          // Fetch Company using service
+          try {
+            const company = await CompanyService.getCompanyByCnpj(userProfile.institution);
             setInstitution(company);
+          } catch (error) {
+            console.error('Error fetching company:', error);
           }
         }
       }

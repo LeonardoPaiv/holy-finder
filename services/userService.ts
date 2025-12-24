@@ -1,6 +1,18 @@
 import { api } from '@/lib/apiClient';
+import { User } from '@/types';
 
 export const UserService = {
+  getUserByEmail: async (email: string): Promise<User> => {
+    const response = await api.get(`/api/users/${email}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to fetch user');
+    }
+    
+    return await response.json();
+  },
+
   confirmUser: async (data: {
     email: string;
     fullName: string;

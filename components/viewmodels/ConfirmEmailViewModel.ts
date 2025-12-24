@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { ROUTES, COOKIES } from '@/lib/constants';
 import { supabase } from '@/lib/supabase';
 import { UserService } from '@/services/userService';
+import { useInstitution } from '@/components/contexts/InstitutionContext';
 
 interface UserMetadata {
   cnpj: string;
@@ -13,6 +14,7 @@ interface UserMetadata {
 
 export const useConfirmEmailViewModel = () => {
   const router = useRouter();
+  const { refreshData } = useInstitution();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -104,7 +106,10 @@ export const useConfirmEmailViewModel = () => {
       // 5. Create user in MongoDB
       await createUserInMongoDB(user.email, metadata);
 
-      // 6. Clear hash and redirect to dashboard
+      // 6. Refresh context to load user and institution data
+      await refreshData();
+
+      // 7. Clear hash and redirect to dashboard
       router.replace(ROUTES.INSTITUTION.DASHBOARD);
     } catch (error: any) {
       console.error('Error processing confirmation:', error);
@@ -122,3 +127,4 @@ export const useConfirmEmailViewModel = () => {
     error,
   };
 };
+
