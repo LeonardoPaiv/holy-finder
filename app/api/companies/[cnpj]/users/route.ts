@@ -3,6 +3,7 @@ import dbConnect from '@/lib/dbConnect';
 import UserModel from '@/lib/models/User';
 import { validateCompanyRequest } from '@/lib/apiUtils';
 import { UserType } from '@/lib/models/common';
+import { UserService } from '@/lib/services/UserService';
 
 export async function GET(
   request: Request,
@@ -13,7 +14,7 @@ export async function GET(
     const { cnpj } = params;
 
     // 1. Verify Authentication & Permissions
-    const { errorResponse, userProfile } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN, UserType.COMUM]);
+    const { errorResponse, userProfile } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN, UserType.INSTITUTION_OWNER]);
     if (errorResponse) return errorResponse;
 
     // 2. Fetch Users
@@ -44,7 +45,7 @@ export async function PATCH(
     const body = await request.json();
 
     // 1. Verify Authentication & Permissions
-    const { errorResponse } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN]);
+    const { userProfile, errorResponse } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN, UserType.INSTITUTION_OWNER]);
     if (errorResponse) return errorResponse;
 
     // 2. Validate Body
@@ -64,8 +65,12 @@ export async function PATCH(
         return NextResponse.json({ error: 'Forbidden: User does not belong to this institution' }, { status: 403 });
     }
 
-    targetUser.type = type;
-    await targetUser.save();
+    if (type === UserType.INSTITUTION_OWNER && userProfile!.type !== UserType.INSTITUTION_OWNER) {
+        return NextResponse.json({ error: 'Forbidden: Only institution owner can update user type to institution owner' }, { status: 403 });
+    }
+
+    const userService = new UserService();
+    await userService.updateUserType(targetUser, type, userProfile!);
 
     return NextResponse.json({
         _id: targetUser._id,

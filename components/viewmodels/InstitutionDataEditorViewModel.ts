@@ -266,7 +266,7 @@ export const useInstitutionDataEditorViewModel = () => {
     }));
   };
 
-  const isAdmin = user?.type === 'institution admin';
+  const isAdmin = user?.type === 'institution admin' || user?.type === 'institution owner';
 
   return {
     formData,

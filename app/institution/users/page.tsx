@@ -12,12 +12,12 @@ export default function UserControlPage() {
 
   // Redirect if not admin (double check on client side for UX)
   React.useEffect(() => {
-    if (user && user.type !== 'institution admin') {
+    if (user && (user.type !== 'institution admin' && user.type !== 'institution owner')) {
       router.push('/institution/dashboard');
     }
   }, [user, router]);
 
-  if (!user || user.type !== 'institution admin') {
+  if (!user || user.type !== 'institution admin' && user.type !== 'institution owner') {
     return null; // Or a loading spinner while redirecting
   }
 

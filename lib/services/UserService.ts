@@ -54,4 +54,15 @@ export class UserService extends BaseService<UserDocument> {
             reportsResolved
         };
     }
+
+    async updateUserType(targetUser: UserDocument, type: UserType, currentUser: IUser) {
+        
+    let userIsOwner = currentUser && currentUser.type === UserType.INSTITUTION_OWNER;
+
+    if (userIsOwner && type === UserType.INSTITUTION_OWNER) {
+      await this.repository.update(currentUser._id, { type: UserType.INSTITUTION_ADMIN });
+    }
+    targetUser.type = type;
+    await targetUser.save();
+    }
 }

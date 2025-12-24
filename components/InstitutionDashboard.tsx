@@ -68,7 +68,7 @@ export const InstitutionDashboard: React.FC = () => {
       onClick: () => handleNavigation('/institution/posts'),
       disabled: isInactive
     },
-    ...(user?.type === 'institution admin' ? [{
+    ...(user?.type === 'institution admin' || user?.type === 'institution owner' ? [{
       icon: <Users size={32} />,
       title: 'Controle de usuários',
       description: 'Gerencie membros e permissões de acesso.',
