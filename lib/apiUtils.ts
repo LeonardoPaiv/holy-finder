@@ -2,16 +2,18 @@ import { NextResponse } from 'next/server';
 import UserModel from '@/lib/models/User';
 import { supabase } from '@/lib/supabase';
 import { UserRole } from './models/common';
+import { User } from '@/types';
 
 interface ValidationResult {
-  userProfile?: any;
+  userProfile?: User | null;
   errorResponse?: NextResponse;
 }
 
 export async function verifyAuth(
   request: Request,
   allowedTypes: string[] = [],
-  allowedRoles: string[] = []
+  allowedRoles: string[] = [],
+  allowBanned: boolean = false
 ): Promise<ValidationResult> {
   try {
     const authHeader = request.headers.get('authorization');
@@ -25,12 +27,12 @@ export async function verifyAuth(
       return { errorResponse: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
     }
 
-    const userProfile = await UserModel.findOne({ email: user.email });
+    const userProfile: User | null = await UserModel.findOne({ email: user.email });
     if (!userProfile) {
       return { errorResponse: NextResponse.json({ error: 'User profile not found' }, { status: 404 }) };
     }
 
-    if (userProfile.role === UserRole.BANNED) {
+    if (!allowBanned && userProfile.role === UserRole.BANNED) {
       return { errorResponse: NextResponse.json({ error: 'User is banned' }, { status: 403 }) };
     }
 
@@ -61,7 +63,7 @@ export async function validateCompanyRequest(
       return { errorResponse };
     }
 
-    if (userProfile.institution !== cnpj) {
+    if (!userProfile || userProfile.institution !== cnpj) {
       return { errorResponse: NextResponse.json({ error: 'Forbidden: You do not belong to this institution' }, { status: 403 }) };
     }
 

@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         // 3. Auth & Specific Validations
         if (type === ReportType.INSTITUTION_INTERN_REPORT) {
             // Auth Required
-            const { errorResponse } = await verifyAuth(request);
+            const { errorResponse } = await verifyAuth(request, [], [], true);
             if (errorResponse) {
                 return errorResponse;
             }
