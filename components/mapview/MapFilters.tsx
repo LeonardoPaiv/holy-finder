@@ -24,7 +24,7 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
   onRecenter,
   onSelectCompany,
 }) => {
-  const { searchRadius, setSearchRadius, userLocation } = useApp();
+  const { searchRadius, setSearchRadius, userLocation, setIsAdjustingRadius } = useApp();
 
   const handleCompanySelect = (company: Company) => {
     if (onSelectCompany) {
@@ -71,17 +71,21 @@ export const MapFilters: React.FC<MapFiltersProps> = ({
               max="20"
               step="1"
               value={searchRadius}
+              onMouseDown={() => setIsAdjustingRadius(true)}
+              onTouchStart={() => setIsAdjustingRadius(true)}
               onChange={(e) => {
                 const newRadius = parseInt(e.target.value, 10);
                 setSearchRadius(newRadius);
               }}
               onMouseUp={() => {
+                setIsAdjustingRadius(false);
                 if (onSearchArea && mapRef?.current) {
                   const center = mapRef.current.getCenter();
                   onSearchArea({ lat: center.lat, lng: center.lng });
                 }
               }}
               onTouchEnd={() => {
+                setIsAdjustingRadius(false);
                 if (onSearchArea && mapRef?.current) {
                   const center = mapRef.current.getCenter();
                   onSearchArea({ lat: center.lat, lng: center.lng });

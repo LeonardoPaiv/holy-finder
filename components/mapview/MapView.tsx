@@ -3,12 +3,14 @@ import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import { Company } from '../../types';
 import { useMapViewViewModel } from '../viewmodels/MapViewViewModel';
+import { useApp } from '../AppContext';
 import { MapController } from './MapController';
 import { MapEvents } from './MapEvents';
 import { LocationPermissionOverlay } from './LocationPermissionOverlay';
 import { SearchAreaButton } from './SearchAreaButton';
 import { MapFilters } from './MapFilters';
 import { RecenterButton } from './RecenterButton';
+import { RadiusCircle } from './RadiusCircle';
 
 // Custom Marker Icon using DivIcon and Tailwind classes
 const customMarkerIcon = new L.DivIcon({
@@ -71,6 +73,8 @@ export const MapView: React.FC<MapViewProps> = ({
     handleSearchArea,
   } = useMapViewViewModel(center, onSearchArea);
 
+  const { searchRadius, isAdjustingRadius } = useApp();
+
   return (
     <div className="w-full h-full absolute inset-0 bg-slate-100">
       <MapContainer 
@@ -89,7 +93,10 @@ export const MapView: React.FC<MapViewProps> = ({
         />
         
         {userLocation && (
-          <Marker position={[userLocation.lat, userLocation.lng]} icon={userLocationIcon} />
+          <>
+            <Marker position={[userLocation.lat, userLocation.lng]} icon={userLocationIcon} />
+            <RadiusCircle userLocation={userLocation} searchRadius={searchRadius} isAdjustingRadius={isAdjustingRadius} />
+          </>
         )}
 
         {companies.map((company) => (
