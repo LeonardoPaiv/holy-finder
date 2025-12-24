@@ -2,12 +2,13 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import L from 'leaflet';
 import { useApp } from '../AppContext';
 import toast from 'react-hot-toast';
+import { calculateZoomFromRadius } from '@/utils/mapUtils';
 
 export const useMapViewViewModel = (
   center?: { lat: number; lng: number },
   onSearchArea?: (center: { lat: number; lng: number }) => void
 ) => {
-  const { userLocation, setUserLocation } = useApp();
+  const { userLocation, setUserLocation, searchRadius } = useApp();
   const [lastSearchCenter, setLastSearchCenter] = useState<L.LatLng | null>(null);
   const [showSearchButton, setShowSearchButton] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
@@ -18,6 +19,15 @@ export const useMapViewViewModel = (
     const defaultPosition: [number, number] = [-23.550520, -46.633308];
     return userLocation ? [userLocation.lat, userLocation.lng] : defaultPosition;
   }, [userLocation, center]);
+
+  const isMobile = useMemo(() => {
+    return window.innerWidth < 768;
+  }, []);
+  // Calculate appropriate zoom level based on search radius
+  const zoom = useMemo(() => {
+    const latitude = position[0];
+    return calculateZoomFromRadius(searchRadius, latitude, isMobile);
+  }, [searchRadius, position, isMobile]);
 
   // Initialize lastSearchCenter when userLocation is first available
   useEffect(() => {
@@ -132,6 +142,7 @@ export const useMapViewViewModel = (
 
   return {
     position,
+    zoom,
     userLocation,
     showSearchButton,
     mapRef,

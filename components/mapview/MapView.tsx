@@ -64,6 +64,7 @@ export const MapView: React.FC<MapViewProps> = ({
 }) => {
   const {
     position,
+    zoom,
     userLocation,
     showSearchButton,
     mapRef,
@@ -79,7 +80,8 @@ export const MapView: React.FC<MapViewProps> = ({
     <div className="w-full h-full absolute inset-0 bg-slate-100">
       <MapContainer 
         center={position} 
-        zoom={14} 
+        zoom={zoom}
+        key={`map-${zoom}`}
         scrollWheelZoom={true} 
         className="w-full h-full z-0"
         zoomControl={false}
