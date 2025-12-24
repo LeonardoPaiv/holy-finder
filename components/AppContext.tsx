@@ -29,6 +29,8 @@ interface AppContextType {
     setIsReligionDialogOpen: (isOpen: boolean) => void;
     isAdjustingRadius: boolean;
     setIsAdjustingRadius: (isAdjusting: boolean) => void;
+    isLoadingCompanies: boolean;
+    setIsLoadingCompanies: (isLoading: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -70,6 +72,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const [feedFilters, setFeedFilters] = useState<FeedFilters>({});
     const [isReligionDialogOpen, setIsReligionDialogOpen] = useState(false);
     const [isAdjustingRadius, setIsAdjustingRadius] = useState(false);
+    const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
 
     // Save religion to localStorage when it changes
     useEffect(() => {
@@ -108,6 +111,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             setIsReligionDialogOpen,
             isAdjustingRadius,
             setIsAdjustingRadius,
+            isLoadingCompanies,
+            setIsLoadingCompanies,
         }}>
             {children}
         </AppContext.Provider>

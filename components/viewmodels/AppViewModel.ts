@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 export const useAppViewModel = () => {
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | undefined>(undefined);
-  const { religion, userLocation, companies, setCompanies, searchRadius } = useApp();
+  const { religion, userLocation, companies, setCompanies, searchRadius, setIsLoadingCompanies } = useApp();
   const { showFindNearestToast } = useFindNearest();
 
   const handleFindNearest = async () => {
@@ -33,6 +33,7 @@ export const useAppViewModel = () => {
   };
 
   const fetchCompaniesData = async (lat: number, lng: number, limit?: number) => {
+    setIsLoadingCompanies(true);
     try {
       const companiesData = await CompanyService.getCompanies(lat, lng, searchRadius, limit, religion);
       if (companiesData.length === 0) {
@@ -42,6 +43,8 @@ export const useAppViewModel = () => {
     } catch (error) {
       console.error('Erro ao buscar instituições:', error);
       toast.error('Erro ao carregar instituições. Tente novamente mais tarde.');
+    } finally {
+      setIsLoadingCompanies(false);
     }
   };
 
