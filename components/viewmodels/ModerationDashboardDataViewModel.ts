@@ -21,9 +21,9 @@ export const useModerationDashboardViewModel = () => {
     },
     {
       title: 'Gerenciamento de usuários',
-      count: 0,
+      count: status?.activeUsers || 0,
       icon: Users,
-      href: '#',
+      href: '/institution/moderation/users',
       color: 'green',
     },
     {
