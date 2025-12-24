@@ -1,5 +1,5 @@
 import { api } from '@/lib/apiClient';
-import { ReportStatus } from '@/types';
+import { ReportStatus, ReportType, PaginatedResult } from '@/types';
 
 export interface ModerationStatus {
   activeCompanies: number;
@@ -24,6 +24,40 @@ export const ModerationService = {
       return null;
     }
   },
+
+  getReports: async (
+    page: number = 1,
+    limit: number = 10,
+    filters?: {
+      type?: ReportType;
+      cnpj?: string;
+      reportId?: string;
+      status?: ReportStatus;
+    }
+  ): Promise<PaginatedResult<any> | null> => {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+
+      if (filters?.type) params.append('type', filters.type);
+      if (filters?.cnpj) params.append('cnpj', filters.cnpj);
+      if (filters?.reportId) params.append('reportId', filters.reportId);
+      if (filters?.status) params.append('status', filters.status);
+
+      const response = await api.get(`/api/moderation/reports?${params.toString()}`);
+
+      if (response.ok) {
+        return await response.json();
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      return null;
+    }
+  },
+
   updatePostSuspendedStatus: async (postId: string, suspended: boolean): Promise<any> => {
     const response = await api.patch(`/api/moderation/posts/${postId}/suspended`, {
       suspended

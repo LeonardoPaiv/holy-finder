@@ -55,7 +55,7 @@ export class ReportRepository extends BaseRepository<ReportDocument> {
             this.model
                 .find(query)
                 .populate('cnpj', 'name')
-                .populate('userId', 'fullName email')
+                .populate('userId', 'fullName email createdAt')
                 .skip(skip)
                 .limit(limit)
                 .sort({ createdAt: -1 }),

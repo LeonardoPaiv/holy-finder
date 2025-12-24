@@ -37,7 +37,7 @@ export const useModerationDashboardViewModel = () => {
       title: 'Visualizar reports',
       count: status?.pendingReports || 0,
       icon: AlertTriangle,
-      href: '#',
+      href: '/institution/moderation/reports',
       color: 'orange',
     },
   ];
