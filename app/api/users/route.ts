@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
             email,
             fullName,
             institution,
-            type: isNew ? UserType.INSTITUTION_ADMIN : UserType.INACTIVE,
+            type: isNew ? UserType.INSTITUTION_OWNER : UserType.INACTIVE,
             role: UserRole.BASIC,
         });
         

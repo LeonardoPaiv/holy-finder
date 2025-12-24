@@ -80,7 +80,7 @@ export interface Post {
   updatedAt?: Date;
 }
 
-export type UserType = 'inactive' | 'comum' | 'institution admin';
+export type UserType = 'inactive' | 'comum' | 'institution admin' | 'institution owner';
 
 export type UserRole = 'basic' | 'moderator' | 'super admin' | 'banned';
 

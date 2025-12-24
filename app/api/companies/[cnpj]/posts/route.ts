@@ -18,7 +18,7 @@ export async function POST(
     const body = await request.json();
 
     // 1. Verify Authentication & Permissions
-    const { errorResponse, userProfile } = await validateCompanyRequest(request, cnpj, [UserType.COMUM, UserType.INSTITUTION_ADMIN]);
+    const { errorResponse, userProfile } = await validateCompanyRequest(request, cnpj, [UserType.COMUM, UserType.INSTITUTION_ADMIN, UserType.INSTITUTION_OWNER]);
     if (errorResponse) return errorResponse;
 
     // 2. Validate Body

@@ -15,7 +15,8 @@ export { Religions } from '@/types';
 export enum UserType {
     INACTIVE = 'inactive',
     COMUM = 'comum',
-    INSTITUTION_ADMIN = 'institution admin'
+    INSTITUTION_ADMIN = 'institution admin',
+    INSTITUTION_OWNER = 'institution owner'
 }
 
 export enum UserRole {

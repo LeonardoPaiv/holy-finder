@@ -14,7 +14,7 @@ export async function PATCH(
     const body = await request.json();
 
     // 1. Verify Authentication & Permissions
-    const { errorResponse } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN]);
+    const { errorResponse } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN, UserType.INSTITUTION_OWNER]);
     if (errorResponse) return errorResponse;
 
     // 3. Update Missas
