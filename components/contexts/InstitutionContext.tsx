@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { User, Company } from '@/types';
 
@@ -10,6 +10,8 @@ interface InstitutionContextType {
   setUser: (user: User | null) => void;
   setInstitution: (institution: Company | null) => void;
   loading: boolean;
+  isReady: boolean; // True when user AND institution are loaded (or confirmed as null)
+  isInitializing: boolean; // True during first load only
   refreshData: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, cnpj: string, fullName: string, location?: { lat: number; lng: number } | null) => Promise<void>;
@@ -22,9 +24,40 @@ const InstitutionContext = createContext<InstitutionContextType | undefined>(und
 export const InstitutionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const auth = useAuth();
 
+  // Determine if context is ready
+  const isReady = useMemo(() => {
+    // If still loading, not ready
+    if (auth.loading) return false;
+    
+    // If user exists, we need institution data too (unless user has no institution)
+    if (auth.user) {
+      // If user has institution field, wait for institution to load
+      if (auth.user.institution && !auth.institution) {
+        return false;
+      }
+      return true;
+    }
+    
+    // If no user and not loading, we're ready (logged out state)
+    return true;
+  }, [auth.loading, auth.user, auth.institution]);
+
+  // Track if this is the initial load
+  const [hasLoadedOnce, setHasLoadedOnce] = React.useState(false);
+  
+  React.useEffect(() => {
+    if (isReady && !hasLoadedOnce) {
+      setHasLoadedOnce(true);
+    }
+  }, [isReady, hasLoadedOnce]);
+
+  const isInitializing = !hasLoadedOnce;
+
   return (
     <InstitutionContext.Provider value={{ 
       ...auth,
+      isReady,
+      isInitializing,
       refreshData: async () => {
         await auth.checkSession();
       }

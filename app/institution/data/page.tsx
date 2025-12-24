@@ -1,9 +1,12 @@
 'use client'
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { InstitutionDataEditor } from '../../../components/InstitutionDataEditor';
+import { InstitutionPageLayout } from '@/components/institution/InstitutionPageLayout';
 
 export default function InstitutionDataPage() {
-    const router = useRouter();
-    return <InstitutionDataEditor onBack={() => router.push('/institution/dashboard')} />;
+    return (
+        <InstitutionPageLayout title="Dados da Instituição" showBackButton>
+            <InstitutionDataEditor />
+        </InstitutionPageLayout>
+    );
 }

@@ -52,6 +52,7 @@ export const useInstitutionDashboardViewModel = () => {
     isReportDialogOpen,
     reportText,
     isBanned,
+    isReady: user !== null && user !== undefined, // Ensure user is fully loaded
     setReportText,
     handleLogout,
     handleReportSubmit,

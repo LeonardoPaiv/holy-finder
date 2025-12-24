@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useInstitutionDataEditorViewModel } from './viewmodels/InstitutionDataEditorViewModel';
-import { EditorHeader } from './institution-editor/EditorHeader';
 import { CoverImageEditor } from './institution-editor/CoverImageEditor';
 import { BasicInfoEditor } from './institution-editor/BasicInfoEditor';
 import { ScheduleEditor } from './institution-editor/ScheduleEditor';
@@ -20,13 +19,9 @@ const LocationEditor = dynamic(
 );
 import { Info, MapPin, Clock, Calendar } from 'lucide-react';
 
-interface InstitutionDataEditorProps {
-  onBack: () => void;
-}
-
 type TabType = 'basic' | 'location' | 'schedule' | 'events';
 
-export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ onBack }) => {
+export const InstitutionDataEditor = () => {
   const {
     formData,
     setFormData,
@@ -61,7 +56,6 @@ export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ on
     saveEvents,
     // Common
     saveBasicInfo,
-    handleLogout,
     // Location
     saveLocation,
     saveMapsUrl,
@@ -88,12 +82,6 @@ export const InstitutionDataEditor: React.FC<InstitutionDataEditorProps> = ({ on
 
   return (
     <div className="w-full min-h-screen bg-slate-50 flex flex-col">
-      
-      <EditorHeader 
-        onBack={onBack} 
-        handleLogout={handleLogout} 
-        institutionName={formData.name} 
-      />
 
       {/* Tab Navigation */}
       <div className="bg-white border-b border-slate-200 sticky top-[73px] z-10 px-4">

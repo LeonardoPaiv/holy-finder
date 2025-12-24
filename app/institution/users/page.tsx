@@ -1,48 +1,29 @@
 'use client';
 
 import React from 'react';
+import { InstitutionPageLayout } from '@/components/institution/InstitutionPageLayout';
+import { PermissionGuard } from '@/components/institution/PermissionGuard';
 import { UserControl } from '@/components/institution/UserControl';
-import { ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useInstitution } from '@/components/contexts/InstitutionContext';
 
 export default function UserControlPage() {
-  const router = useRouter();
-  const { user } = useInstitution();
-
-  // Redirect if not admin (double check on client side for UX)
-  React.useEffect(() => {
-    if (user && (user.type !== 'institution admin' && user.type !== 'institution owner')) {
-      router.push('/institution/dashboard');
-    }
-  }, [user, router]);
-
-  if (!user || user.type !== 'institution admin' && user.type !== 'institution owner') {
-    return null; // Or a loading spinner while redirecting
-  }
-
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <button
-          onClick={() => router.push('/institution/dashboard')}
-          className="flex items-center text-slate-600 hover:text-slate-900 transition-colors font-medium"
-        >
-          <ArrowLeft size={20} className="mr-2" />
-          Voltar ao Painel
-        </button>
+    <PermissionGuard requiredTypes={['institution admin', 'institution owner']}>
+      <InstitutionPageLayout title="Controle de Usuários" showBackButton>
+        <div className="p-4 md:p-8">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+                Controle de Usuários
+              </h1>
+              <p className="text-slate-500 mt-2">
+                Gerencie quem tem acesso ao painel da sua instituição.
+              </p>
+            </div>
 
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-            Controle de Usuários
-          </h1>
-          <p className="text-slate-500 mt-2">
-            Gerencie quem tem acesso ao painel da sua instituição.
-          </p>
+            <UserControl />
+          </div>
         </div>
-
-        <UserControl />
-      </div>
-    </div>
+      </InstitutionPageLayout>
+    </PermissionGuard>
   );
 }
