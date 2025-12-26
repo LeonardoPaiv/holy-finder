@@ -70,13 +70,15 @@ export async function PATCH(
     }
 
     const userService = new UserService();
-    await userService.updateUserType(targetUser, type, userProfile!);
+    await userService.updateUserType(targetUser.email, type);
 
     return NextResponse.json({
         _id: targetUser._id,
-        name: targetUser.name,
         email: targetUser.email,
-        type: targetUser.type
+        fullName: targetUser.fullName,
+        institution: targetUser.institution,
+        type,
+        role: targetUser.role
     });
 
   } catch (error) {

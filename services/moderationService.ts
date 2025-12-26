@@ -1,5 +1,6 @@
 import { api } from '@/lib/apiClient';
-import { ReportStatus, ReportType, PaginatedResult } from '@/types';
+import { ReportStatus, ReportType, PaginatedResult, User } from '@/types';
+import { UserRole, UserType } from '@/lib/models/common';
 
 export interface ModerationStatus {
   activeCompanies: number;
@@ -94,6 +95,32 @@ export const ModerationService = {
     return await response.json();
   },
 
+  updateUserRole: async (email: string, role: UserRole): Promise<User> => {
+    const response = await api.patch(`/api/moderation/users/${email}/role`, {
+      role
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to update user role');
+    }
+    
+    return await response.json();
+  },
+
+  updateUserType: async (email: string, type: UserType): Promise<User> => {
+    const response = await api.patch(`/api/moderation/users/${email}/type`, {
+      type
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to update user type');
+    }
+    
+    return await response.json();
+  },
+
   revertToPending: async (postId: string, postReportId: string): Promise<void> => {
     // Execute both operations in parallel
     await Promise.all([
@@ -102,3 +129,4 @@ export const ModerationService = {
     ]);
   },
 };
+

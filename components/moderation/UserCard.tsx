@@ -5,10 +5,19 @@ import { User, Building2, Ban } from 'lucide-react';
 
 interface UserCardProps {
   user: any;
+  currentUserRole?: string;
   onBan?: (userId: string) => void;
+  onRoleChange?: (email: string, role: string) => void;
+  onTypeChange?: (email: string, type: string) => void;
 }
 
-export const UserCard: React.FC<UserCardProps> = ({ user, onBan }) => {
+export const UserCard: React.FC<UserCardProps> = ({ 
+  user, 
+  currentUserRole,
+  onBan,
+  onRoleChange,
+  onTypeChange 
+}) => {
   const getUserTypeLabel = (type: string) => {
     switch (type) {
       case 'inactive':
@@ -17,6 +26,8 @@ export const UserCard: React.FC<UserCardProps> = ({ user, onBan }) => {
         return 'Comum';
       case 'institution admin':
         return 'Admin da Instituição';
+      case 'institution owner':
+        return 'Dono da Instituição';
       default:
         return type;
     }
@@ -36,6 +47,21 @@ export const UserCard: React.FC<UserCardProps> = ({ user, onBan }) => {
         return role;
     }
   };
+
+  // Permission checks
+  const isModerator = currentUserRole === 'moderator';
+  const isSuperAdmin = currentUserRole === 'super admin';
+  const isTargetSuperAdmin = user.role === 'super admin';
+  
+  // Moderators cannot modify super admins
+  const canModify = isSuperAdmin || (isModerator && !isTargetSuperAdmin);
+  
+  // Moderators can only set role to banned or basic
+  const availableRoles = isModerator 
+    ? ['basic', 'banned']
+    : ['basic', 'moderator', 'super admin', 'banned'];
+  
+  const availableTypes = ['inactive', 'comum', 'institution admin', 'institution owner'];
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
@@ -71,30 +97,39 @@ export const UserCard: React.FC<UserCardProps> = ({ user, onBan }) => {
             Banir Usuário
           </button>
 
-          {/* Role Select (Placeholder) */}
-          <select
-            value={user.role}
-            onChange={() => {}}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled
-          >
-            <option value="basic">Básico</option>
-            <option value="moderator">Moderador</option>
-            <option value="super admin">Super Admin</option>
-            <option value="banned">Banido</option>
-          </select>
+          {/* Role Select */}
+          <div>
+            <select
+              value={user.role}
+              onChange={(e) => onRoleChange?.(user.email, e.target.value)}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!canModify}
+              title={!canModify ? 'Você não tem permissão para modificar este usuário' : ''}
+            >
+              {availableRoles.map((role) => (
+                <option key={role} value={role}>
+                  {getUserRoleLabel(role)}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          {/* Type Select (Placeholder) */}
-          <select
-            value={user.type}
-            onChange={() => {}}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled
-          >
-            <option value="inactive">Inativo</option>
-            <option value="comum">Comum</option>
-            <option value="institution admin">Admin da Instituição</option>
-          </select>
+          {/* Type Select */}
+          <div>
+            <select
+              value={user.type}
+              onChange={(e) => onTypeChange?.(user.email, e.target.value)}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!canModify}
+              title={!canModify ? 'Você não tem permissão para modificar este usuário' : ''}
+            >
+              {availableTypes.map((type) => (
+                <option key={type} value={type}>
+                  {getUserTypeLabel(type)}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
     </div>

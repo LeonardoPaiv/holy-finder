@@ -10,7 +10,9 @@ import { CompanySearch } from '@/components/mapview/CompanySearch';
 import { UserTypeSelect } from '@/components/moderation/UserTypeSelect';
 import { UserRoleSelect } from '@/components/moderation/UserRoleSelect';
 import { PaginationControls } from '@/components/moderation/PaginationControls';
+import { BanUserDialog } from '@/components/moderation/BanUserDialog';
 import { useApp } from '@/components/AppContext';
+import { useBanUser } from '@/hooks/useBanUser';
 
 export default function UsersModerationPage() {
   const router = useRouter();
@@ -26,21 +28,27 @@ export default function UsersModerationPage() {
     userType,
     userRole,
     activeFiltersCount,
+    currentUserRole,
     handleUserSelect,
     handleCompanySelect,
     handleUserTypeChange,
     handleUserRoleChange,
     handleClearFilters,
+    handleUpdateUserRole,
+    handleUpdateUserType,
     handleNextPage,
     handlePrevPage,
   } = useUsersPageViewModel();
 
-  const [showFilters, setShowFilters] = React.useState(true);
+  const {
+    isDialogOpen,
+    selectedUser: banSelectedUser,
+    openBanDialog,
+    closeBanDialog,
+    confirmBan,
+  } = useBanUser({ onSuccess: handleClearFilters });
 
-  const handleBanUser = (userId: string) => {
-    // Placeholder for ban user functionality
-    console.log('Ban user:', userId);
-  };
+  const [showFilters, setShowFilters] = React.useState(true);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -139,7 +147,10 @@ export default function UsersModerationPage() {
               <UserCard
                 key={user._id}
                 user={user}
-                onBan={handleBanUser}
+                currentUserRole={currentUserRole}
+                onBan={() => openBanDialog({ email: user.email, fullName: user.fullName })}
+                onRoleChange={handleUpdateUserRole}
+                onTypeChange={handleUpdateUserType}
               />
             ))}
           </div>
@@ -166,6 +177,14 @@ export default function UsersModerationPage() {
           />
         )}
       </div>
+
+      {/* Ban User Dialog */}
+      <BanUserDialog
+        isOpen={isDialogOpen}
+        userName={banSelectedUser?.fullName || ''}
+        onConfirm={confirmBan}
+        onClose={closeBanDialog}
+      />
     </div>
   );
 }

@@ -32,6 +32,22 @@ export class UserRepository extends BaseRepository<UserDocument> {
         );
     }
 
+    async updateRole(email: string, role: UserRole): Promise<UserDocument | null> {
+        return this.model.findOneAndUpdate(
+            { email },
+            { role },
+            { new: true }
+        ).populate('institution', 'name');
+    }
+
+    async updateType(email: string, type: UserType): Promise<UserDocument | null> {
+        return this.model.findOneAndUpdate(
+            { email },
+            { type },
+            { new: true }
+        ).populate('institution', 'name');
+    }
+
     async searchUsers(query: string, limit: number = 5): Promise<UserDocument[]> {
 
         const regexPattern = createDiacriticRegex(query);

@@ -26,6 +26,26 @@ export class UserService extends BaseService<UserDocument> {
         return this.repository.create(data as any);
     }
 
+    async updateUserRole(email: string, role: UserRole): Promise<UserDocument> {
+        const user = await (this.repository as UserRepository).updateRole(email, role);
+        
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        return user;
+    }
+
+    async updateUserType(email: string, type: UserType): Promise<UserDocument> {
+        const user = await (this.repository as UserRepository).updateType(email, type);
+        
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        return user;
+    }
+
     async banUser(email: string): Promise<{
         user: UserDocument;
         postsSuspended: number;
@@ -53,16 +73,5 @@ export class UserService extends BaseService<UserDocument> {
             postsSuspended,
             reportsResolved
         };
-    }
-
-    async updateUserType(targetUser: UserDocument, type: UserType, currentUser: IUser) {
-        
-    let userIsOwner = currentUser && currentUser.type === UserType.INSTITUTION_OWNER;
-
-    if (userIsOwner && type === UserType.INSTITUTION_OWNER) {
-      await this.repository.update(currentUser._id, { type: UserType.INSTITUTION_ADMIN });
-    }
-    targetUser.type = type;
-    await targetUser.save();
     }
 }
