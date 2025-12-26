@@ -11,6 +11,7 @@ export default function CreatePostTab() {
     isLoading,
     isUploading,
     isCreating,
+    isModerating,
     handleImageSelect,
     handleRemoveImage,
     handleDescriptionChange,
@@ -33,6 +34,7 @@ export default function CreatePostTab() {
               onImageSelect={handleImageSelect}
               onRemoveImage={handleRemoveImage}
               disabled={isLoading}
+              isLoading={isModerating}
             />
           </div>
 
@@ -63,7 +65,13 @@ export default function CreatePostTab() {
             {isLoading ? (
               <>
                 <Loader2 className="animate-spin" size={20} />
-                <span>{isUploading ? 'Enviando imagem...' : 'Criando post...'}</span>
+                <span>
+                  {isModerating 
+                    ? 'Verificando conteúdo da imagem...' 
+                    : isUploading 
+                    ? 'Enviando imagem...' 
+                    : 'Criando post...'}
+                </span>
               </>
             ) : (
               <span>Publicar Post</span>

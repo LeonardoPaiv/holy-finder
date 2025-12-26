@@ -3,6 +3,7 @@ import { useInstitution } from '@/components/contexts/InstitutionContext';
 import { useInstitutionPost } from '@/components/contexts/InstitutionPostContext';
 import { PostService } from '@/services/postService';
 import { StorageService } from '@/services/storageService';
+import { ModerationImageService } from '@/services/moderationImageService';
 import toast from 'react-hot-toast';
 
 export const useCreatePostViewModel = () => {
@@ -13,8 +14,9 @@ export const useCreatePostViewModel = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isModerating, setIsModerating] = useState(false);
 
-  const handleImageSelect = (file: File | null) => {
+  const handleImageSelect = async (file: File | null) => {
     if (!file) return;
 
     // Validate
@@ -24,14 +26,33 @@ export const useCreatePostViewModel = () => {
       return;
     }
 
-    setImageFile(file);
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    try {
+      setIsModerating(true);
+
+      // Moderate image content
+      const moderationResult = await ModerationImageService.moderateImage(file);
+
+      if (moderationResult.flagged) {
+        const errorMessage = ModerationImageService.getFlaggedMessage(moderationResult.categories);
+        toast.error(errorMessage);
+        return;
+      }
+
+      setImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+    } catch (error) {
+      console.error('Error moderating image:', error);
+      toast.error('Erro ao verificar conteúdo da imagem. Tente novamente.');
+    } finally {
+      setIsModerating(false);
+    }
   };
 
   const handleRemoveImage = () => {
@@ -99,6 +120,7 @@ export const useCreatePostViewModel = () => {
     isLoading,
     isUploading,
     isCreating,
+    isModerating,
     handleImageSelect,
     handleRemoveImage,
     handleDescriptionChange,

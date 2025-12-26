@@ -3,6 +3,7 @@ import { useConfirm } from '@/hooks/useConfirm';
 import { Company, Event } from '@/types';
 import { CompanyService } from '@/services/companyService';
 import { StorageService } from '@/services/storageService';
+import { ModerationImageService } from '@/services/moderationImageService';
 import { useInstitution } from '@/components/contexts/InstitutionContext';
 import { WEEKDAYS } from '@/lib/constants';
 import toast from 'react-hot-toast';
@@ -120,6 +121,16 @@ export const useInstitutionDataEditorViewModel = () => {
     if (!institution?._id) return;
     setIsSaving(true);
     try {
+      // Moderate image content before upload
+      const moderationResult = await ModerationImageService.moderateImage(file);
+
+      if (moderationResult.flagged) {
+        const errorMessage = ModerationImageService.getFlaggedMessage(moderationResult.categories);
+        toast.error(errorMessage);
+        setIsSaving(false);
+        return;
+      }
+
       const photoUrl = await StorageService.uploadCoverImage(file, institution._id);
       const updated = await CompanyService.updateCoverImage(institution._id, photoUrl);
       setInstitution(updated);
