@@ -140,6 +140,8 @@ export const useMapViewViewModel = (
     }
   };
 
+  useEffect(() => handleRecenter(), [])
+
   return {
     position,
     zoom,
