@@ -124,3 +124,18 @@ export interface PaginatedResult<T> {
       hasMore: boolean;
   };
 }
+
+// Google AdSense types
+export interface GoogleAdUnitProps {
+  adSlot: string;
+  adFormat?: 'auto' | 'fluid' | 'rectangle';
+  fullWidthResponsive?: boolean;
+  className?: string;
+}
+
+// Extend Window interface for Google AdSense
+declare global {
+  interface Window {
+    adsbygoogle: any[];
+  }
+}

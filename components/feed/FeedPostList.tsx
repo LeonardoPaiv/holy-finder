@@ -1,5 +1,7 @@
 import { Post } from '@/types';
 import FeedPostCard from './FeedPostCard';
+import GoogleAdUnit from './GoogleAdUnit';
+import { useGoogleAds } from '@/hooks/useGoogleAds';
 
 interface FeedPostListProps {
   posts: (Post & {
@@ -25,6 +27,9 @@ export default function FeedPostList({
   onLoadMore,
   onRetry,
 }: FeedPostListProps) {
+  // Load Google Ads script
+  const { isLoaded: isAdsLoaded } = useGoogleAds();
+
   if (isLoading) {
     return (
       <div className="text-center py-12">
@@ -58,11 +63,34 @@ export default function FeedPostList({
     );
   }
 
+  // Render posts with ads intercalated every 5 items (after every 4 posts)
+  const renderPostsWithAds = (): JSX.Element[] => {
+    const items: JSX.Element[] = [];
+    
+    posts.forEach((post, index) => {
+      // Add the post
+      items.push(<FeedPostCard key={post._id} post={post} />);
+      
+      // Add an ad after every 4 posts (at positions 4, 9, 14, etc.)
+      // This means ads appear at indices 4, 9, 14, 19... (every 5th position)
+      if (isAdsLoaded && (index + 1) % 4 === 0 && index < posts.length - 1) {
+        items.push(
+          <GoogleAdUnit
+            key={`ad-${index}`}
+            adSlot={process.env.NEXT_PUBLIC_GOOGLE_AD_SLOT || ''}
+            adFormat="auto"
+            fullWidthResponsive={true}
+          />
+        );
+      }
+    });
+    
+    return items;
+  };
+
   return (
     <div className="space-y-6">
-      {posts.map((post) => (
-        <FeedPostCard key={post._id} post={post} />
-      ))}
+      {renderPostsWithAds()}
 
       {/* Load More */}
       {hasNextPage && (
