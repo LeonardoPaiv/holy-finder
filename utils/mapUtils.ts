@@ -7,11 +7,12 @@
  * @returns Appropriate zoom level (1-18)
  */
 export const calculateZoomFromRadius = (radiusKm: number, latitude: number = 0, isMobile: boolean = false): number => {
+  console.log("🚀 ~ calculateZoomFromRadius ~ isMobile:", isMobile)
   // At the equator, each zoom level roughly doubles the visible area
   // We want the radius to fit comfortably in the viewport
   // Assuming viewport shows roughly 2x the radius (diameter + padding)
   
-  const metersPerPixel = (radiusKm * (isMobile ? 3 : 1)); // 256px is typical tile size
+  const metersPerPixel = (radiusKm * (isMobile ? 3 : 0.5)); // 256px is typical tile size
   
   // Adjust for latitude (meters per pixel varies with latitude)
   const latitudeAdjustment = Math.cos(latitude * Math.PI / 180);
