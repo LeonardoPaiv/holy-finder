@@ -7,7 +7,6 @@
  * @returns Appropriate zoom level (1-18)
  */
 export const calculateZoomFromRadius = (radiusKm: number, latitude: number = 0, isMobile: boolean = false): number => {
-  console.log("🚀 ~ calculateZoomFromRadius ~ isMobile:", isMobile)
   // At the equator, each zoom level roughly doubles the visible area
   // We want the radius to fit comfortably in the viewport
   // Assuming viewport shows roughly 2x the radius (diameter + padding)
