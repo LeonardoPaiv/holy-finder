@@ -3,6 +3,8 @@ import { Settings, FileText, Users, Shield, Map } from 'lucide-react';
 import { ReportForm } from '@/components/church-dialog/ReportForm';
 import { useInstitutionDashboardViewModel } from './viewmodels/InstitutionDashboardViewModel';
 import { InstitutionPageLayout } from './institution/InstitutionPageLayout';
+import { WelcomeDialog } from './WelcomeDialog';
+import { useWelcomeDialog } from '@/hooks/useWelcomeDialog';
 
 interface DashboardOptionProps {
   icon: React.ReactNode;
@@ -45,6 +47,8 @@ export const InstitutionDashboard: React.FC = () => {
     handleOpenReportDialog,
     handleCloseReportDialog
   } = useInstitutionDashboardViewModel();
+
+  const { shouldShow, isChecking, markAsShown } = useWelcomeDialog();
 
   // Only build options when user is ready to prevent blinks
   const options = React.useMemo(() => {
@@ -171,6 +175,14 @@ export const InstitutionDashboard: React.FC = () => {
             />
           </div>
         </div>
+      )}
+
+      {/* Welcome Dialog */}
+      {!isChecking && shouldShow && (
+        <WelcomeDialog 
+          isOpen={shouldShow} 
+          onClose={markAsShown} 
+        />
       )}
     </InstitutionPageLayout>
   );

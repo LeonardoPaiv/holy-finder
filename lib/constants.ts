@@ -15,3 +15,7 @@ export const COOKIES = {
   ACCESS_TOKEN: 'sb-access-token',
   REFRESH_TOKEN: 'sb-refresh-token',
 };
+
+export const LOCALSTORAGE = {
+  DASHBOARD_WELCOME_SHOWN: 'mapa-da-fe-dashboard-welcome-shown',
+};
