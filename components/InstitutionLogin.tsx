@@ -111,7 +111,9 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
           </div>
           
           <p className="text-center mt-6 text-xs text-slate-400 max-w-xs mx-auto">
-            Ao entrar, você concorda com os termos de uso do Ecclesia Locator para instituições parceiras.
+            Ao entrar, você concorda com os 
+            <a className="text-blue-600 hover:underline" href="https://mapsfe.com/terms" target="_blank" rel="noopener noreferrer"> termos de uso</a>
+             do Mapa da Fé para instituições parceiras.
           </p>
         </div>
       </div>

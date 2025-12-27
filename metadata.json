@@ -1,5 +1,5 @@
 {
-  "name": "Ecclesia Locator",
+  "name": "Mapa da Fé",
   "description": "Localizador de igrejas com feed comunitário e integração de doações.",
   "requestFramePermissions": [
     "geolocation"
