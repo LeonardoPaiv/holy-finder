@@ -28,10 +28,23 @@ export enum UserRole {
 
 export const EventSchema = new Schema({
     name: { type: String, required: true },
+    // Dias da semana (para eventos recorrentes) - opcional
     days: [{
         type: String,
         enum: Object.values(WeekDays),
-        required: true
+        required: false
+    }],
+    // Datas específicas (formato ISO: "2025-12-25") - opcional
+    dates: [{
+        type: String,
+        required: false,
+        validate: {
+            validator: function(v: string) {
+                // Valida formato ISO date (YYYY-MM-DD)
+                return /^\d{4}-\d{2}-\d{2}$/.test(v);
+            },
+            message: 'Date must be in ISO format (YYYY-MM-DD)'
+        }
     }],
     hours: [{ type: String, required: true }],
     description: { type: String, required: false },

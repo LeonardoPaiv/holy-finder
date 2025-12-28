@@ -17,20 +17,36 @@ export async function PATCH(
     const { errorResponse } = await validateCompanyRequest(request, cnpj, [UserType.INSTITUTION_ADMIN, UserType.COMUM, UserType.INSTITUTION_OWNER]);
     if (errorResponse) return errorResponse;
 
-    // 3. Update Events
+    // 2. Validate Events
     if (!Array.isArray(body.events)) {
         return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
     }
 
+
+    // Validate each event has either days or dates
+    for (const event of body.events) {
+        const hasDays = event.days && event.days.length > 0;
+        const hasDates = event.dates && event.dates.length > 0;
+        
+        if (!hasDays && !hasDates) {
+            return NextResponse.json({ 
+                error: 'Each event must have either days or dates',
+                event: event.name 
+            }, { status: 400 });
+        }
+    }
+
+    // 3. Update Events
     const updatedCompany = await CompanyModel.findOneAndUpdate(
       { _id: cnpj },
       { $set: { events: body.events } },
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     if (!updatedCompany) {
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
+
 
     return NextResponse.json(updatedCompany);
 

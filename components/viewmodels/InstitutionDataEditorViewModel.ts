@@ -23,7 +23,9 @@ export const useInstitutionDataEditorViewModel = () => {
   const [currentScheduleName, setCurrentScheduleName] = useState('Missa');
 
   // Local state for new event entry
+  const [eventType, setEventType] = useState<'recurring' | 'specific'>('recurring');
   const [eventSelectedDays, setEventSelectedDays] = useState<string[]>([]);
+  const [eventSelectedDates, setEventSelectedDates] = useState<string[]>([]);
   const [eventCurrentInputTime, setEventCurrentInputTime] = useState('');
   const [eventSelectedTimesList, setEventSelectedTimesList] = useState<string[]>([]);
   const [currentEventName, setCurrentEventName] = useState('Evento');
@@ -248,26 +250,44 @@ export const useInstitutionDataEditorViewModel = () => {
   };
 
   const handleAddEventBlock = () => {
-    if (eventSelectedDays.length === 0 || eventSelectedTimesList.length === 0) return;
-
-    const sortedDays = WEEKDAYS.filter(day => eventSelectedDays.includes(day));
+    if (!currentEventName || eventSelectedTimesList.length === 0) {
+      toast.error('Preencha o nome e adicione pelo menos um horário');
+      return;
+    }
 
     const newEvent: Event = {
-        name: currentEventName,
-        days: sortedDays,
-        hours: eventSelectedTimesList,
-        description: ''
+      name: currentEventName,
+      hours: eventSelectedTimesList,
+      description: ''
     };
 
+    if (eventType === 'recurring') {
+      if (eventSelectedDays.length === 0) {
+        toast.error('Selecione pelo menos um dia da semana');
+        return;
+      }
+      const sortedDays = WEEKDAYS.filter(day => eventSelectedDays.includes(day));
+      newEvent.days = sortedDays;
+    } else {
+      if (eventSelectedDates.length === 0) {
+        toast.error('Selecione pelo menos uma data');
+        return;
+      }
+      newEvent.dates = eventSelectedDates;
+    }
+
     setFormData(prev => ({
-        ...prev,
-        events: [...(prev.events || []), newEvent]
+      ...prev,
+      events: [...(prev.events || []), newEvent]
     }));
 
+    // Reset form
     setEventSelectedDays([]);
+    setEventSelectedDates([]);
     setEventSelectedTimesList([]);
     setEventCurrentInputTime('');
     setCurrentEventName('Evento');
+    setEventType('recurring');
   };
 
   const removeEvent = (index: number) => {
@@ -300,7 +320,11 @@ export const useInstitutionDataEditorViewModel = () => {
     removeSchedule,
     saveMissas,
     // Events
+    eventType,
+    setEventType,
     eventSelectedDays,
+    eventSelectedDates,
+    setEventSelectedDates,
     eventCurrentInputTime,
     setEventCurrentInputTime,
     eventSelectedTimesList,

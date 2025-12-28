@@ -10,6 +10,11 @@ interface ScheduleSectionProps {
 }
 
 export const ScheduleSection: React.FC<ScheduleSectionProps> = ({ title, icon: Icon, items, emptyMessage }) => {
+  const formatDateToBR = (dateISO: string): string => {
+    const [year, month, day] = dateISO.split('-');
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center space-x-2 font-semibold text-slate-800 border-b pb-2">
@@ -18,18 +23,40 @@ export const ScheduleSection: React.FC<ScheduleSectionProps> = ({ title, icon: I
       </div>
       {items && items.length > 0 ? (
         <ul className="space-y-2">
-          {items.map((item, idx) => (
-            <li key={idx} className="flex flex-col text-sm text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100">
-              <div className="flex justify-between items-center mb-1">
-                <span className="font-medium">{item.name}</span>
-              </div>
-              <div className="text-xs text-slate-500 flex flex-col gap-1">
-                <span className="font-medium text-slate-700">{item.days.join(', ')}</span>
-                <span>{item.hours.join(', ')}</span>
-              </div>
-              {item.description && <div className="text-xs italic text-slate-400 mt-1 border-t border-slate-200 pt-1">{item.description}</div>}
-            </li>
-          ))}
+          {items.map((item, idx) => {
+            const hasSpecificDates = item.dates && item.dates.length > 0;
+            const hasRecurringDays = item.days && item.days.length > 0;
+
+            return (
+              <li key={idx} className="flex flex-col text-sm text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-medium">{item.name}</span>
+                </div>
+                <div className="text-xs text-slate-500 flex flex-col gap-1">
+                  {/* Mostrar datas específicas se disponíveis */}
+                  {hasSpecificDates ? (
+                    <span className="font-medium text-slate-700">
+                      📅 {item.dates!.map(formatDateToBR).join(', ')}
+                    </span>
+                  ) : hasRecurringDays ? (
+                    <span className="font-medium text-slate-700">
+                      {item.days!.join(', ')}
+                    </span>
+                  ) : (
+                    <span className="font-medium text-slate-400 italic">
+                      Sem data definida
+                    </span>
+                  )}
+                  <span>⏰ {item.hours.join(', ')}</span>
+                </div>
+                {item.description && (
+                  <div className="text-xs italic text-slate-400 mt-1 border-t border-slate-200 pt-1">
+                    {item.description}
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p className="text-sm text-slate-500 italic">{emptyMessage}</p>

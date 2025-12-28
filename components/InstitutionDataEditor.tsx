@@ -42,7 +42,11 @@ export const InstitutionDataEditor = () => {
     removeSchedule,
     saveMissas,
     // Events
+    eventType,
+    setEventType,
     eventSelectedDays,
+    eventSelectedDates,
+    setEventSelectedDates,
     eventCurrentInputTime,
     setEventCurrentInputTime,
     eventSelectedTimesList,
@@ -177,8 +181,12 @@ export const InstitutionDataEditor = () => {
                 onRemove={removeEvent}
                 currentEventName={currentEventName}
                 setCurrentEventName={setCurrentEventName}
+                eventType={eventType}
+                setEventType={setEventType}
                 selectedDays={eventSelectedDays}
                 toggleDay={toggleEventDay}
+                selectedDates={eventSelectedDates}
+                setSelectedDates={setEventSelectedDates}
                 currentInputTime={eventCurrentInputTime}
                 setCurrentInputTime={setEventCurrentInputTime}
                 selectedTimesList={eventSelectedTimesList}

@@ -30,7 +30,12 @@ const CompanySchema = new Schema<Company>({
 
 CompanySchema.index({ geo: '2dsphere' });
 
-const CompanyModel = mongoose.models.Company || mongoose.model<Company>('Company', CompanySchema);
+// Force model reload to pick up EventSchema changes
+if (mongoose.models.Company) {
+    delete mongoose.models.Company;
+}
+
+const CompanyModel = mongoose.model<Company>('Company', CompanySchema);
 
 const syncIndexes = () => {
     CompanyModel.syncIndexes().then(() => {

@@ -50,9 +50,10 @@ export interface Geo {
 
 export interface Event {
   name: string;
-  days: string[];
+  days?: string[];      // Dias da semana (opcional, para eventos recorrentes)
+  dates?: string[];     // Datas específicas ISO (opcional, formato: "2025-12-25")
   hours: string[];
-  description: string;
+  description?: string;
 }
 
 export interface Company {

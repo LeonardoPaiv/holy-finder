@@ -3,6 +3,7 @@ import { Calendar, Save, Check, Trash2, Plus, X, Loader2 } from 'lucide-react';
 import { Event } from '@/types';
 import { WEEKDAYS } from '@/lib/constants';
 import { TimePicker } from '../TimePicker';
+import { DateSelector } from '../DateSelector';
 
 interface EventsEditorProps {
     events: Event[];
@@ -12,8 +13,12 @@ interface EventsEditorProps {
     // New event state
     currentEventName: string;
     setCurrentEventName: (name: string) => void;
+    eventType: 'recurring' | 'specific';
+    setEventType: (type: 'recurring' | 'specific') => void;
     selectedDays: string[];
     toggleDay: (day: string) => void;
+    selectedDates: string[];
+    setSelectedDates: (dates: string[]) => void;
     currentInputTime: string;
     setCurrentInputTime: (time: string) => void;
     selectedTimesList: string[];
@@ -25,11 +30,22 @@ interface EventsEditorProps {
 export const EventsEditor: React.FC<EventsEditorProps> = ({
     events, isSaving, onSave, onRemove,
     currentEventName, setCurrentEventName,
+    eventType, setEventType,
     selectedDays, toggleDay,
+    selectedDates, setSelectedDates,
     currentInputTime, setCurrentInputTime,
     selectedTimesList, addTimeToDraft, removeTimeFromDraft,
     handleAddEventBlock
 }) => {
+    const formatDateToBR = (dateISO: string): string => {
+        const [year, month, day] = dateISO.split('-');
+        return `${day}/${month}/${year}`;
+    };
+
+    const hasValidSchedule = eventType === 'recurring' 
+        ? selectedDays.length > 0 && selectedTimesList.length > 0
+        : selectedDates.length > 0 && selectedTimesList.length > 0;
+
     return (
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-4">
@@ -53,14 +69,22 @@ export const EventsEditor: React.FC<EventsEditorProps> = ({
                 <p className="text-sm text-slate-400 italic">Nenhum evento cadastrado.</p>
               )}
               {events?.map((event, index) => {
+                const hasSpecificDates = event.dates && event.dates.length > 0;
+                const hasRecurringDays = event.days && event.days.length > 0;
+
                 return (
                   <div key={index} className="flex items-start justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
                     <div className="flex flex-col space-y-2">
                       <div className="text-sm font-bold text-purple-600">{event.name}</div>
-                      {/* Row 1: Days */}
+                      {/* Row 1: Days or Dates */}
                       <span className="font-bold text-slate-800 text-base flex items-center">
                         <Check size={16} className="text-green-500 mr-1.5" />
-                        {event.days.join(', ')}
+                        {hasSpecificDates 
+                          ? event.dates!.map(formatDateToBR).join(', ')
+                          : hasRecurringDays 
+                            ? event.days!.join(', ')
+                            : 'Sem data definida'
+                        }
                       </span>
                       {/* Row 2: Times */}
                       <div className="flex flex-wrap gap-2">
@@ -99,29 +123,72 @@ export const EventsEditor: React.FC<EventsEditorProps> = ({
                 />
               </div>
 
-              {/* Day Selector */}
+              {/* Event Type Toggle */}
               <div className="mb-6">
-                <label className="block text-sm text-purple-900 mb-3 font-bold">1. Selecione os dias:</label>
-                <div className="flex flex-wrap gap-2">
-                  {WEEKDAYS.map(day => {
-                    const isSelected = selectedDays.includes(day);
-                    return (
-                      <button
-                        key={day}
-                        onClick={() => toggleDay(day)}
-                        className={`px-4 py-2.5 rounded-lg text-sm font-bold transition-all border shadow-sm
-                          ${isSelected
-                            ? 'bg-purple-600 text-white border-purple-600 shadow-purple-200 transform scale-105'
-                            : 'bg-white text-slate-500 border-slate-200 hover:border-purple-300 hover:text-purple-600'
-                          }
-                        `}
-                      >
-                        {day}
-                      </button>
-                    )
-                  })}
+                <label className="block text-sm text-purple-900 mb-3 font-bold">Tipo de Evento:</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setEventType('recurring')}
+                    className={`flex-1 px-4 py-3 rounded-lg text-sm font-bold transition-all border-2 shadow-sm
+                      ${eventType === 'recurring'
+                        ? 'bg-purple-600 text-white border-purple-600 shadow-purple-200'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-purple-300 hover:text-purple-600'
+                      }
+                    `}
+                  >
+                    📅 Dias da Semana
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEventType('specific')}
+                    className={`flex-1 px-4 py-3 rounded-lg text-sm font-bold transition-all border-2 shadow-sm
+                      ${eventType === 'specific'
+                        ? 'bg-purple-600 text-white border-purple-600 shadow-purple-200'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-purple-300 hover:text-purple-600'
+                      }
+                    `}
+                  >
+                    📆 Datas Específicas
+                  </button>
                 </div>
               </div>
+
+              {/* Day/Date Selector */}
+              {eventType === 'recurring' ? (
+                <div className="mb-6">
+                  <label className="block text-sm text-purple-900 mb-3 font-bold">1. Selecione os dias da semana:</label>
+                  <div className="flex flex-wrap gap-2">
+                    {WEEKDAYS.map(day => {
+                      const isSelected = selectedDays.includes(day);
+                      return (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => toggleDay(day)}
+                          className={`px-4 py-2.5 rounded-lg text-sm font-bold transition-all border shadow-sm
+                            ${isSelected
+                              ? 'bg-purple-600 text-white border-purple-600 shadow-purple-200 transform scale-105'
+                              : 'bg-white text-slate-500 border-slate-200 hover:border-purple-300 hover:text-purple-600'
+                            }
+                          `}
+                        >
+                          {day}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-6">
+                  <DateSelector
+                    selectedDates={selectedDates}
+                    onDatesChange={setSelectedDates}
+                    label="1. Selecione as datas específicas:"
+                    minDate={new Date().toISOString().split('T')[0]}
+                  />
+                </div>
+              )}
 
               {/* Time Selector */}
               <div className="mb-6">
@@ -136,6 +203,7 @@ export const EventsEditor: React.FC<EventsEditorProps> = ({
                   </div>
 
                   <button
+                    type="button"
                     onClick={addTimeToDraft}
                     disabled={!currentInputTime}
                     className={`h-14 w-14 rounded-xl flex items-center justify-center transition-all border-2 shadow-sm
@@ -156,7 +224,7 @@ export const EventsEditor: React.FC<EventsEditorProps> = ({
                     {selectedTimesList.map(time => (
                       <span key={time} className="bg-white border-2 border-purple-100 text-purple-800 text-sm font-bold pl-3 pr-2 py-1.5 rounded-lg flex items-center shadow-sm animate-in zoom-in-50 duration-200">
                         {time}
-                        <button onClick={() => removeTimeFromDraft(time)} className="ml-2 p-0.5 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded transition-colors">
+                        <button type="button" onClick={() => removeTimeFromDraft(time)} className="ml-2 p-0.5 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded transition-colors">
                           <X size={16} />
                         </button>
                       </span>
@@ -171,10 +239,11 @@ export const EventsEditor: React.FC<EventsEditorProps> = ({
 
               {/* Main Action */}
               <button
+                type="button"
                 onClick={handleAddEventBlock}
-                disabled={selectedDays.length === 0 || selectedTimesList.length === 0}
+                disabled={!hasValidSchedule}
                 className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2 transition-all shadow-lg
-                  ${(selectedDays.length === 0 || selectedTimesList.length === 0)
+                  ${!hasValidSchedule
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
                     : 'bg-green-600 text-white hover:bg-green-700 active:scale-95 shadow-green-200'
                   }
