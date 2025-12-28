@@ -63,7 +63,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                       {/* Row 1: Days */}
                       <span className="font-bold text-slate-800 text-base flex items-center">
                         <Check size={16} className="text-green-500 mr-1.5" />
-                        {event.days.join(', ')}
+                        {event.days?.join(', ') || 'Sem dias definidos'}
                       </span>
                       {/* Row 2: Times */}
                       <div className="flex flex-wrap gap-2">

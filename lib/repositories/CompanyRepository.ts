@@ -1,11 +1,7 @@
 import { BaseRepository } from './BaseRepository';
-import Company from '../models/Company';
-import { Company as ICompany, PaginatedResult } from '../../types';
-import { Document } from 'mongoose';
+import Company, { CompanyDocument } from '../models/Company';
+import { PaginatedResult } from '../../types';
 import { createDiacriticRegex } from '../utils/stringUtils';
-
-// Need to intersect ICompany with Document to satisfy BaseRepository generic constraint
-type CompanyDocument = ICompany & Document;
 
 export class CompanyRepository extends BaseRepository<CompanyDocument> {
     constructor() {

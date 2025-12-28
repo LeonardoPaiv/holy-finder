@@ -1,8 +1,11 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 import { Company } from '../../types';
 import { EventSchema, GeoSchema, Religions } from './common';
 
-const CompanySchema = new Schema<Company>({
+// Define CompanyDocument type that extends both Company interface and Document
+export type CompanyDocument = Company & Document;
+
+const CompanySchema = new Schema<CompanyDocument>({
     _id: { type: String, required: true }, // CNPJ
     email: { type: String, required: true },
     name: { type: String, required: true },
@@ -35,7 +38,7 @@ if (mongoose.models.Company) {
     delete mongoose.models.Company;
 }
 
-const CompanyModel = mongoose.model<Company>('Company', CompanySchema);
+const CompanyModel = mongoose.model<CompanyDocument>('Company', CompanySchema);
 
 const syncIndexes = () => {
     CompanyModel.syncIndexes().then(() => {
