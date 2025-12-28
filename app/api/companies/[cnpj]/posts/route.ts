@@ -62,7 +62,7 @@ export async function GET(
     const { searchParams } = new URL(request.url);
 
     // 1. Verify Authentication & Permissions
-    const { errorResponse } = await validateCompanyRequest(request, cnpj, [UserType.COMUM, UserType.INSTITUTION_ADMIN]);
+    const { errorResponse } = await validateCompanyRequest(request, cnpj, [UserType.COMUM, UserType.INSTITUTION_ADMIN, UserType.INSTITUTION_OWNER]);
     if (errorResponse) return errorResponse;
 
     // 2. Parse Query Parameters
