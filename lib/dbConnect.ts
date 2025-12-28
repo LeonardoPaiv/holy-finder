@@ -33,6 +33,7 @@ function loadModels() {
     require('./models/Post');
     require('./models/Report');
     require('./models/PostsReports');
+    require('./models/Transaction');
 }
 
 async function dbConnect() {

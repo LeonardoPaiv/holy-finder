@@ -18,12 +18,16 @@ export interface FeedPost {
 }
 
 export interface Transaction {
-  id: string;
-  type: 'APP_EXPENSE' | 'CHARITY_DONATION';
+  _id: string; // UUID
+  photo: string;
   title: string;
-  amount: number;
-  date: string;
-  receiptUrl: string;
+  category: 'donation' | 'bill';
+  description: string;
+  value: number;
+  unit: 'R$' | 'USD';
+  donatorId: string | undefined;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export enum Religions {
