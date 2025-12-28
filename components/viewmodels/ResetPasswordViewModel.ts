@@ -1,17 +1,14 @@
 import { useState } from 'react';
 import { AuthService } from '@/services/authService';
 import toast from 'react-hot-toast';
-import { COOKIES, ROUTES } from '@/lib/constants';
-import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { ROUTES } from '@/lib/constants';
 
 export const useResetPasswordViewModel = () => {
   const router = useRouter();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewPassword(e.target.value);
@@ -43,27 +40,15 @@ export const useResetPasswordViewModel = () => {
     setLoading(true);
     try {
       await AuthService.updatePassword(newPassword);
-      setSuccess(true);
-      toast.success('Senha redefinida com sucesso! Você já está autenticado.');
+      toast.success('Senha redefinida com sucesso!');
+      
+      // Redireciona para o dashboard após 1 segundo
+      setTimeout(() => {
+        router.push(ROUTES.INSTITUTION.DASHBOARD);
+      }, 1000);
     } catch (error: any) {
       console.error('Error resetting password:', error);
       toast.error(error.message || 'Erro ao redefinir senha');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-    const signOut = async (): Promise<void> => {
-    setLoading(true);
-    try {
-      await supabase.auth.signOut();
-      Cookies.remove(COOKIES.ACCESS_TOKEN);
-      Cookies.remove(COOKIES.REFRESH_TOKEN);
-      router.push(ROUTES.INSTITUTION.LOGIN);
-    } catch (error) {
-      console.error('Error logging out:', error);
-      // Force redirect even if error
-      router.push(ROUTES.INSTITUTION.LOGIN);
     } finally {
       setLoading(false);
     }
@@ -76,12 +61,10 @@ export const useResetPasswordViewModel = () => {
     newPassword,
     confirmPassword,
     loading,
-    success,
     passwordsMatch,
     passwordsDontMatch,
     handleNewPasswordChange,
     handleConfirmPasswordChange,
     handleSubmit,
-    signOut,
   };
 };

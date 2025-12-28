@@ -3,17 +3,19 @@ import { useInstitution } from '@/components/contexts/InstitutionContext';
 import toast from 'react-hot-toast';
 
 export const useInstitutionLoginViewModel = (onLoginSuccess: () => void) => {
-  const { signIn, loading, checkSession, user } = useInstitution();
+  const { signIn, loading, checkSession, user, institution } = useInstitution();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    if (user) {
+    // Only auto-redirect if user exists AND has institution data loaded
+    // This prevents redirect loop when user is authenticated but data hasn't loaded
+    if (user && institution) {
       onLoginSuccess();
-    } else {
+    } else if (!user) {
       checkSession();
     }
-  }, [user, checkSession, onLoginSuccess]);
+  }, [user, institution, checkSession, onLoginSuccess]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

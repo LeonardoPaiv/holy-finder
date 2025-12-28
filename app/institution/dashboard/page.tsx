@@ -1,7 +1,12 @@
 'use client'
 import React from 'react';
 import { InstitutionDashboard } from '@/components/InstitutionDashboard';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 export default function InstitutionDashboardPage() {
-    return <InstitutionDashboard />;
+    return (
+        <ProtectedRoute>
+            <InstitutionDashboard />
+        </ProtectedRoute>
+    );
 }

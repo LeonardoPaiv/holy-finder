@@ -1,21 +1,17 @@
 import React from 'react';
-import Link from 'next/link';
 import { Lock, CheckCircle, XCircle } from 'lucide-react';
 import { useResetPasswordViewModel } from './viewmodels/ResetPasswordViewModel';
-import { ROUTES } from '@/lib/constants';
 
 export const ResetPassword: React.FC = () => {
   const {
     newPassword,
     confirmPassword,
     loading,
-    success,
     passwordsMatch,
     passwordsDontMatch,
     handleNewPasswordChange,
     handleConfirmPasswordChange,
     handleSubmit,
-    signOut
   } = useResetPasswordViewModel();
 
   return (
@@ -35,23 +31,10 @@ export const ResetPassword: React.FC = () => {
 
             <h2 className="text-2xl font-bold text-slate-800 mb-2">Nova Senha</h2>
             <p className="text-slate-500 mb-8 text-sm">
-              {success 
-                ? 'Sua senha foi redefinida com sucesso!'
-                : 'Defina uma nova senha para sua conta. Ela deve ter no mínimo 6 caracteres.'
-              }
+              Defina uma nova senha para sua conta. Ela deve ter no mínimo 6 caracteres.
             </p>
 
-            {success ? (
-              // Success State
-              <button 
-                onClick={signOut}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center space-x-2 active:scale-95"
-              >
-                Ir para o Login
-              </button>
-            ) : (
-              // Form State
-              <form onSubmit={handleSubmit} className="space-y-4 text-left">
+            <form onSubmit={handleSubmit} className="space-y-4 text-left">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase">Nova Senha</label>
                   <div className="relative">
@@ -121,11 +104,10 @@ export const ResetPassword: React.FC = () => {
                   </button>
                 </div>
               </form>
-            )}
           </div>
           
           <p className="text-center mt-6 text-xs text-slate-400 max-w-xs mx-auto">
-            Após redefinir sua senha, você já estará autenticado e poderá acessar o painel.
+            Após redefinir sua senha, você será redirecionado automaticamente para o painel.
           </p>
         </div>
       </div>

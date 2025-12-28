@@ -52,7 +52,9 @@ export const useAuth = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
-        if (session.user.email && !user) {
+        // Only fetch user data if we have auth cookies (prevents 401 redirect)
+        const hasAuthCookie = Cookies.get(COOKIES.ACCESS_TOKEN);
+        if (session.user.email && !user && hasAuthCookie) {
              fetchUserData(session.user.email);
         }
       }
@@ -64,7 +66,9 @@ export const useAuth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser(session.user);
-        if (session.user.email && !user) {
+        // Only fetch user data if we have auth cookies (prevents 401 redirect)
+        const hasAuthCookie = Cookies.get(COOKIES.ACCESS_TOKEN);
+        if (session.user.email && !user && hasAuthCookie) {
             fetchUserData(session.user.email);
         }
       } else {
