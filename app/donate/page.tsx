@@ -30,26 +30,19 @@ export default function DonatePage() {
                     </p>
                 </div>
 
-                {/* QR Code Container */}
-                <div className="flex flex-col items-center mb-6">
-                    <div className="bg-white p-2 rounded-xl border-2 border-slate-100 shadow-sm mb-3">
-                        {/* Generating a static QR code for visual representation */}
-                        <img
-                            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020126580014BR.GOV.BCB.PIX0136123e4567-e89b-12d3-a456-4266141740005204000053039865802BR5913Ecclesia App6008Sao Paulo62070503***6304E2CA"
-                            alt="QR Code Pix"
-                            className="w-40 h-40 opacity-90 mix-blend-multiply"
-                        />
+                {/* Placeholder for donations coming soon */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 mb-6">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Heart size={32} className="text-blue-500" fill="currentColor" />
                     </div>
-                    <p className="text-xs text-slate-400 font-mono bg-slate-100 px-3 py-1 rounded-full">
-                        Chave: pix@ecclesia.app
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">Obrigado pelo Interesse!</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                        Em breve será possível fazer doações para apoiar nossa missão. 
+                        Estamos trabalhando para disponibilizar essa funcionalidade o mais rápido possível.
                     </p>
                 </div>
 
                 <div className="space-y-3">
-                    <button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 active:scale-95">
-                        <Copy size={18} />
-                        <span>Copiar Código Pix</span>
-                    </button>
 
                     <button
                         onClick={handleViewTransactions}
