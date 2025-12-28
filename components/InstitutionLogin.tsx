@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Building, ArrowLeft, Lock, ChevronRight, Mail } from 'lucide-react';
 import { useInstitutionLoginViewModel } from './viewmodels/InstitutionLoginViewModel';
 import { ROUTES } from '@/lib/constants';
@@ -98,9 +99,9 @@ export const InstitutionLogin: React.FC<InstitutionLoginProps> = ({ onLoginSucce
             </form>
 
             <div className="mt-6 text-center">
-              <a href="#" className="text-xs text-slate-400 hover:text-blue-500 transition-colors">
+              <Link href={ROUTES.INSTITUTION.FORGOT_PASSWORD} className="text-xs text-slate-400 hover:text-blue-500 transition-colors">
                 Esqueci minha senha
-              </a>
+              </Link>
             </div>
 
             <div className="mt-2 text-center">

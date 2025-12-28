@@ -37,6 +37,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({ isSettingsOpen, onToggleSe
     }
   };
 
+  if (pathname === '/reset-password') {
+    return null;
+  }
+
   return (
     <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 md:border md:rounded-full md:bottom-6 md:w-[400px] md:left-1/2 md:-translate-x-1/2 md:shadow-2xl z-[40]">
       <div className="flex justify-around items-center h-16 md:h-14 px-2">

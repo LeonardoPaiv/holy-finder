@@ -8,6 +8,8 @@ export const ROUTES = {
     SIGNUP: '/institution/signup',
     CONFIRM: '/institution/confirm',
     MODERATION: '/institution/moderation',
+    FORGOT_PASSWORD: '/institution/forgot-password',
+    RESET_PASSWORD: '/reset-password',
   },
 };
 

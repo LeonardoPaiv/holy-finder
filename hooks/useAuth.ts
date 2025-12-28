@@ -195,6 +195,36 @@ export const useAuth = () => {
     }
   };
 
+  const requestPasswordReset = async (email: string): Promise<void> => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      if (error.code) {
+        throw new Error(translateSupabaseError(error.code));
+      }
+      throw error;
+    }
+  };
+
+  const updatePassword = async (newPassword: string): Promise<void> => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      if (error.code) {
+        throw new Error(translateSupabaseError(error.code));
+      }
+      throw error;
+    }
+  };
+
   return {
     user,
     institution,
@@ -205,5 +235,7 @@ export const useAuth = () => {
     signUp,
     signOut,
     checkSession,
+    requestPasswordReset,
+    updatePassword,
   };
 };

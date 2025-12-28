@@ -17,6 +17,8 @@ interface InstitutionContextType {
   signUp: (email: string, password: string, cnpj: string, fullName: string, location?: { lat: number; lng: number } | null) => Promise<void>;
   signOut: () => Promise<void>;
   checkSession: (callback?: () => void) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
 }
 
 const InstitutionContext = createContext<InstitutionContextType | undefined>(undefined);
