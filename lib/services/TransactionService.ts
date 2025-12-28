@@ -39,7 +39,7 @@ export class TransactionService extends BaseService<TransactionDocument> {
 
     async createTransaction(data: Partial<ITransaction>): Promise<TransactionDocument> {
         // Validate required fields
-        if (!data.photo || !data.title || !data.category || !data.description || !data.value || !data.donatorId) {
+        if (!data.photo || !data.title || !data.category || !data.description || !data.value) {
             throw new Error('Missing required fields');
         }
 

@@ -43,7 +43,6 @@ export class TransactionRepository extends BaseRepository<TransactionDocument> {
         const [data, total] = await Promise.all([
             this.model
                 .find(query)
-                .populate('donatorId', 'fullName email')
                 .skip(skip)
                 .limit(limit)
                 .sort({ createdAt: -1 }),
