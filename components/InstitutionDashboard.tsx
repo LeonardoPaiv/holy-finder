@@ -5,6 +5,7 @@ import { useInstitutionDashboardViewModel } from './viewmodels/InstitutionDashbo
 import { InstitutionPageLayout } from './institution/InstitutionPageLayout';
 import { WelcomeDialog } from './WelcomeDialog';
 import { useWelcomeDialog } from '@/hooks/useWelcomeDialog';
+import toast from 'react-hot-toast';
 
 interface DashboardOptionProps {
   icon: React.ReactNode;
@@ -96,7 +97,7 @@ export const InstitutionDashboard: React.FC = () => {
         description: 'Candidate-se para ajudar na moderação da comunidade.',
         onClick: () => {
           // Placeholder for now
-          alert('Funcionalidade em breve!');
+          toast('Por enquanto não estamos aceitando incrições, obrigado pela compreensão!');
         },
         disabled: false
       }] : []),
