@@ -11,19 +11,20 @@ import { SearchAreaButton } from './SearchAreaButton';
 import { MapFilters } from './MapFilters';
 import { RecenterButton } from './RecenterButton';
 import { RadiusCircle } from './RadiusCircle';
+import { getReligionColor } from '@/utils/religionColors';
 
-// Custom Marker Icon using DivIcon and Tailwind classes
-const customMarkerIcon = new L.DivIcon({
+// Function to create a custom marker icon with dynamic color based on religion
+const createMarkerIcon = (color: string) => new L.DivIcon({
   className: 'bg-transparent border-none',
   html: `
     <div class="marker-fade-in relative flex flex-col items-center justify-center transform hover:scale-110 transition-transform duration-200 cursor-pointer">
-      <div class="w-10 h-10 bg-blue-600 rounded-full shadow-xl border-2 border-white flex items-center justify-center z-10">
+      <div class="w-10 h-10 rounded-full shadow-xl border-2 border-white flex items-center justify-center z-10" style="background-color: ${color}">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
           <circle cx="12" cy="10" r="3"/>
         </svg>
       </div>
-      <div class="w-3 h-3 bg-blue-600 rotate-45 -mt-2 shadow-sm"></div>
+      <div class="w-3 h-3 rotate-45 -mt-2 shadow-sm" style="background-color: ${color}"></div>
       <div class="w-8 h-2 bg-black/20 blur-[2px] rounded-full mt-0.5"></div>
     </div>
   `,
@@ -101,17 +102,22 @@ export const MapView: React.FC<MapViewProps> = ({
           </>
         )}
 
-        {companies.map((company) => (
-          <Marker 
-            key={company._id} 
-            position={[company.geo.coordinates[1], company.geo.coordinates[0]]} 
-            icon={customMarkerIcon}
-            eventHandlers={{
-              click: () => onSelectCompany(company),
-            }}
-          >
-          </Marker>
-        ))}
+        {companies.map((company) => {
+          const markerColor = getReligionColor(company.type);
+          const markerIcon = createMarkerIcon(markerColor);
+          
+          return (
+            <Marker 
+              key={company._id} 
+              position={[company.geo.coordinates[1], company.geo.coordinates[0]]} 
+              icon={markerIcon}
+              eventHandlers={{
+                click: () => onSelectCompany(company),
+              }}
+            >
+            </Marker>
+          );
+        })}
       </MapContainer>
       
       <SearchAreaButton show={showSearchButton} onSearch={handleSearchArea} />
