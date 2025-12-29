@@ -25,21 +25,3 @@ export function createAuthenticatedClient(accessToken: string): SupabaseClient {
     },
   });
 }
-
-/**
- * Creates a Supabase admin client using the service role key
- * Use this for admin operations like banning users
- * IMPORTANT: Only use on server-side (API routes)
- */
-export function createAdminClient(): SupabaseClient {
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Supabase admin configuration missing');
-  }
-
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  });
-}

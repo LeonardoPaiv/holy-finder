@@ -38,7 +38,29 @@ export class PostService extends BaseService<PostDocument> {
         return (this.repository as PostRepository).findNearby(filters, options);
     }
 
-    async getPostById(id: string): Promise<PostDocument | null> {
+    async getPostById(id: string): Promise<PostDocument & { cnpj: { _id: string; name: string } } | null> {
         return (this.repository as PostRepository).findById(id);
+    }
+
+    async deletePost(postId: string): Promise<{ success: boolean; error?: string }> {
+        try {
+            // First, get the post to retrieve the photo URL
+            const post = await this.repository.findById(postId);
+            
+            if (!post) {
+                return { success: false, error: 'Post not found' };
+            }
+
+            // Delete from database
+            const deletedPost = await (this.repository as PostRepository).deletePost(postId);
+            
+            if (!deletedPost) {
+                return { success: false, error: 'Failed to delete post from database' };
+            }
+            return { success: true };
+        } catch (error) {
+            console.error('Error in PostService.deletePost:', error);
+            return { success: false, error: 'Internal server error' };
+        }
     }
 }

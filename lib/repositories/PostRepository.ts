@@ -255,4 +255,8 @@ export class PostRepository extends BaseRepository<PostDocument> {
             { new: true }
         );
     }
+
+    async deletePost(postId: string): Promise<PostDocument | null> {
+        return this.model.findByIdAndDelete(postId);
+    }
 }

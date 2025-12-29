@@ -63,7 +63,7 @@ export default function PostList({
   return (
     <div className="space-y-6">
       {posts.map((post) => (
-        <PostCard key={post._id} post={post} />
+        <PostCard key={post._id} post={post} onDelete={onRetry} />
       ))}
 
       {/* Load More */}
@@ -81,3 +81,4 @@ export default function PostList({
     </div>
   );
 }
+

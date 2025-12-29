@@ -65,5 +65,16 @@ export const PostService = {
     }
 
     return await response.json();
+  },
+
+  deletePost: async (postId: string): Promise<{ message: string }> => {
+    const response = await api.delete(`/api/posts/${postId}`);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete post');
+    }
+
+    return await response.json();
   }
 };
