@@ -1,13 +1,13 @@
 import { Schema } from 'mongoose';
 
 export enum WeekDays {
-    SEGUNDA = 'Segunda',
-    TERCA = 'Terça',
-    QUARTA = 'Quarta',
-    QUINTA = 'Quinta',
-    SEXTA = 'Sexta',
-    SABADO = 'Sábado',
-    DOMINGO = 'Domingo'
+    SEGUNDA = 'Seg',
+    TERCA = 'Ter',
+    QUARTA = 'Qua',
+    QUINTA = 'Qui',
+    SEXTA = 'Sex',
+    SABADO = 'Sab',
+    DOMINGO = 'Dom'
 }
 
 export { Religions } from '@/types';

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Info, Save, MapPin, Phone, Loader2 } from 'lucide-react';
 import { Company, Religions } from '@/types';
+import { formatPhoneInput, unformatPhone } from '@/utils/phoneFormatter';
 
 interface BasicInfoEditorProps {
     formData: Partial<Company>;
@@ -61,10 +62,15 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({ formData, setF
                 <Phone size={18} className="text-slate-400 shrink-0" />
                 <input
                   type="text"
-                  value={formData.tel || ''}
-                  onChange={(e) => setFormData({ ...formData, tel: e.target.value })}
+                  value={formatPhoneInput(formData.tel || '')}
+                  onChange={(e) => {
+                    const unformatted = unformatPhone(e.target.value);
+                    setFormData({ ...formData, tel: unformatted });
+                  }}
+                  placeholder="(11) 91234-5678"
                   className="w-full bg-transparent outline-none"
                   disabled={!isAdmin}
+                  maxLength={15}
                 />
               </div>
             </div>

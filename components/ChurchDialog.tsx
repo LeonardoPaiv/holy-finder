@@ -5,6 +5,7 @@ import { useChurchDialogViewModel } from './viewmodels/ChurchDialogViewModel';
 import { ScheduleSection } from './church-dialog/ScheduleSection';
 import { ReportForm } from './church-dialog/ReportForm';
 import { ImagePreviewDialog } from './ImagePreviewDialog';
+import { formatPhoneDisplay } from '@/utils/phoneFormatter';
 
 interface ChurchDialogProps {
   church: Company | null;
@@ -104,7 +105,7 @@ export const ChurchDialog: React.FC<ChurchDialogProps> = ({ church, onClose }) =
               {church.tel && (
                 <div className="flex items-center space-x-3 text-slate-600">
                   <Phone className="shrink-0 text-green-600" size={20} />
-                  <span className="text-sm md:text-base">{church.tel}</span>
+                  <span className="text-sm md:text-base">{formatPhoneDisplay(church.tel)}</span>
                 </div>
               )}
 
