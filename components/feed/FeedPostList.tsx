@@ -2,6 +2,7 @@ import { Post } from '@/types';
 import FeedPostCard from './FeedPostCard';
 import GoogleAdUnit from './GoogleAdUnit';
 import { useGoogleAds } from '@/hooks/useGoogleAds';
+import { featureFlags } from '@/lib/featureFlags';
 
 interface FeedPostListProps {
   posts: (Post & {
@@ -73,7 +74,8 @@ export default function FeedPostList({
       
       // Add an ad after every 4 posts (at positions 4, 9, 14, etc.)
       // This means ads appear at indices 4, 9, 14, 19... (every 5th position)
-      if (isAdsLoaded && (index + 1) % 4 === 0 && index < posts.length - 1) {
+      // Only show ads if the feature flag is enabled
+      if (featureFlags.ads && isAdsLoaded && (index + 1) % 4 === 0 && index < posts.length - 1) {
         items.push(
           <GoogleAdUnit
             key={`ad-${index}`}

@@ -2,6 +2,7 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Map, LayoutList, Heart, Settings } from 'lucide-react';
 import { ViewState } from '../types';
+import { featureFlags } from '@/lib/featureFlags';
 
 interface BottomNavProps {
   isSettingsOpen: boolean;
@@ -41,10 +42,19 @@ export const BottomNav: React.FC<BottomNavProps> = ({ isSettingsOpen, onToggleSe
     return null;
   }
 
+  // Filter nav items based on feature flags
+  const visibleNavItems = navItems.filter((item) => {
+    // Hide donation button if feature is disabled
+    if (item.id === ViewState.DONATE && !featureFlags.donations) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 md:border md:rounded-full md:bottom-6 md:w-[400px] md:left-1/2 md:-translate-x-1/2 md:shadow-2xl z-[40]">
       <div className="flex justify-around items-center h-16 md:h-14 px-2">
-        {navItems.map((item) => {
+        {visibleNavItems.map((item) => {
           // Highlight if it is the current view OR if it's the settings button and the menu is open
           const isActive = (currentView === item.id && !isSettingsOpen) || (item.id === ViewState.SETTINGS && isSettingsOpen);
           const Icon = item.icon;
